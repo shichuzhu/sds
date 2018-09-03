@@ -13,7 +13,8 @@ import (
 )
 
 var (
-	port = flag.Int("port", 10000, "The server port")
+	port     = flag.Int("port", 10000, "The server port")
+	dataPath = flag.String("dataPath", "mp1/data", "The path to files to be grep")
 )
 
 type grepLogServer struct {
@@ -21,10 +22,9 @@ type grepLogServer struct {
 }
 
 func (s *grepLogServer) ReturnMatches(theCmd *pb.Cmd, stream pb.GrepLog_ReturnMatchesServer) error {
-	log.Println("New request received!")
-	var dir = "mp1/src/toys/"
-	var python3 = "/usr/bin/python3"
-	cmd := exec.Command(python3, dir+"gen.py")
+	log.Printf("New request received with pattern: %s\n", theCmd)
+	strCmd := theCmd.GetCmd() + fmt.Sprintf(" %s/* /dev/null", *dataPath)
+	cmd := exec.Command("/bin/sh", "-c", strCmd)
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		log.Fatal(err)
@@ -49,6 +49,7 @@ func main() {
 	}
 	grpcServer := grpc.NewServer()
 	pb.RegisterGrepLogServer(grpcServer, &grepLogServer{})
+	//grpcServer.Serve(lis)
 	go grpcServer.Serve(lis)
 	time.Sleep(time.Second * 5)
 	grpcServer.GracefulStop()

@@ -13,20 +13,18 @@ Compile the `.proto` file using
 
 ## How to run
 
-Run the server on VM:
-
-`go run mp1/src/server/server.go`
-
-Then run the the client:
-
-`go run mp1/src/server/client.go`
+1. Modify the `mp1/config.json` file to add the appropriate IP addresses and port numbers of the VMs.
+2. Modify the `mp1/Makefile` to spawn the corresponding VMs.
+3. `make`
 
 ## Tricks
 
 1. To return the line number, need to add `-n`.
 2. To return the file name, need to add another null file (e.g. /dev/null)
+3. The wildcard "*" will not work in exec.Command. Have to do the filepath.Glob manually, or invoke a shell `/bin/sh -c ...`
 
 ## TODO:
 
-- Add json file to support input IP address.
-- Write code to autosend IP & port info from server to the client.
+- [Done] Add json file to support input IP address.
+- Write code to auto-send IP & port info from server to the client.
+- Add build functionality instead of running `go run` all the time.

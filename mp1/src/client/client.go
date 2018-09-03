@@ -2,11 +2,13 @@ package main
 
 import (
 	pb "../protobuf"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"io"
+	"io/ioutil"
 	"log"
 	"strconv"
 	"sync"
@@ -14,9 +16,19 @@ import (
 )
 
 var (
-	serverAddr = flag.String("addr", "127.0.0.1", "The server ip address")
-	serverPort = flag.Int("port", 10000, "The server port number")
+	//serverAddr     = flag.String("addr", "127.0.0.1", "The server ip address")
+	//serverPort     = flag.Int("port", 10000, "The server port number")
+	configFileName = flag.String("config", "mp1/config.json", "The global configuration file")
 )
+
+type Configuration struct {
+	Addrs []struct {
+		IP   string
+		Port int
+	}
+}
+
+var config Configuration
 
 type Dispatcher struct {
 	writerLock sync.Mutex
@@ -58,19 +70,30 @@ func (s *Dispatcher) dispatch(addr string, port int) {
 	}
 	defer conn.Close()
 	client := pb.NewGrepLogClient(conn)
-	s.distGrep(client, &pb.Cmd{Cmd: "grep"})
+	s.distGrep(client, &pb.Cmd{Cmd: "grep -n hello"})
+}
+
+func loadConfig() {
+	fileContent, err := ioutil.ReadFile(*configFileName)
+	if err != nil {
+		log.Fatalln("Cannot read the config file")
+	}
+	if err := json.Unmarshal(fileContent, &config); err != nil {
+		log.Fatalln("Fail to parse the JSON config file")
+	}
 }
 
 func main() {
 	flag.Parse()
+	loadConfig()
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())
 	opts = append(opts, grpc.WithTimeout(time.Second*3))
 	dispatcher := Dispatcher{opts: opts}
 
-	for i := 0; i < 2; i++ {
+	for i := 0; i < len(config.Addrs); i++ {
 		dispatcher.wg.Add(1)
-		go dispatcher.dispatch(*serverAddr, *serverPort+i)
+		go dispatcher.dispatch(config.Addrs[i].IP, config.Addrs[i].Port)
 	}
 	dispatcher.wg.Wait()
 }
