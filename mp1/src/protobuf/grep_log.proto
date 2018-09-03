@@ -1,0 +1,15 @@
+syntax = "proto3";
+package greplog;
+
+service GrepLog {
+    rpc ReturnMatches (Cmd) returns (stream GrepLine) {
+    }
+}
+
+message GrepLine {
+    string line = 1;
+}
+
+message Cmd {
+    string cmd = 1;
+}
