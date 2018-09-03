@@ -3,22 +3,17 @@ package main
 import (
 	pb "../protobuf"
 	"encoding/json"
-	"flag"
 	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"io"
 	"io/ioutil"
 	"log"
+	"os"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
-)
-
-var (
-	//serverAddr     = flag.String("addr", "127.0.0.1", "The server ip address")
-	//serverPort     = flag.Int("port", 10000, "The server port number")
-	configFileName = flag.String("config", "mp1/config.json", "The global configuration file")
 )
 
 type Configuration struct {
@@ -28,6 +23,7 @@ type Configuration struct {
 	}
 }
 
+var configFileName = "mp1/config.json"
 var config Configuration
 
 type Dispatcher struct {
@@ -70,11 +66,11 @@ func (s *Dispatcher) dispatch(addr string, port int) {
 	}
 	defer conn.Close()
 	client := pb.NewGrepLogClient(conn)
-	s.distGrep(client, &pb.Cmd{Cmd: "grep -n hello"})
+	s.distGrep(client, &pb.Cmd{Cmd: "grep " + strings.Join(os.Args[1:], " ")})
 }
 
 func loadConfig() {
-	fileContent, err := ioutil.ReadFile(*configFileName)
+	fileContent, err := ioutil.ReadFile(configFileName)
 	if err != nil {
 		log.Fatalln("Cannot read the config file")
 	}
@@ -84,7 +80,6 @@ func loadConfig() {
 }
 
 func main() {
-	flag.Parse()
 	loadConfig()
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())

@@ -26,5 +26,7 @@ Compile the `.proto` file using
 ## TODO:
 
 - [Done] Add json file to support input IP address.
+- [Done] Allow user-input grep pattern. (Currently hard-coded)
+- Write command that will cleanup the running service instead of manually cancel each server.
 - Write code to auto-send IP & port info from server to the client.
 - Add build functionality instead of running `go run` all the time.
