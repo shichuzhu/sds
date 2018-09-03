@@ -23,7 +23,7 @@ type Configuration struct {
 	}
 }
 
-var configFileName = "mp1/config.json"
+var configFileName = "config.json"
 var config Configuration
 
 type Dispatcher struct {

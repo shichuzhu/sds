@@ -14,7 +14,7 @@ import (
 
 var (
 	port     = flag.Int("port", 10000, "The server port")
-	dataPath = flag.String("dataPath", "mp1/data", "The path to files to be grep")
+	dataPath = flag.String("dataPath", "data", "The path to files to be grep")
 )
 
 type grepLogServer struct {
