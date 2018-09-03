@@ -9,6 +9,7 @@ import (
 	"log"
 	"net"
 	"os/exec"
+	"time"
 )
 
 var (
@@ -20,6 +21,7 @@ type grepLogServer struct {
 }
 
 func (s *grepLogServer) ReturnMatches(theCmd *pb.Cmd, stream pb.GrepLog_ReturnMatchesServer) error {
+	log.Println("New request received!")
 	var dir = "mp1/src/toys/"
 	var python3 = "/usr/bin/python3"
 	cmd := exec.Command(python3, dir+"gen.py")
@@ -31,7 +33,6 @@ func (s *grepLogServer) ReturnMatches(theCmd *pb.Cmd, stream pb.GrepLog_ReturnMa
 		log.Fatal(err)
 	}
 	scanner := bufio.NewScanner(stdout)
-	fmt.Println("Stream created!")
 	for scanner.Scan() {
 		if err := stream.Send(&pb.GrepLine{Line: scanner.Text()}); err != nil {
 			return err
@@ -42,12 +43,13 @@ func (s *grepLogServer) ReturnMatches(theCmd *pb.Cmd, stream pb.GrepLog_ReturnMa
 
 func main() {
 	flag.Parse()
-	//fmt.Println(*port)
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
 	pb.RegisterGrepLogServer(grpcServer, &grepLogServer{})
-	grpcServer.Serve(lis)
+	go grpcServer.Serve(lis)
+	time.Sleep(time.Second * 5)
+	grpcServer.GracefulStop()
 }

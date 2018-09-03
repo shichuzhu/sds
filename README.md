@@ -20,3 +20,13 @@ Run the server on VM:
 Then run the the client:
 
 `go run mp1/src/server/client.go`
+
+## Tricks
+
+1. To return the line number, need to add `-n`.
+2. To return the file name, need to add another null file (e.g. /dev/null)
+
+## TODO:
+
+- Add json file to support input IP address.
+- Write code to autosend IP & port info from server to the client.
