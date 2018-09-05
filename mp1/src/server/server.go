@@ -51,6 +51,6 @@ func main() {
 	pb.RegisterGrepLogServer(grpcServer, &grepLogServer{})
 	//grpcServer.Serve(lis)
 	go grpcServer.Serve(lis)
-	time.Sleep(time.Second * 5)
+	time.Sleep(time.Second * 10)
 	grpcServer.GracefulStop()
 }
