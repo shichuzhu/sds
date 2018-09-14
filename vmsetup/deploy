@@ -1,0 +1,74 @@
+#!/usr/bin/env python3
+
+import sys
+import subprocess
+
+
+group = 44
+user = "szhu28"
+vmRange = range(1, 11)
+
+
+def forEachAddr(iterOfID=vmRange):
+    for i in iterOfID:
+        strID = format(i, "0>2d")
+        yield f"{user}@fa18-cs425-g{group}-{strID}.cs.illinois.edu"
+
+
+def runAsCommand(cmd, syncList=None):
+    print(f"Execute: {cmd}")
+    if syncList is None:
+        subprocess.run(cmd.split())
+    else:
+        syncList.append(subprocess.Popen(cmd, shell=True))
+
+
+def CopyKey():
+    # Copy ssh key to vm, need to type a lot of yes and passwords...
+    for host in forEachAddr():
+        runAsCommand(f"ssh-copy-id {host}")
+
+
+def Copy():
+    # Copy from local to remote, last arg must start with "@"
+    dest = sys.argv[-1]
+    if dest[0] != "@":
+        sys.stderr.write("Last argument must be @")
+        exit()
+    srcs = sys.argv[2:narg-1]
+    for host in forEachAddr():
+        runAsCommand(f"scp {' '.join(srcs)} to {host}:~/{dest[1:]}")
+
+
+def For():
+    # For each vm host do command, Each async, each sync
+    collector = []
+    for i in range(2, narg):
+        arg = sys.argv[i]
+        if arg == "each" or arg == "Each":
+            break
+        else:
+            collector.append(int(arg))
+    if not collector:
+        collector = list(vmRange)
+    if arg == "each":
+        toWaitList = None
+    elif arg == "Each":
+        toWaitList = []
+    else:
+        return
+
+    for host in forEachAddr(collector):
+        runAsCommand(f"ssh {host} "+" ".join(sys.argv[i+1:]), toWaitList)
+    if toWaitList:
+        for toWait in toWaitList:
+            toWait.wait()
+
+
+if __name__ == "__main__":
+    narg = len(sys.argv)
+    if narg == 1:
+        sys.stderr.write("No action specified.")
+        exit()
+    action = sys.argv[1]
+    locals()[action]()
