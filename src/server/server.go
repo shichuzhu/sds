@@ -2,11 +2,11 @@ package main
 
 import (
 	"bufio"
+	pb "fa18cs425mp/src/protobuf"
 	"flag"
 	"fmt"
 	"google.golang.org/grpc"
 	"log"
-	pb "mp/src/protobuf"
 	"net"
 	"os/exec"
 	"strings"

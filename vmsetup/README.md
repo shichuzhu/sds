@@ -8,6 +8,6 @@
    - Need to "yes" and "passwd"
 4. For each vm, ssh and run the setup script. `./deploy For 2 Each "bash -s" '< setup.sh'`
 5. To update source code on VMs upon testing new code, use <br />
-`../vmsetup/deploy Copy src @go/src/mp/`
+`vmsetup/deploy Copy src @go/src/fa18cs425mp/`
 <br />Note this does NOT copy the Makefile.
 
