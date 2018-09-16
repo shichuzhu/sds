@@ -1,16 +1,14 @@
 package main
 
 import (
-	"encoding/json"
+	co "fa18cs425mp/src/lib/connect"
 	pb "fa18cs425mp/src/protobuf"
 	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"io"
-	"io/ioutil"
 	"log"
 	"os"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -29,7 +27,6 @@ var config Configuration
 type Dispatcher struct {
 	writerLock sync.Mutex
 	wg         sync.WaitGroup
-	opts       []grpc.DialOption
 }
 
 func (s *Dispatcher) distGrep(client pb.ServerServicesClient, cmd *pb.Cmd) {
@@ -56,39 +53,24 @@ func (s *Dispatcher) distGrep(client pb.ServerServicesClient, cmd *pb.Cmd) {
 	}
 }
 
-func (s *Dispatcher) dispatch(addr string, port int) {
+func (s *Dispatcher) dispatch(conn *grpc.ClientConn) {
 	defer s.wg.Done()
-	strAddr := addr + ":" + strconv.Itoa(port)
-	conn, err := grpc.Dial(strAddr, s.opts...)
-	if err != nil {
-		log.Printf("fail to dial: %v", err)
-		return
-	}
 	defer conn.Close()
 	client := pb.NewServerServicesClient(conn)
 	s.distGrep(client, &pb.Cmd{Cmd: "grep " + strings.Join(os.Args[1:], " ")})
 }
 
-func loadConfig() {
-	fileContent, err := ioutil.ReadFile(configFileName)
-	if err != nil {
-		log.Fatalln("Cannot read the config file")
-	}
-	if err := json.Unmarshal(fileContent, &config); err != nil {
-		log.Fatalln("Fail to parse the JSON config file")
-	}
-}
-
 func main() {
-	loadConfig()
-	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithInsecure())
-	opts = append(opts, grpc.WithTimeout(time.Second*3))
-	dispatcher := Dispatcher{opts: opts}
+	dispatcher := Dispatcher{}
+	connLists, err := co.Connect()
+	if err != nil {
+		fmt.Println("No Server can be connected")
+		os.Exit(1)
+	}
 
-	for i := 0; i < len(config.Addrs); i++ {
+	for i := 0; i < len(connLists); i++ {
 		dispatcher.wg.Add(1)
-		go dispatcher.dispatch(config.Addrs[i].IP, config.Addrs[i].Port)
+		go dispatcher.dispatch(connLists[i])
 	}
 	dispatcher.wg.Wait()
 }

@@ -2,14 +2,30 @@ syntax = "proto3";
 package serverservices;
 
 service ServerServices {
+    rpc ServerConfig(ConfigInfo) returns (Info){
+    }
     rpc ReturnMatches (Cmd) returns (stream GrepLine) {
     }
-}
+    rpc CloseServer (CloseMessage) returns (Info){
 
+    }
+}
+message ConfigInfo{
+    int32 log_level = 1;
+    int32 VMIndex   = 2;
+}
 message GrepLine {
     string line = 1;
 }
 
 message Cmd {
     string cmd = 1;
+}
+
+message CloseMessage{
+    string close_cmd = 1;
+}
+
+message Info{
+    string info = 1;
 }
