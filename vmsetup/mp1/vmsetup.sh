@@ -1,6 +1,6 @@
 #!/bin/sh
 
 cd
-mkdir data
+mkdir -p data/mp1
 mkdir logs
 
