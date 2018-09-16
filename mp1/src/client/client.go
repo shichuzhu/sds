@@ -32,7 +32,7 @@ type Dispatcher struct {
 	opts       []grpc.DialOption
 }
 
-func (s *Dispatcher) distGrep(client pb.GrepLogClient, cmd *pb.Cmd) {
+func (s *Dispatcher) distGrep(client pb.ServerServicesClient, cmd *pb.Cmd) {
 	// The maximum time a client will be waiting for the server to respond.
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -65,7 +65,7 @@ func (s *Dispatcher) dispatch(addr string, port int) {
 		return
 	}
 	defer conn.Close()
-	client := pb.NewGrepLogClient(conn)
+	client := pb.NewServerServicesClient(conn)
 	s.distGrep(client, &pb.Cmd{Cmd: "grep " + strings.Join(os.Args[1:], " ")})
 }
 

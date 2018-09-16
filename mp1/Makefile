@@ -3,7 +3,7 @@ all: build run
 deploy:
 	go get google.golang.org/grpc
 	go get github.com/golang/protobuf/protoc-gen-go
-	protoc -I protobuf/ protobuf/grep_log.proto --go_out=plugins=grpc:protobuf
+	protoc -I src/protobuf/ src/protobuf/server_services.proto --go_out=plugins=grpc:src/protobuf
 
 build: src/server src/client
 	mkdir -p bin

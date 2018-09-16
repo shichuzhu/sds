@@ -1,7 +1,7 @@
 syntax = "proto3";
-package greplog;
+package serverservices;
 
-service GrepLog {
+service ServerServices {
     rpc ReturnMatches (Cmd) returns (stream GrepLine) {
     }
 }

@@ -21,7 +21,7 @@ type grepLogServer struct {
 	//object states defined here
 }
 
-func (s *grepLogServer) ReturnMatches(theCmd *pb.Cmd, stream pb.GrepLog_ReturnMatchesServer) error {
+func (s *grepLogServer) ReturnMatches(theCmd *pb.Cmd, stream pb.ServerServices_ReturnMatchesServer) error {
 	log.Printf("New request received with pattern: %s\n", theCmd)
 	strCmd := theCmd.GetCmd() + fmt.Sprintf(" %s/* /dev/null", *dataPath)
 	cmd := exec.Command("/bin/sh", "-c", strCmd)
@@ -48,7 +48,7 @@ func main() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 	grpcServer := grpc.NewServer()
-	pb.RegisterGrepLogServer(grpcServer, &grepLogServer{})
+	pb.RegisterServerServicesServer(grpcServer, &grepLogServer{})
 	//grpcServer.Serve(lis)
 	go grpcServer.Serve(lis)
 	time.Sleep(time.Second * 10)
