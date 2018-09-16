@@ -1,7 +1,6 @@
 package main
 
 import (
-	pb "../protobuf"
 	"encoding/json"
 	"fmt"
 	"golang.org/x/net/context"
@@ -9,6 +8,7 @@ import (
 	"io"
 	"io/ioutil"
 	"log"
+	pb "mp/src/protobuf"
 	"os"
 	"strconv"
 	"strings"

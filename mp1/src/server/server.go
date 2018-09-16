@@ -1,12 +1,12 @@
 package main
 
 import (
-	pb "../protobuf"
 	"bufio"
 	"flag"
 	"fmt"
 	"google.golang.org/grpc"
 	"log"
+	pb "mp/src/protobuf"
 	"net"
 	"os/exec"
 	"strings"
