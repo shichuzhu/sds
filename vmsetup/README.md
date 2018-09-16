@@ -6,8 +6,10 @@
 2. Tune user (netid) and group number info in `deploy` file.
 3. Deploy the public keys to vms. `./deploy CopyKey`
    - Need to "yes" and "passwd"
-4. For each vm, ssh and run the setup script. `./deploy For 2 Each "bash -s" '< mp1/vmsetup.sh'`
+4. For each vm, ssh and run the setup script. `./deploy For 2 Each "bash -s" '< setup.sh'`
 5. To update source code on VMs upon testing new code, use <br />
 `vmsetup/deploy Copy src @go/src/fa18cs425mp/` or `make deploy`
 <br />Note this does NOT copy the Makefile.
+6. Run `vmsetup/localsetup.sh` to copy files to VMs. The data needs to be at directory `data/`
+7. `make` to deploy, build, and run.
 

@@ -2,9 +2,10 @@
 
 import subprocess
 import sys
+import os
 
-group = 44
-user = "szhu28"
+user = os.environ['CS425NETID']
+group = int(os.environ['CS425GROUPID'])
 vmRange = range(1, 11)
 
 

@@ -48,7 +48,7 @@ func Connect() ([]*grpc.ClientConn, error) {
 	}
 
 	if len(ret) == 0 {
-		return nil, errors.New("all connection failed, client should quit")
+		return nil, errors.New("all connection failed")
 	}
 
 	return ret, nil
