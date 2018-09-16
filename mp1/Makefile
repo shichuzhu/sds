@@ -15,7 +15,7 @@ run: bin/server bin/dgrep
 	bin/server -port 10001 &
 	bin/server -port 10002 &
 	sleep 1
-	bin/dgrep -n "'#4'"
+	bin/dgrep '-n "#4" * /dev/null'
 
 clean:
 	rm -f bin/*

@@ -9,6 +9,7 @@ import (
 	"log"
 	"net"
 	"os/exec"
+	"strings"
 	"time"
 )
 
@@ -22,9 +23,10 @@ type grepLogServer struct {
 }
 
 func (s *grepLogServer) ReturnMatches(theCmd *pb.Cmd, stream pb.ServerServices_ReturnMatchesServer) error {
-	log.Printf("New request received with pattern: %s\n", theCmd)
-	strCmd := theCmd.GetCmd() + fmt.Sprintf(" %s/* /dev/null", *dataPath)
-	cmd := exec.Command("/bin/sh", "-c", strCmd)
+	//log.Printf("New request received with pattern: %s\n", theCmd)
+	cmd := exec.Command("/bin/sh", "-c", theCmd.GetCmd())
+	cmd.Dir = *dataPath
+	log.Printf("From \"%s\" executing: %s", cmd.Dir, strings.Join(cmd.Args, " "))
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
 		log.Fatal(err)

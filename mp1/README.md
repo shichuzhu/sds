@@ -22,6 +22,7 @@ Compile the `.proto` file using
 1. To return the line number, need to add `-n`.
 2. To return the file name, need to add another null file (e.g. /dev/null)
 3. The wildcard "*" will not work in exec.Command. Have to do the filepath.Glob manually, or invoke a shell `/bin/sh -c ...`
+4. Invoking sh -c results in "#" signs unquoted.
 
 ## TODO:
 
