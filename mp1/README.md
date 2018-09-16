@@ -23,6 +23,8 @@ Compile the `.proto` file using
 2. To return the file name, need to add another null file (e.g. /dev/null)
 3. The wildcard "*" will not work in exec.Command. Have to do the filepath.Glob manually, or invoke a shell `/bin/sh -c ...`
 4. Invoking sh -c results in "#" signs unquoted.
+5. Go install will make the binary filename based on package name (which is the name of the directory containing "main"), not the name of file containing "main" function.
+6. To uninstall binaries, use `go clean -i mp/...`
 
 ## TODO:
 

@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "../protobuf"
+	pb "mp/src/protobuf"
 	"encoding/json"
 	"fmt"
 	"golang.org/x/net/context"

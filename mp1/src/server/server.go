@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "../protobuf"
+	pb "mp/src/protobuf"
 	"bufio"
 	"flag"
 	"fmt"
