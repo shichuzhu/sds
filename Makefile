@@ -1,10 +1,18 @@
-all: build run
+all: deploy build run
 
 deploy:
 	vmsetup/deploy Copy src @go/src/fa18cs425mp/
 
+clean:
+	vmsetup/deploy For Each 'go clean -i fa18cs425mp/...'
+
 build:
 	vmsetup/deploy For Each 'go install fa18cs425mp/...'
+
+run: build
+	vmsetup/deploy Spawn Each '-port 10000 -dataPath "data/mp1"'
+	sleep 2
+	dgrep '-n 515922 * /dev/null'
 
 localsetup:
 	go get -u google.golang.org/grpc
@@ -21,12 +29,5 @@ runlocal: buildlocal
 	sleep 1
 	dgrep '-n "#4" * /dev/null'
 
-run: build
-	vmsetup/deploy Spawn Each '-port 10000 -dataPath "data/mp1"'
-	sleep 2
-	dgrep '-n 515922 * /dev/null'
-
-clean:
-	rm -f bin/*
 
 .PHONY: clean all

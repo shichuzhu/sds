@@ -39,7 +39,7 @@ def Spawn():
     else:
         return
 
-    spawn_command = '\'shopt -s huponexit ; server ' + " ".join(
+    spawn_command = '\'shopt -s huponexit ; dserver ' + " ".join(
         sys.argv[i + 1:]) + ' > log.out 2> log.err < /dev/null\''
     for host in forEachAddr(collector):
         runAsCommand(f"ssh {host} {spawn_command} &", toWaitList)
@@ -63,7 +63,8 @@ def Copy():
     srcs = sys.argv[2:narg - 1]
     for host in forEachAddr():
         # runAsCommand(f"scp {' '.join(srcs)} {host}:~/{dest[1:]}")
-        runAsCommand(f"rsync -av --delete {' '.join(srcs)} {host}:~/{dest[1:]}")
+        runAsCommand(
+            f"rsync -av --delete {' '.join(srcs)} {host}:~/{dest[1:]}")
 
 
 def For():

@@ -18,7 +18,7 @@ type Configuration struct {
 	}
 }
 
-var configFileName = "config.json"
+var configFileName = "remotecfg.json"
 var config Configuration
 var opts []grpc.DialOption
 

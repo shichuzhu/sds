@@ -16,12 +16,13 @@ import (
 )
 
 var (
-	port      = flag.Int("port", 10000, "The server port")
-	dataPath  = flag.String("dataPath", "data", "The path to files to be grep")
-	closeSigs chan int
-	logLevel  int32
-	vmIndex   int32
-	lg        = cl.LogMessage{}
+	port       = flag.Int("port", 10000, "The server port")
+	dataPath   = flag.String("dataPath", "data", "The path to files to be grep")
+	//configFile = flag.String("configFile", "remotecfg.json", "The json file containing IP/port info of VMs")
+	closeSigs  chan int
+	logLevel   int32
+	vmIndex    int32
+	lg         = cl.LogMessage{}
 )
 
 type serviceServer struct {
