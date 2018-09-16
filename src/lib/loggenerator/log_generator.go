@@ -24,7 +24,7 @@ func (T *LogMessage) Print(str string) {
 
 func (T *LogMessage) Close() {
 	T.file.Close()
-	fmt.Printf("Log File for server %d has closed ", T.vmIndex)
+	log.Printf("Log File for server %d has closed.\n", T.vmIndex)
 }
 
 func (T *LogMessage) Init(index, mode int32) {
@@ -35,7 +35,6 @@ func (T *LogMessage) Init(index, mode int32) {
 	if T.err != nil {
 		fmt.Println("Unable to create the file.")
 	}
-
 	//log using citing from website https://www.jianshu.com/p/8e6dd09e86f7
 	T.logger = log.New(T.file, "", log.LstdFlags)
 }

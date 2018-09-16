@@ -1,44 +1,16 @@
 {
   "addrs": [
     {
-      "ip": "fa18-cs425-g44-01.cs.illinois.edu",
+      "ip": "127.0.0.1",
       "port": 10000
     },
     {
-      "ip": "fa18-cs425-g44-02.cs.illinois.edu",
-      "port": 10000
+      "ip": "127.0.0.1",
+      "port": 10001
     },
     {
-      "ip": "fa18-cs425-g44-03.cs.illinois.edu",
-      "port": 10000
-    },
-    {
-      "ip": "fa18-cs425-g44-04.cs.illinois.edu",
-      "port": 10000
-    },
-    {
-      "ip": "fa18-cs425-g44-05.cs.illinois.edu",
-      "port": 10000
-    },
-    {
-      "ip": "fa18-cs425-g44-06.cs.illinois.edu",
-      "port": 10000
-    },
-    {
-      "ip": "fa18-cs425-g44-07.cs.illinois.edu",
-      "port": 10000
-    },
-    {
-      "ip": "fa18-cs425-g44-08.cs.illinois.edu",
-      "port": 10000
-    },
-    {
-      "ip": "fa18-cs425-g44-09.cs.illinois.edu",
-      "port": 10000
-    },
-    {
-      "ip": "fa18-cs425-g44-10.cs.illinois.edu",
-      "port": 10000
+      "ip": "127.0.0.1",
+      "port": 10002
     }
   ]
 }

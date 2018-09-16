@@ -57,9 +57,9 @@ func Connect() ([]*grpc.ClientConn, error) {
 func helper(IP string, port int) (*grpc.ClientConn, error) {
 	strAddr := IP + ":" + strconv.Itoa(port)
 	conn, err := grpc.Dial(strAddr, opts...)
-	message := fmt.Sprintf("CAN NOT CONNECT TO IP %v", strAddr)
-	fmt.Println(message)
 	if err != nil {
+		message := fmt.Sprintf("CAN NOT CONNECT TO IP %v", strAddr)
+		log.Println(message)
 		return nil, errors.New(message)
 	}
 

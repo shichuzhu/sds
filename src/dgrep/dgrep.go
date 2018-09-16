@@ -64,7 +64,7 @@ func main() {
 	dispatcher := Dispatcher{}
 	connLists, err := co.Connect()
 	if err != nil {
-		fmt.Println("No Server can be connected")
+		log.Println("No Server can be connected")
 		os.Exit(1)
 	}
 

@@ -13,7 +13,6 @@ import (
 	"net"
 	"os/exec"
 	"strings"
-	"time"
 )
 
 var (
@@ -22,7 +21,7 @@ var (
 	closeSigs chan int
 	logLevel  int32
 	vmIndex   int32
-	lg        *cl.LogMessage
+	lg        = cl.LogMessage{}
 )
 
 type serviceServer struct {
@@ -35,7 +34,7 @@ func (s *serviceServer) ServerConfig(ctx context.Context, info *pb.ConfigInfo) (
 	}
 
 	vmIndex = info.VMIndex
-	lg = new(cl.LogMessage)
+	//lg = new(cl.LogMessage)
 	lg.Init(vmIndex, 1)
 
 	message := fmt.Sprintf("Config information receive successfully by Server %v", vmIndex)
@@ -66,6 +65,8 @@ func (s *serviceServer) ReturnMatches(theCmd *pb.Cmd, stream pb.ServerServices_R
 func (s *serviceServer) CloseServer(context.Context, *pb.CloseMessage) (*pb.Info, error) {
 	fmt.Println("Server Closed by Client.")
 	closeSigs <- 1
+	//defer grpcServer.GracefulStop() // This won't work, as it's a deadlock
+	//defer grpcServer.Stop() // This works, but not elegent
 
 	message := fmt.Sprintf("Server %v Successfully closed", vmIndex)
 	return &pb.Info{Info: message}, nil
@@ -81,12 +82,9 @@ func main() {
 	}
 	grpcServer := grpc.NewServer()
 	pb.RegisterServerServicesServer(grpcServer, &serviceServer{})
-	//grpcServer.Serve(lis)
 	go grpcServer.Serve(lis)
-	time.Sleep(time.Second * 10)
-	grpcServer.GracefulStop()
-	/*if (<-closeSigs == 1) {
+	if <-closeSigs == 1 {
 		grpcServer.GracefulStop()
 		lg.Close()
-	}*/
+	}
 }

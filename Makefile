@@ -7,17 +7,17 @@ build:
 	vmsetup/deploy For Each 'go install fa18cs425mp/...'
 
 localsetup:
-	go get google.golang.org/grpc
-	go get github.com/golang/protobuf/protoc-gen-go
+	go get -u google.golang.org/grpc
+	go get -u github.com/golang/protobuf/protoc-gen-go
 	protoc -I src/protobuf/ src/protobuf/server_services.proto --go_out=plugins=grpc:src/protobuf
 
-buildlocal: src/server src/dgrep
+buildlocal: src/dserver src/dgrep
 	go install fa18cs425mp/...
 
-runlocal: build
-	server -port 10000 &
-	server -port 10001 &
-	server -port 10002 &
+runlocal: buildlocal
+	server -port 10000 -dataPath "data/mp1" &
+	server -port 10001 -dataPath "data/mp1" &
+	server -port 10002 -dataPath "data/mp1" &
 	sleep 1
 	dgrep '-n "#4" * /dev/null'
 
