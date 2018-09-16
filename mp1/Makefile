@@ -8,7 +8,7 @@ deploy:
 build: src/server src/client
 	mkdir -p bin
 	go build -o bin/server src/server/server.go
-	go build -o bin/dgrep src/client/client.go
+	go build -o bin/dgrep src/client/dgrep.go
 
 run: bin/server bin/dgrep
 	bin/server -port 10000 &
