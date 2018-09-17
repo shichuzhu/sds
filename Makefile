@@ -29,5 +29,7 @@ runlocal: buildlocal
 	sleep 1
 	dgrep '-n "#4" * /dev/null'
 
+test:
+	test/mp1/runtest
 
-.PHONY: clean all
+.PHONY: clean all test

@@ -1,0 +1,10 @@
+#!/bin/sh
+
+cd $CS425HOME/test/mp1
+./testwithpattern 123
+./testwithpattern 1234
+./testwithpattern 12345
+./testwithpattern 123456
+./testwithpattern 123as98
+
+rm -f local.sorted remote.sorted local.out remote.out

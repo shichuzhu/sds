@@ -1,0 +1,19 @@
+#!/bin/sh
+
+cd $CS425HOME
+grep -n $1 data/vm*.log | cut -f2 -d: > test/mp1/local.out
+dgrep "-n $1 *" | cut -f1 -d: > test/mp1/remote.out
+
+cd test/mp1
+sort local.out > local.sorted
+sort remote.out > remote.sorted
+
+DIFF=`diff local.sorted remote.sorted`
+if [ -z "$DIFF" ]
+then
+	echo Test passed.
+else
+	echo Test failed with diff:
+	echo $DIFF
+	exit 1
+fi
