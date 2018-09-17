@@ -15,8 +15,8 @@ Compile the `.proto` file using
 
 0. Copy SOURCEME.sh.example to SOURCEME.sh and change the value in latter.
 1. Modify the `remotecfg.json` file to add the appropriate IP addresses and port numbers of the VMs.
-2. Refer to `vmsetup/README.md` to spawn the corresponding VMs.
-3. Add 'CS425NETID' environmental variable.
+2. Refer to [vmsetup/README.md](vmsetup/README.md) to spawn the corresponding VMs.
+3. Add 'CS425NETID' environmental variable by `source SOURCEME.sh`.
 4. `make`
 
 ## Tricks
