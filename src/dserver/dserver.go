@@ -1,6 +1,5 @@
 package main
 
-import "C"
 import (
 	"bufio"
 	cl "fa18cs425mp/src/lib/loggenerator"
@@ -16,13 +15,13 @@ import (
 )
 
 var (
-	port       = flag.Int("port", 10000, "The server port")
-	dataPath   = flag.String("dataPath", "data", "The path to files to be grep")
+	port     = flag.Int("port", 10000, "The server port")
+	dataPath = flag.String("dataPath", "data", "The path to files to be grep")
 	//configFile = flag.String("configFile", "remotecfg.json", "The json file containing IP/port info of VMs")
-	closeSigs  chan int
-	logLevel   int32
-	vmIndex    int32
-	lg         = cl.LogMessage{}
+	closeSigs chan int
+	logLevel  int32
+	vmIndex   int32
+	lg        = cl.LogMessage{}
 )
 
 type serviceServer struct {
@@ -43,7 +42,6 @@ func (s *serviceServer) ServerConfig(ctx context.Context, info *pb.ConfigInfo) (
 }
 
 func (s *serviceServer) ReturnMatches(theCmd *pb.Cmd, stream pb.ServerServices_ReturnMatchesServer) error {
-	//log.Printf("New request received with pattern: %s\n", theCmd)
 	cmd := exec.Command("/bin/sh", "-c", theCmd.GetCmd())
 	cmd.Dir = *dataPath
 	log.Printf("From \"%s\" executing: %s", cmd.Dir, strings.Join(cmd.Args, " "))
@@ -63,13 +61,16 @@ func (s *serviceServer) ReturnMatches(theCmd *pb.Cmd, stream pb.ServerServices_R
 	return nil
 }
 
-func (s *serviceServer) CloseServer(context.Context, *pb.CloseMessage) (*pb.Info, error) {
-	fmt.Println("Server Closed by Client.")
-	closeSigs <- 1
-	//defer grpcServer.GracefulStop() // This won't work, as it's a deadlock
-	//defer grpcServer.Stop() // This works, but not elegent
+func (s *serviceServer) CloseServer(_ context.Context, closeMessage *pb.CloseMessage) (*pb.Info, error) {
+	var message string
+	if closeType := closeMessage.GetCloseType(); closeType == 0 {
+		log.Fatalln("Fatal: Simulating fatal failure of node")
+	} else {
+		fmt.Println("Server Closed by Client.")
+		closeSigs <- 1
+		message = fmt.Sprintf("Server %v Successfully closed", vmIndex)
 
-	message := fmt.Sprintf("Server %v Successfully closed", vmIndex)
+	}
 	return &pb.Info{Info: message}, nil
 }
 

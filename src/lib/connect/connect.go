@@ -3,6 +3,7 @@ package Connect_Pack
 import (
 	"encoding/json"
 	"errors"
+	pa "fa18cs425mp/src/lib/parseargs"
 	"fmt"
 	"google.golang.org/grpc"
 	"io/ioutil"
@@ -38,19 +39,25 @@ func Connect() ([]*grpc.ClientConn, error) {
 	opts = append(opts, grpc.WithTimeout(time.Second*3))
 
 	var ret []*grpc.ClientConn
-	for i := 0; i < len(config.Addrs); i++ {
+
+	pa.ParseArgs()
+	if pa.ServerIds == nil {
+		for i := 0; i < len(config.Addrs); i++ {
+			pa.ServerIds = append(pa.ServerIds, i)
+		}
+	}
+
+	for _, i := range pa.ServerIds {
 		conn, err := helper(config.Addrs[i].IP, config.Addrs[i].Port)
 		if err != nil {
 			continue
 		}
-
 		ret = append(ret, conn)
 	}
 
 	if len(ret) == 0 {
 		return nil, errors.New("all connection failed")
 	}
-
 	return ret, nil
 }
 
@@ -62,6 +69,5 @@ func helper(IP string, port int) (*grpc.ClientConn, error) {
 		log.Println(message)
 		return nil, errors.New(message)
 	}
-
 	return conn, nil
 }

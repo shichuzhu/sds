@@ -21,9 +21,6 @@ type Configuration struct {
 	}
 }
 
-var configFileName = "config.json"
-var config Configuration
-
 type Dispatcher struct {
 	writerLock sync.Mutex
 	wg         sync.WaitGroup
@@ -57,7 +54,7 @@ func (s *Dispatcher) dispatch(conn *grpc.ClientConn) {
 	defer s.wg.Done()
 	defer conn.Close()
 	client := pb.NewServerServicesClient(conn)
-	s.distGrep(client, &pb.Cmd{Cmd: "grep " + strings.Join(os.Args[1:], " ")})
+	s.distGrep(client, &pb.Cmd{Cmd: "grep " + strings.Join(os.Args[len(os.Args)-1:], " ")})
 }
 
 func main() {
