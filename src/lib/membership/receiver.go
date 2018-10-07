@@ -58,3 +58,8 @@ func Err_handler(err error) {
 		fmt.Println(err.Error())
 	}
 }
+
+func receiverService() {
+	// for
+	return
+}

@@ -1,7 +1,7 @@
 package membership
 
 func senderService() error {
-	memsToPing := MembershipList.members.getPingTargets(3)
+	memsToPing := MembershipList.getPingTargets(3)
 	for {
 		for i := 0; i < 3; i++ { // Send 3 times.
 			for _, addr := range memsToPing {
@@ -10,9 +10,5 @@ func senderService() error {
 		}
 		//time.Sleep()
 	}
-	return nil
-}
-
-func (s *MembershipListType) getPingTargets(num int) []string {
 	return nil
 }
