@@ -7,6 +7,7 @@ import (
 )
 
 var MyAddr string
+var MembershipList MembershipListType
 
 // Use getter to get list for thread safety issue.
 type MemberType struct {
@@ -95,6 +96,7 @@ func (s *MembershipListType) getPingTargets(num int) []string {
 
 func StartFailureDetector() {
 	MembershipList.myIP = GetOutboundIP()
+	MyAddr = MembershipList.myIP.String()
 	go receiverService()
 	go senderService()
 }
@@ -112,4 +114,13 @@ func GetOutboundIP() net.IP {
 	return localAddr.IP
 }
 
-var MembershipList MembershipListType
+func GetListElement() ([]string, []int) {
+	ret1 := make([]string, len(MembershipList.members))
+	ret2 := make([]int, len(MembershipList.members))
+	for i := 0; i < len(MembershipList.members); i++ {
+		ret1[i] = MembershipList.members[i].addr
+		ret2[i] = MembershipList.members[i].sessionCounter
+	}
+
+	return ret1, ret2
+}

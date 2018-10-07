@@ -43,5 +43,10 @@ message Member {
 
 message FullMembershipList {
     repeated Member List = 1;
+}
 
+message UDPMessage{
+    string MessageType = 1;
+    DetectorMessage Dm= 2;
+    FullMembershipList Fm= 3;
 }

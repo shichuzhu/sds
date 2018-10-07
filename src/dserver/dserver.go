@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	cl "fa18cs425mp/src/lib/loggenerator"
+	ml "fa18cs425mp/src/lib/membership"
 	pb "fa18cs425mp/src/protobuf"
 	"flag"
 	"fmt"
@@ -77,6 +78,8 @@ func (s *serviceServer) CloseServer(_ context.Context, closeMessage *pb.CloseMes
 func main() {
 	flag.Parse()
 	closeSigs = make(chan int)
+
+	ml.StartFailureDetector() //Start failure detector here
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
