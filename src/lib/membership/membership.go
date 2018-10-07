@@ -27,11 +27,17 @@ func (t *MembershipListType) insert(index int, memberType MemberType) {
 	(*s)[index] = memberType
 }
 
+func (t *MembershipListType) delete(index int) {
+	s := &t.members
+	copy((*s)[index:], (*s)[index+1:])
+	*s = (*s)[:len(*s)-1]
+}
+
 func (s *MembershipListType) insertNewID(id string, sessionID int) {
 	for i, member := range MembershipList.members {
 		if id == member.addr {
 			if sessionID > member.sessionCounter {
-				member.sessionCounter = sessionID
+				s.members[i].sessionCounter = sessionID
 			}
 			return
 		} else if id < member.addr {
@@ -43,8 +49,19 @@ func (s *MembershipListType) insertNewID(id string, sessionID int) {
 }
 
 func (s *MembershipListType) deleteID(id string, sessionID int) {
-
+	for i, _ := range MembershipList.members {
+		member := &MembershipList.members[i]
+		if member.addr == id {
+			if member.sessionCounter <= sessionID {
+				s.delete(i)
+			}
+			return
+		} else if member.addr > id {
+			return
+		}
+	}
 }
+
 func (s *MembershipListType) getRandomTargets(num int) []string {
 	return nil
 }
