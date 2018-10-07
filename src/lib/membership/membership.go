@@ -59,7 +59,7 @@ func (s *MembershipListType) lookupID(id string) (MemberType, bool) {
 			return member, true
 		}
 	}
-	return _, false
+	return MemberType{}, false
 }
 func (s *MembershipListType) deleteID(id string, sessionID int) {
 	for i, _ := range MembershipList.members {
