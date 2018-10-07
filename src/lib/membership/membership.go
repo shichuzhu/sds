@@ -1,15 +1,23 @@
 package membership
 
-import "time"
+import (
+	"net"
+	"time"
+)
 
-type Member struct {
+// Use getter to get list for thread safety issue.
+type MemberType struct {
 	addr           string
 	sessionCounter int
 	deadline       time.Time
 	ddlPending     bool
 }
 
-type MembershipList struct {
-	members []Member
+type MembershipListType struct {
+	members []MemberType
 	// Potential global config about MembershipList
+	myID int
 }
+
+var MembershipList MembershipListType
+var Xmtr *net.UDPConn // Transmitter
