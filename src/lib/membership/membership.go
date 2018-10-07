@@ -2,6 +2,7 @@ package membership
 
 import (
 	"log"
+	"math/rand"
 	"net"
 )
 
@@ -25,12 +26,14 @@ func (t *MembershipListType) insert(index int, memberType MemberType) {
 	*s = append(*s, MemberType{})
 	copy((*s)[index+1:], (*s)[index:])
 	(*s)[index] = memberType
+	t.updateMyIndex()
 }
 
 func (t *MembershipListType) delete(index int) {
 	s := &t.members
 	copy((*s)[index:], (*s)[index+1:])
 	*s = (*s)[:len(*s)-1]
+	t.updateMyIndex()
 }
 
 func (s *MembershipListType) insertNewID(id string, sessionID int) {
@@ -63,14 +66,27 @@ func (s *MembershipListType) deleteID(id string, sessionID int) {
 }
 
 func (s *MembershipListType) getRandomTargets(num int) []string {
-	return nil
+	targets := make([]string, num)
+	for i, j := range rand.Perm(len(MembershipList.members))[:num] {
+		targets[i] = s.members[j].addr
+	}
 }
+
 func (s *MembershipListType) updateMyIndex() {
-	return
+	for i, member := range MembershipList.members {
+		if member.addr == s.myID {
+			s.myIndex = i
+			return
+		}
+	}
 }
 
 func (s *MembershipListType) getPingTargets(num int) []string {
-	return nil
+	targets := make([]string, NodeNumberToPing)
+	for i, _ := range targets {
+		targets[i] = s.members[(s.myIndex+i)%len(s.members)].addr
+	}
+	return targets
 }
 
 func StartFailureDetector() {
