@@ -1,6 +1,7 @@
 syntax = "proto3";
 package serverservices;
 
+// gRPC related messages
 service ServerServices {
     rpc ServerConfig (ConfigInfo) returns (Info) {
     }
@@ -29,6 +30,8 @@ message Info {
     string info = 1;
 }
 
+// Failure detector related messages
+
 message DetectorMessage {
     string Header = 1;
     string Addr = 2;
@@ -45,8 +48,8 @@ message FullMembershipList {
     repeated Member List = 1;
 }
 
-message UDPMessage{
+message UDPMessage {
     string MessageType = 1;
-    DetectorMessage Dm= 2;
-    FullMembershipList Fm= 3;
+    DetectorMessage Dm = 2;
+    FullMembershipList Fm = 3;
 }

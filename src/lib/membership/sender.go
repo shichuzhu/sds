@@ -1,6 +1,8 @@
 package membership
 
 import (
+	pb "fa18cs425mp/src/protobuf"
+	"github.com/golang/protobuf/proto"
 	"sync"
 	"time"
 )
@@ -32,7 +34,11 @@ func senderService() error {
 		}
 		for i := 0; i < 3; i++ { // Send 3 times.
 			for j, addr := range memsToPing {
-				UdpSendSingle(addr, []byte{}) // TODO: add message here.
+				message, _ := proto.Marshal(
+					&pb.UDPMessage{MessageType: "DetectorMessage",
+						Dm: &pb.DetectorMessage{Header: "Ping", Addr: MyAddr, SessNUm: 0, TTL: 0},
+						Fm: &pb.FullMembershipList{}}) // TODO: see if any can be omitted.
+				UdpSendSingle(addr, message)
 			}
 		}
 		time.Sleep(1500 * time.Millisecond)
@@ -40,12 +46,17 @@ func senderService() error {
 			if ackWaitEntries[i].acked == true {
 				continue
 			} else {
-				// TODO: Form fail message for ackW[i].addr
-				message := []byte{}
-				for _, addrs := range MembershipList.getRandomTargets(len(MembershipList.members)) {
-					UdpSend(addrs, message, 2)
+				addr := ackWaitEntries[i].addr
+				if member, exist := MembershipList.lookupID(addr); exist {
+					message, _ := proto.Marshal(
+						&pb.UDPMessage{MessageType: "DetectorMessage",
+							Dm: &pb.DetectorMessage{Header: "Delete", Addr: addr, SessNUm: int32(member.sessionCounter), TTL: 0},
+							Fm: &pb.FullMembershipList{}}) // TODO: see if any can be omitted.
+					for _, addr := range MembershipList.getRandomTargets(len(MembershipList.members)) {
+						UdpSend(addr, message, 2)
+					}
+					MembershipList.deleteID(ackWaitEntries[i].addr, int(^uint(0)>>1))
 				}
-				MembershipList.deleteID(ackWaitEntries[i].addr, int(^uint(0)>>1))
 			}
 		}
 

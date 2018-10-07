@@ -13,13 +13,11 @@ var MembershipList MembershipListType
 type MemberType struct {
 	addr           string
 	sessionCounter int
-	acked          bool
 }
 
 type MembershipListType struct {
 	members []MemberType
 	// Potential global config about MembershipList
-	myID    string
 	myIP    net.IP
 	myIndex int
 }
@@ -54,6 +52,14 @@ func (s *MembershipListType) insertNewID(id string, sessionID int) {
 	s.insert(len(MembershipList.members), MemberType{addr: id, sessionCounter: sessionID})
 }
 
+func (s *MembershipListType) lookupID(id string) (MemberType, bool) {
+	for _, member := range MembershipList.members {
+		if id == member.addr {
+			return member, true
+		}
+	}
+	return _, false
+}
 func (s *MembershipListType) deleteID(id string, sessionID int) {
 	for i, _ := range MembershipList.members {
 		member := &MembershipList.members[i]
@@ -79,7 +85,7 @@ func (s *MembershipListType) getRandomTargets(num int) []string {
 
 func (s *MembershipListType) updateMyIndex() {
 	for i, member := range MembershipList.members {
-		if member.addr == s.myID {
+		if member.addr == MyAddr {
 			s.myIndex = i
 			return
 		}
