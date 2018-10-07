@@ -26,7 +26,7 @@ func ParseMessage(m pb.DetectorMessage) {
 	case "Delete":
 		HandleDeleteMessage(m)
 	case "NewJoin":
-		HandleNewjoinMessage(m)
+		HandleNewJoinMessage(m)
 	default:
 		fmt.Println("Wrong input message")
 	}
@@ -37,8 +37,7 @@ func HandlePingMessage(m pb.DetectorMessage) {
 	// marshal the message to byte  string
 	addr := m.GetAddr()
 	ackMess := pb.DetectorMessage{Header: "Ack", Addr: MyAddr, SessNUm: 0, TTL: 0}
-	fm := pb.FullMembershipList{}
-	UdpMess := pb.UDPMessage{MessageType: "DetectorMessage", Dm: &ackMess, Fm: &fm}
+	UdpMess := pb.UDPMessage{MessageType: "DetectorMessage", Dm: &ackMess}
 	mess, _ := proto.Marshal(&UdpMess)
 	// We design to send UDP message
 	UdpSend(addr, mess, 2)
@@ -46,6 +45,13 @@ func HandlePingMessage(m pb.DetectorMessage) {
 
 func HandleAckMessage(m pb.DetectorMessage) {
 	// mark the receiving status to true
+	addr := m.GetAddr()
+
+	for i := 0; i < len(ackWaitEntries); i++ {
+		if addr == ackWaitEntries[i].addr {
+			ackWaitEntries[i].ack()
+		}
+	}
 
 }
 
@@ -56,15 +62,14 @@ func HandleJoinMessage(m pb.DetectorMessage) {
 
 	TTL := m.GetTTL()
 	forwardMess := pb.DetectorMessage{Header: "Join", Addr: addr, SessNUm: session, TTL: TTL + 1}
-	fm := pb.FullMembershipList{}
-	UdpMess := pb.UDPMessage{MessageType: "DetectorMessage", Dm: &forwardMess, Fm: &fm}
+	UdpMess := pb.UDPMessage{MessageType: "DetectorMessage", Dm: &forwardMess}
 
 	mess, _ := proto.Marshal(&UdpMess)
 	if TTL < 4 {
 		targets := MembershipList.getRandomTargets(3)
 
 		for _, target := range targets {
-			UdpSend(target, mess, 2)
+			UdpSend(target, mess, 1)
 		}
 	}
 }
@@ -79,18 +84,18 @@ func HandleDeleteMessage(m pb.DetectorMessage) {
 
 	TTL := m.GetTTL()
 	forwardMess := pb.DetectorMessage{Header: "Delete", Addr: addr, SessNUm: session, TTL: TTL + 1}
-	UdpMess := pb.UDPMessage{MessageType: "DetectorMessage", Dm: &forwardMess, Fm: &pb.FullMembershipList{}}
+	UdpMess := pb.UDPMessage{MessageType: "DetectorMessage", Dm: &forwardMess}
 	mess, _ := proto.Marshal(&UdpMess)
 	if TTL < 4 {
 		targets := MembershipList.getRandomTargets(3)
 
 		for _, target := range targets {
-			UdpSend(target, mess, 2)
+			UdpSend(target, mess, 1)
 		}
 	}
 }
 
-func HandleNewjoinMessage(m pb.DetectorMessage) {
+func HandleNewJoinMessage(m pb.DetectorMessage) {
 	addr := m.GetAddr()
 	fm := GetMemberListMessage()
 	ackMess := pb.DetectorMessage{}
@@ -99,6 +104,15 @@ func HandleNewjoinMessage(m pb.DetectorMessage) {
 	mess, _ := proto.Marshal(&UdpMess)
 
 	UdpSend(addr, mess, 4)
+
+	ackMess = pb.DetectorMessage{Header: "Join", Addr: addr, SessNUm: 0, TTL: 0}
+	UdpMess = pb.UDPMessage{MessageType: "DetectorMessage", Dm: &ackMess}
+	mess, _ = proto.Marshal(&UdpMess)
+
+	targets := MembershipList.getRandomTargets(3)
+	for _, target := range targets {
+		UdpSend(target, mess, 2)
+	}
 
 }
 
