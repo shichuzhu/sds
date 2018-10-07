@@ -34,15 +34,14 @@ func (s *MembershipListType) insertNewID(id string, sessionID int) {
 				member.sessionCounter = sessionID
 			}
 			return
-		} else if id > member.addr {
-			continue
-		} else {
+		} else if id < member.addr {
 			s.insert(i, MemberType{addr: id, sessionCounter: sessionID})
 			return
 		}
 	}
-
+	s.insert(len(MembershipList.members), MemberType{addr: id, sessionCounter: sessionID})
 }
+
 func (s *MembershipListType) deleteID(id string, sessionID int) {
 
 }
