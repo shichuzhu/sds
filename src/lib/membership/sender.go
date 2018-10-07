@@ -26,7 +26,6 @@ func (s *AckWaitEntry) reset() {
 }
 
 func senderService() error {
-	ackWaitEntries := make([]AckWaitEntry, NodeNumberToPing)
 	for {
 		memsToPing := MembershipList.getPingTargets(NodeNumberToPing)
 		for i, addr := range memsToPing {

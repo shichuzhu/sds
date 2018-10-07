@@ -8,6 +8,7 @@ import (
 
 var MyAddr string
 var MembershipList MembershipListType
+var ackWaitEntries []AckWaitEntry
 
 // Use getter to get list for thread safety issue.
 type MemberType struct {
@@ -101,6 +102,7 @@ func (s *MembershipListType) getPingTargets(num int) []string {
 }
 
 func StartFailureDetector() {
+	ackWaitEntries = make([]AckWaitEntry, NodeNumberToPing)
 	MembershipList.myIP = GetOutboundIP()
 	MyAddr = MembershipList.myIP.String()
 	go receiverService()
