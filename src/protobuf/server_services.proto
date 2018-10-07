@@ -28,3 +28,20 @@ message CloseMessage {
 message Info {
     string info = 1;
 }
+
+message DetectorMessage {
+    string Header = 1;
+    string Addr = 2;
+    int32 SessNUm = 3;
+    int32 TTL = 4;
+}
+
+message Member {
+    string Addr = 1;
+    int32 SessNum = 2;
+}
+
+message FullMembershipList {
+    repeated Member List = 1;
+
+}

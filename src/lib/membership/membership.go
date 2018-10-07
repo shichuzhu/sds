@@ -6,6 +6,8 @@ import (
 	"net"
 )
 
+var MyAddr string
+
 // Use getter to get list for thread safety issue.
 type MemberType struct {
 	addr           string
@@ -70,6 +72,8 @@ func (s *MembershipListType) getRandomTargets(num int) []string {
 	for i, j := range rand.Perm(len(MembershipList.members))[:num] {
 		targets[i] = s.members[j].addr
 	}
+
+	return targets
 }
 
 func (s *MembershipListType) updateMyIndex() {
