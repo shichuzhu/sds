@@ -1,6 +1,7 @@
 package membership
 
 import (
+	"fmt"
 	"log"
 	"math/rand"
 	"net"
@@ -131,4 +132,11 @@ func GetListElement() ([]string, []int) {
 	}
 
 	return ret1, ret2
+}
+
+func dumpTable() {
+	table, _ := GetListElement()
+	for i, t := range table {
+		fmt.Printf("Entry %d has ID: %s", i+1, t)
+	}
 }
