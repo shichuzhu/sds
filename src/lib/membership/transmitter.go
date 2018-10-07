@@ -29,7 +29,7 @@ func UdpSend(IP string, buf []byte, rep int) {
 	conn, _ := net.DialUDP("udp", nil, addr)
 	for i := 0; i < rep; i++ {
 		_, err := conn.WriteToUDP(buf, addr)
-		Err_handler(err)
+		ErrHandler(err)
 		networkStats.bytesCount += len(buf)
 	}
 	conn.Close()
@@ -39,7 +39,7 @@ func UdpSendSingle(IP string, buf []byte) {
 	addr, _ := net.ResolveUDPAddr("udp", IP)
 	conn, _ := net.DialUDP("udp", nil, addr)
 	_, err := conn.WriteToUDP(buf, addr)
-	Err_handler(err)
+	ErrHandler(err)
 	networkStats.bytesCount += len(buf)
 	conn.Close()
 }

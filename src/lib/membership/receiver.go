@@ -41,7 +41,7 @@ func HandlePingMessage(m pb.DetectorMessage) {
 	UdpMess := pb.UDPMessage{MessageType: "DetectorMessage", Dm: &ackMess, Fm: &fm}
 	mess, _ := proto.Marshal(&UdpMess)
 	// We design to send UDP message
-	UDPSend(addr, mess, 2)
+	UdpSend(addr, mess, 2)
 }
 
 func HandleAckMessage(m pb.DetectorMessage) {
@@ -64,7 +64,7 @@ func HandleJoinMessage(m pb.DetectorMessage) {
 		targets := MembershipList.getRandomTargets(3)
 
 		for _, target := range targets {
-			UDPSend(target, mess, 2)
+			UdpSend(target, mess, 2)
 		}
 	}
 }
@@ -85,7 +85,7 @@ func HandleDeleteMessage(m pb.DetectorMessage) {
 		targets := MembershipList.getRandomTargets(3)
 
 		for _, target := range targets {
-			UDPSend(target, mess, 2)
+			UdpSend(target, mess, 2)
 		}
 	}
 }
@@ -98,18 +98,8 @@ func HandleNewjoinMessage(m pb.DetectorMessage) {
 	UdpMess := pb.UDPMessage{MessageType: "FullMembershipList", Dm: &ackMess, Fm: &fm}
 	mess, _ := proto.Marshal(&UdpMess)
 
-	UDPSend(addr, mess, 4)
+	UdpSend(addr, mess, 4)
 
-}
-
-func UDPSend(IP string, buf []byte, rep int) {
-	addr, _ := net.ResolveUDPAddr("udp", IP)
-	conn, _ := net.DialUDP("udp", nil, addr)
-	for i := 0; i < rep; i++ {
-		_, err := conn.WriteToUDP(buf, addr)
-		ErrHandler(err)
-	}
-	conn.Close()
 }
 
 func ErrHandler(err error) {
