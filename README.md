@@ -1,6 +1,20 @@
 # FA18CS425MP
 
-## GRPC
+## MP2
+
+### Installation
+
+Deploy the source files to VMs and compile using the Makefile. The procedure is described in the MP1 session. After compilation, an extra command `dswim` will be installed to `$GOPATH/bin/dswim`. This will be the command that we'll use for this MP.
+
+### Run demo
+
+The steps needed to play the demo is below:
+1. ssh to one VM and run `dswim -i`. The flag `-i` here implying the dswim will be the introducer. Use `ls` for the stdin input to retrieve the id, which will be used by other nodes to join later.
+2. ssh to other VM and run `dswim`. This will block on user input. type `join <id of the introducer>` to join the group. Repeat this process on as many VMs as you like. You can type `ls` in any VM to get its local membership list and its own ID (i.e. IP:port)
+3. Ctrl-C to kill one of the dswim process to simulate a node failing.
+4. type leave to actively leave the group. Instead of failure that requires a timeout to be detected, active leave will disseminate its leave immediately.
+
+## MP1
 
 ### Installation
 
