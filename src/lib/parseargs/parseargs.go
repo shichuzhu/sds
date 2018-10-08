@@ -4,11 +4,14 @@ import (
 	"flag"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 	"strings"
 )
 
 type arrayFlags []int
+
+var ArgsCopy []string
 
 func (i *arrayFlags) String() string {
 	return fmt.Sprint(*i)
@@ -28,17 +31,26 @@ func (intArr *arrayFlags) Set(value string) error {
 	return nil
 }
 
-var ServerIds arrayFlags
 var alreadyParsed bool
+var ServerIds arrayFlags
 
-func registerArgs() {
-	flag.Var(&ServerIds, "n", "Node list, comma separated string")
+func RegisterNodeArgs(flagSet *flag.FlagSet) *flag.FlagSet {
+	if flagSet == nil {
+		flagSet = flag.NewFlagSet("dclient", flag.ErrorHandling(flag.PanicOnError))
+	}
+	flagSet.Var(&ServerIds, "n", "Node list, comma separated string")
+	return flagSet
 }
 
-func ParseArgs() {
+func ParseArgs(flagSet *flag.FlagSet) bool {
 	if !alreadyParsed {
-		registerArgs()
-		flag.Parse()
+		ArgsCopy = make([]string, len(os.Args))
+		copy(ArgsCopy, os.Args)
 		alreadyParsed = true
+	} else if flagSet.Name() == ArgsCopy[0] {
+		return false
 	}
+	flagSet.Parse(ArgsCopy[1:])
+	ArgsCopy = ArgsCopy[len(ArgsCopy)-flagSet.NArg():]
+	return true
 }

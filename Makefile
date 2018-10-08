@@ -24,11 +24,11 @@ buildlocal: src/dserver src/dgrep
 	go install fa18cs425mp/...
 
 runlocal: buildlocal
-	server -port 10000 -dataPath "data/mp1" &
-	server -port 10001 -dataPath "data/mp1" &
-	server -port 10002 -dataPath "data/mp1" &
+	dserver -port 10000 -dataPath "data/mp1" &
+	dserver -port 10001 -dataPath "data/mp1" &
+	dserver -port 10002 -dataPath "data/mp1" &
 	sleep 1
-	dgrep -n 1,2,3  ' -c 123456 * /dev/null'
+	dgrep ' -c 123456 * /dev/null'
 
 test:
 	test/mp1/runtest

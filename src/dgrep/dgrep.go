@@ -26,7 +26,7 @@ type Dispatcher struct {
 	wg         sync.WaitGroup
 }
 
-func (s *Dispatcher) distGrep(client pb.ServerServicesClient, cmd *pb.Cmd) {
+func (s *Dispatcher) distGrep(client pb.ServerServicesClient, cmd *pb.StringMessage) {
 	// The maximum time a client will be waiting for the server to respond.
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -45,7 +45,7 @@ func (s *Dispatcher) distGrep(client pb.ServerServicesClient, cmd *pb.Cmd) {
 			return
 		}
 		s.writerLock.Lock()
-		fmt.Println(grepLine.GetLine())
+		fmt.Println(grepLine.GetMesg())
 		s.writerLock.Unlock()
 	}
 }
@@ -54,7 +54,7 @@ func (s *Dispatcher) dispatch(conn *grpc.ClientConn) {
 	defer s.wg.Done()
 	defer conn.Close()
 	client := pb.NewServerServicesClient(conn)
-	s.distGrep(client, &pb.Cmd{Cmd: "grep " + strings.Join(os.Args[len(os.Args)-1:], " ")})
+	s.distGrep(client, &pb.StringMessage{Mesg: "grep " + strings.Join(os.Args[len(os.Args)-1:], " ")})
 }
 
 func main() {

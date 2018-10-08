@@ -4,6 +4,7 @@ import (
 	"bufio"
 	cl "fa18cs425mp/src/lib/loggenerator"
 	ml "fa18cs425mp/src/lib/membership"
+	ms "fa18cs425mp/src/lib/membership"
 	pb "fa18cs425mp/src/protobuf"
 	"flag"
 	"fmt"
@@ -29,7 +30,7 @@ type serviceServer struct {
 	//object states defined here
 }
 
-func (s *serviceServer) ServerConfig(ctx context.Context, info *pb.ConfigInfo) (*pb.Info, error) {
+func (s *serviceServer) ServerConfig(ctx context.Context, info *pb.ConfigInfo) (*pb.StringMessage, error) {
 	if info.LogLevel >= 0 && info.LogLevel < 4 {
 		logLevel = info.LogLevel
 	}
@@ -39,30 +40,32 @@ func (s *serviceServer) ServerConfig(ctx context.Context, info *pb.ConfigInfo) (
 	lg.Init(vmIndex, 1)
 
 	message := fmt.Sprintf("Config information receive successfully by Server %v", vmIndex)
-	return &pb.Info{Info: message}, nil
+	return &pb.StringMessage{Mesg: message}, nil
 }
 
-func (s *serviceServer) ReturnMatches(theCmd *pb.Cmd, stream pb.ServerServices_ReturnMatchesServer) error {
-	cmd := exec.Command("/bin/sh", "-c", theCmd.GetCmd())
+func (s *serviceServer) ReturnMatches(theCmd *pb.StringMessage, stream pb.ServerServices_ReturnMatchesServer) error {
+	cmd := exec.Command("/bin/sh", "-c", theCmd.GetMesg())
 	cmd.Dir = *dataPath
 	log.Printf("From \"%s\" executing: %s", cmd.Dir, strings.Join(cmd.Args, " "))
 	stdout, err := cmd.StdoutPipe()
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return err
 	}
 	if err := cmd.Start(); err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return err
 	}
 	scanner := bufio.NewScanner(stdout)
 	for scanner.Scan() {
-		if err := stream.Send(&pb.GrepLine{Line: scanner.Text()}); err != nil {
+		if err := stream.Send(&pb.StringMessage{Mesg: scanner.Text()}); err != nil {
 			return err
 		}
 	}
 	return nil
 }
 
-func (s *serviceServer) CloseServer(_ context.Context, closeMessage *pb.CloseMessage) (*pb.Info, error) {
+func (s *serviceServer) CloseServer(_ context.Context, closeMessage *pb.CloseMessage) (*pb.StringMessage, error) {
 	var message string
 	if closeType := closeMessage.GetCloseType(); closeType == 0 {
 		log.Fatalln("Fatal: Simulating fatal failure of node")
@@ -72,7 +75,7 @@ func (s *serviceServer) CloseServer(_ context.Context, closeMessage *pb.CloseMes
 		message = fmt.Sprintf("Server %v Successfully closed", vmIndex)
 
 	}
-	return &pb.Info{Info: message}, nil
+	return &pb.StringMessage{Mesg: message}, nil
 }
 
 func main() {
@@ -88,6 +91,8 @@ func main() {
 	grpcServer := grpc.NewServer()
 	pb.RegisterServerServicesServer(grpcServer, &serviceServer{})
 	go grpcServer.Serve(lis)
+	ms.InitInstance()
+	ms.StartFailureDetector()
 	if <-closeSigs == 1 {
 		grpcServer.GracefulStop()
 		lg.Close()

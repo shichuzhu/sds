@@ -3,31 +3,30 @@ package serverservices;
 
 // gRPC related messages
 service ServerServices {
-    rpc ServerConfig (ConfigInfo) returns (Info) {
+    rpc ServerConfig (ConfigInfo) returns (StringMessage) {
     }
-    rpc ReturnMatches (Cmd) returns (stream GrepLine) {
+    rpc ReturnMatches (StringMessage) returns (stream StringMessage) {
     }
-    rpc CloseServer (CloseMessage) returns (Info) {
+    rpc CloseServer (CloseMessage) returns (StringMessage) {
+    }
+    rpc ActMembership (StringArray) returns (StringMessage) {
     }
 }
 message ConfigInfo {
     int32 log_level = 1;
     int32 VMIndex = 2;
 }
-message GrepLine {
-    string line = 1;
+
+message StringMessage {
+    string mesg = 1;
 }
 
-message Cmd {
-    string cmd = 1;
+message StringArray {
+    repeated string msgs = 1;
 }
 
 message CloseMessage {
     int32 closeType = 1;
-}
-
-message Info {
-    string info = 1;
 }
 
 // Failure detector related messages

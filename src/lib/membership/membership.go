@@ -163,3 +163,12 @@ func DumpTable() {
 		fmt.Printf("Index %d is Process: %s\n", i, t)
 	}
 }
+
+func FormDumpTable() string {
+	var response string
+	table, _ := GetListElement()
+	for i, t := range table {
+		response += fmt.Sprintf("Index %d is Process: %s\n", i, t)
+	}
+	return response
+}

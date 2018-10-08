@@ -19,7 +19,7 @@ type Configuration struct {
 	}
 }
 
-var configFileName = "remotecfg.json"
+var configFileName = "cfg.json"
 var config Configuration
 var opts []grpc.DialOption
 
@@ -40,7 +40,10 @@ func Connect() ([]*grpc.ClientConn, error) {
 
 	var ret []*grpc.ClientConn
 
-	pa.ParseArgs()
+	set := pa.RegisterNodeArgs(nil)
+	if !pa.ParseArgs(set) {
+		log.Panicln("Fail to parse Node")
+	}
 	if pa.ServerIds == nil {
 		for i := 0; i < len(config.Addrs); i++ {
 			pa.ServerIds = append(pa.ServerIds, i)

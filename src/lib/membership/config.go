@@ -12,6 +12,13 @@ func ListInfo() {
 	fmt.Println("Current process ID is ", MyAddr)
 }
 
+func FormListInfo() string {
+	var response string
+	response += FormDumpTable()
+	response += fmt.Sprintf("Current process ID is %s\n", MyAddr)
+	return response
+}
+
 func JoinByIntroducer(introAddr string) {
 	ContactIntroducer(introAddr)
 }
