@@ -95,10 +95,10 @@ func UdpRecvSingle() (*pb.UDPMessage, error) {
 	UdpMess := pb.UDPMessage{}
 	err = proto.Unmarshal(buffer[0:n], &UdpMess)
 	ErrHandler(err)
-	if mesgType := UdpMess.GetMessageType(); mesgType == "DetectorMessage" {
-		log.Printf("Received byte %d TYPE %s\n", n, UdpMess.GetDm().GetHeader())
-	} else {
-		log.Printf("Received byte %d TYPE %s\n", n, mesgType)
-	}
+	//if mesgType := UdpMess.GetMessageType(); mesgType == "DetectorMessage" {
+	//	log.Printf("Received byte %d TYPE %s\n", n, UdpMess.GetDm().GetHeader())
+	//} else {
+	//	log.Printf("Received byte %d TYPE %s\n", n, mesgType)
+	//}
 	return &UdpMess, nil
 }

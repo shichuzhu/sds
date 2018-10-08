@@ -58,7 +58,7 @@ func ReportFailure(addr string) {
 func senderService() error {
 	for {
 		memsToPing := MembershipList.getPingTargets(NodeNumberToPing)
-		log.Printf("memsToPing %s\n", memsToPing)
+		//log.Printf("memsToPing %s\n", memsToPing)
 		for i, addr := range memsToPing {
 			ackWaitEntries[i] = AckWaitEntry{addr: addr}
 		}
