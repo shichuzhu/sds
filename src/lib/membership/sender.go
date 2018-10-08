@@ -40,6 +40,7 @@ func ContactIntroducer(introAddr string) {
 }
 
 func ReportFailure(addr string) {
+	log.Println("Failure DETECTED: ", addr)
 	if member, exist := MembershipList.lookupID(addr); exist {
 		message, _ := proto.Marshal(
 			&pb.UDPMessage{MessageType: "DetectorMessage",

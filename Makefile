@@ -10,10 +10,10 @@ build:
 	vmsetup/deploy For Each 'go install fa18cs425mp/...'
 
 run: build
-	vmsetup/deploy Spawn Each '-port 10000 -dataPath "data/mp1"'
+	vmsetup/deploy Spawn Each '-port 10000 -dataPath "data/mp2"'
 	sleep 2
 # The first blank before -c to let flag render it as non-flag argument
-	dgrep -n 1,2,3 ' -c 515922 * /dev/null'
+	dgrep -n 1,2,3 ' -c ailure * /dev/null'
 
 localsetup:
 #	go get -u google.golang.org/grpc
