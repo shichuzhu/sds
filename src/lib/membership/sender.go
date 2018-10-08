@@ -32,7 +32,7 @@ func ContactIntroducer(introAddr string) {
 	message, err := proto.Marshal(
 		&pb.UDPMessage{MessageType: "DetectorMessage",
 			Dm: &pb.DetectorMessage{Header: "NewJoin", Addr: MyAddr, SessNUm: 0, TTL: 0},
-			Fm: &pb.FullMembershipList{}}) // TODO: see if any can be omitted.
+			Fm: nil})
 	ErrHandler(err)
 
 	UdpSend(introAddr, message, 3)
@@ -44,7 +44,7 @@ func ReportFailure(addr string) {
 		message, _ := proto.Marshal(
 			&pb.UDPMessage{MessageType: "DetectorMessage",
 				Dm: &pb.DetectorMessage{Header: "Delete", Addr: addr, SessNUm: int32(member.sessionCounter), TTL: 0},
-				Fm: nil}) // TODO: see if any can be omitted.
+				Fm: nil})
 		for _, addr := range MembershipList.getRandomTargets(len(MembershipList.members)) {
 			UdpSend(addr, message, 2)
 		}
@@ -67,7 +67,7 @@ func senderService() error {
 				message, _ := proto.Marshal(
 					&pb.UDPMessage{MessageType: "DetectorMessage",
 						Dm: &pb.DetectorMessage{Header: "Ping", Addr: MyAddr, SessNUm: 0, TTL: 0},
-						Fm: &pb.FullMembershipList{}}) // TODO: see if any can be omitted.
+						Fm: nil})
 				UdpSendSingle(addr, message)
 			}
 		}

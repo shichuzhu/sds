@@ -2,7 +2,6 @@ package membership
 
 import (
 	pb "fa18cs425mp/src/protobuf"
-	"fmt"
 	"github.com/golang/protobuf/proto"
 	"log"
 	"math/rand"
@@ -44,7 +43,6 @@ func (s *NetworkStatsType) InitNetworkStats() {
 }
 
 func (s *NetworkStatsType) GetBandwidthUsage() float32 {
-	fmt.Println(s.startTime)
 	s.endTime = time.Now()
 	durationInSecond := s.endTime.Sub(s.startTime).Seconds()
 	count := s.bytesCount
@@ -79,7 +77,6 @@ func UdpSendSingle(IP string, buf []byte) {
 	NetworkStats.bytesCount += len(buf)
 }
 
-// TODO: return pointer type
 func AddrStrToBin(addr string) *net.UDPAddr {
 	bin, err := net.ResolveUDPAddr("udp", addr)
 	if err != nil {
@@ -88,7 +85,6 @@ func AddrStrToBin(addr string) *net.UDPAddr {
 	return bin
 }
 
-// TODO: add drop packet functionality
 func UdpRecvSingle() (*pb.UDPMessage, error) {
 	n, err := xmtr.Read(buffer)
 	ErrHandler(err)

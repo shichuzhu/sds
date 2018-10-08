@@ -25,7 +25,7 @@ func ParseMessage(m pb.DetectorMessage) {
 	case "NewJoin":
 		HandleNewJoinMessage(m)
 	default:
-		log.Println("Wrong message input message")
+		log.Println("Wrong input message")
 	}
 }
 
