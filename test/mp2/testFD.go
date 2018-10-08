@@ -3,6 +3,7 @@ package main
 import (
 	ms "fa18cs425mp/src/lib/membership"
 	"flag"
+	"fmt"
 	"time"
 )
 
@@ -12,7 +13,7 @@ func main() {
 	flag.Parse()
 	if !(*introFlag) {
 		ms.MembershipList.MyPort = *port
-		ms.ContactIntroducer("128.174.245.229:11000")
+		ms.ContactIntroducer("10.195.35.3:11000")
 	} else {
 		ms.MembershipList.MyPort = *port
 		ms.InitInstance()
@@ -21,6 +22,8 @@ func main() {
 	}
 	for {
 		ms.DumpTable()
-		time.Sleep(time.Duration(500) * time.Millisecond)
+		time.Sleep(time.Duration(2000) * time.Millisecond)
+		fmt.Println(time.Now())
+		fmt.Printf("Average usage is %v \n", ms.NetworkStats.GetBandwidthUsage())
 	}
 }

@@ -15,19 +15,23 @@ type NetworkStatsType struct {
 	endTime    time.Time
 }
 
-var networkStats NetworkStatsType
+var NetworkStats NetworkStatsType
 var xmtr *net.UDPConn
 var buffer []byte
 
-func (s *NetworkStatsType) initNetworkStats() {
+func (s *NetworkStatsType) InitNetworkStats() {
 	s.startTime = time.Now()
 	s.bytesCount = 0
 }
 
-func (s *NetworkStatsType) getBandwidthUsage() float32 {
+func (s *NetworkStatsType) GetBandwidthUsage() float32 {
+	fmt.Println(s.startTime)
 	s.endTime = time.Now()
 	durationInSecond := s.endTime.Sub(s.startTime).Seconds()
-	return float32(s.bytesCount) / float32(durationInSecond)
+	count := s.bytesCount
+	s.startTime = time.Now()
+	s.bytesCount = 0
+	return float32(count) / float32(durationInSecond)
 }
 
 func UdpSend(IP string, buf []byte, rep int) {
@@ -53,7 +57,7 @@ func UdpSendSingle(IP string, buf []byte) {
 	ErrHandler(err)
 	_, err = xmtr.WriteToUDP(buf, remote)
 	ErrHandler(err)
-	networkStats.bytesCount += len(buf)
+	NetworkStats.bytesCount += len(buf)
 }
 
 // TODO: return pointer type

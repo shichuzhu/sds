@@ -130,6 +130,7 @@ func StartFailureDetector() {
 	InitXmtr()
 	go receiverService()
 	go senderService()
+	NetworkStats.InitNetworkStats()
 }
 
 // Get preferred outbound ip of this machine
