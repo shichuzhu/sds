@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"log"
+	"math/rand"
 	"net"
 	"time"
 )
@@ -15,9 +16,28 @@ type NetworkStatsType struct {
 	endTime    time.Time
 }
 
+type PacketDropType struct {
+	dropRate float32
+}
+
+var networkStats NetworkStatsType
 var NetworkStats NetworkStatsType
 var xmtr *net.UDPConn
 var buffer []byte
+var PacketDrop PacketDropType
+
+func (s *PacketDropType) SetDropRate(rate float32) {
+	s.dropRate = rate
+	rand.Seed(time.Now().Unix())
+}
+
+func (s *PacketDropType) rollDiceToDrop() bool {
+	if rand.Float32() >= s.dropRate {
+		return false
+	} else {
+		return true
+	}
+}
 
 func (s *NetworkStatsType) InitNetworkStats() {
 	s.startTime = time.Now()
@@ -49,7 +69,7 @@ func InitXmtr() {
 	var err error
 	xmtr, err = net.ListenUDP("udp", local)
 	ErrHandler(err)
-	buffer = make([]byte, 4096) // TODO: move this to init
+	buffer = make([]byte, 4096)
 }
 
 func UdpSendSingle(IP string, buf []byte) {
@@ -73,6 +93,10 @@ func AddrStrToBin(addr string) *net.UDPAddr {
 func UdpRecvSingle() (*pb.UDPMessage, error) {
 	n, err := xmtr.Read(buffer)
 	ErrHandler(err)
+	if PacketDrop.rollDiceToDrop() {
+		log.Println("Packet dropped.")
+		return nil, nil
+	}
 	UdpMess := pb.UDPMessage{}
 	err = proto.Unmarshal(buffer[0:n], &UdpMess)
 	ErrHandler(err)
