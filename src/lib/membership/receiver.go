@@ -2,7 +2,6 @@ package membership
 
 import (
 	pb "fa18cs425mp/src/protobuf"
-	"fmt"
 	"github.com/golang/protobuf/proto"
 	"log"
 )
@@ -26,7 +25,7 @@ func ParseMessage(m pb.DetectorMessage) {
 	case "NewJoin":
 		HandleNewJoinMessage(m)
 	default:
-		fmt.Println("Wrong input message")
+		log.Println("Wrong message input message")
 	}
 }
 
@@ -124,6 +123,9 @@ func ErrHandler(err error) {
 func receiverService() {
 	for {
 		UdpMess, _ := UdpRecvSingle()
+		if UdpMess == nil {
+			continue
+		}
 		switch UdpMess.GetMessageType() {
 		case "DetectorMessage":
 			ParseMessage(*UdpMess.GetDm())

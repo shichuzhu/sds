@@ -9,6 +9,8 @@ import (
 func main() {
 	introFlag := flag.Bool("i", false, "Indicator of the node is the introducer of port 11000")
 	port := flag.Int("p", 11000, "port number to use for the failure detector")
+	drop := flag.Float64("d", 0.0, "Simulated packet drop rate.")
+	ms.PacketDrop.SetDropRate(float32(*drop))
 	flag.Parse()
 	if !(*introFlag) {
 		ms.MembershipList.MyPort = *port
