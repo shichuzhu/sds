@@ -41,7 +41,7 @@ func Connect() ([]*grpc.ClientConn, error) {
 	var ret []*grpc.ClientConn
 
 	set := pa.RegisterNodeArgs(nil)
-	if !pa.ParseArgs(set) {
+	if !pa.ParseArgs(set, "") {
 		log.Panicln("Fail to parse Node")
 	}
 	if pa.ServerIds == nil {

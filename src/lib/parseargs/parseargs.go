@@ -42,12 +42,12 @@ func RegisterNodeArgs(flagSet *flag.FlagSet) *flag.FlagSet {
 	return flagSet
 }
 
-func ParseArgs(flagSet *flag.FlagSet) bool {
+func ParseArgs(flagSet *flag.FlagSet, name string) bool {
 	if !alreadyParsed {
 		ArgsCopy = make([]string, len(os.Args))
 		copy(ArgsCopy, os.Args)
 		alreadyParsed = true
-	} else if flagSet.Name() == ArgsCopy[0] {
+	} else if name == ArgsCopy[0] {
 		return false
 	}
 	flagSet.Parse(ArgsCopy[1:])
