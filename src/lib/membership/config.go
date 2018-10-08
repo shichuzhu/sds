@@ -1,5 +1,6 @@
 package membership
 
-const FailureTimeout float32 = 1.5
+const FailureTimeout int = 1800 // in millisecond
 const DefaultUdpPort int = 11000
 const NodeNumberToPing = 3
+const MultiSendNumber = 1

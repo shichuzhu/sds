@@ -2,6 +2,7 @@ package membership
 
 import (
 	pb "fa18cs425mp/src/protobuf"
+	"fmt"
 	"github.com/golang/protobuf/proto"
 	"sync"
 	"time"
@@ -25,14 +26,28 @@ func (s *AckWaitEntry) reset() {
 	s.lock.Unlock()
 }
 
+func ContactIntroducer(introAddr string) {
+	InitInstance()
+	InitXmtr()
+	message, err := proto.Marshal(
+		&pb.UDPMessage{MessageType: "DetectorMessage",
+			Dm: &pb.DetectorMessage{Header: "NewJoin", Addr: MyAddr, SessNUm: 0, TTL: 0},
+			Fm: &pb.FullMembershipList{}}) // TODO: see if any can be omitted.
+	ErrHandler(err)
+
+	UdpSend(introAddr, message, 3)
+	StartFailureDetector()
+}
+
 func senderService() error {
 	for {
-		memsToPing := MembershipList.getPingTargets(NodeNumberToPing)
+		memsToPing := MembershipList.getPingTargets(min(NodeNumberToPing, len(MembershipList.members)))
+		fmt.Printf("memsToPing %s\n", memsToPing)
 		for i, addr := range memsToPing {
 			ackWaitEntries[i] = AckWaitEntry{addr: addr}
 		}
-		for i := 0; i < 3; i++ { // Send 3 times.
-			for j, addr := range memsToPing {
+		for i := 0; i < MultiSendNumber; i++ { // Send 3 times.
+			for _, addr := range memsToPing {
 				message, _ := proto.Marshal(
 					&pb.UDPMessage{MessageType: "DetectorMessage",
 						Dm: &pb.DetectorMessage{Header: "Ping", Addr: MyAddr, SessNUm: 0, TTL: 0},
@@ -40,8 +55,9 @@ func senderService() error {
 				UdpSendSingle(addr, message)
 			}
 		}
-		time.Sleep(1500 * time.Millisecond)
-		for i := range ackWaitEntries {
+		time.Sleep(time.Duration(FailureTimeout) * time.Millisecond)
+		for i := range memsToPing {
+			fmt.Println(i)
 			if ackWaitEntries[i].acked == true {
 				continue
 			} else {

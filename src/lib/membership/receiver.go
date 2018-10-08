@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"github.com/golang/protobuf/proto"
 	"log"
-	"net"
-	"strconv"
 )
 
 type Message struct {
@@ -33,8 +31,8 @@ func ParseMessage(m pb.DetectorMessage) {
 }
 
 func HandlePingMessage(m pb.DetectorMessage) {
-	//create sending message from protool buffer
-	// marshal the message to byte  string
+	//create sending message from proto buffer
+	// marshal the message to byte string
 	addr := m.GetAddr()
 	ackMess := pb.DetectorMessage{Header: "Ack", Addr: MyAddr, SessNUm: 0, TTL: 0}
 	UdpMess := pb.UDPMessage{MessageType: "DetectorMessage", Dm: &ackMess}
@@ -97,6 +95,7 @@ func HandleDeleteMessage(m pb.DetectorMessage) {
 
 func HandleNewJoinMessage(m pb.DetectorMessage) {
 	addr := m.GetAddr()
+	MembershipList.insertNewID(addr, 0) // TODO: change sessionID
 	fm := GetMemberListMessage()
 	ackMess := pb.DetectorMessage{}
 
@@ -118,31 +117,13 @@ func HandleNewJoinMessage(m pb.DetectorMessage) {
 
 func ErrHandler(err error) {
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Panicln(err.Error())
 	}
 }
 
 func receiverService() {
-	// for
-	fd, err := net.ListenPacket("udp", ":"+strconv.Itoa(DefaultUdpPort))
-	if err != nil {
-		log.Panicln("Cannot listen UDP packet")
-	}
-	buf := make([]byte, 4096)
-	defer fd.Close()
 	for {
-		n, _, err := fd.ReadFrom(buf)
-		if err != nil {
-			fmt.Printf("ReadError from UDP: %s", err.Error())
-		}
-		UdpMess := pb.UDPMessage{}
-		err = proto.Unmarshal(buf[0:n], &UdpMess)
-
-		if err != nil {
-			fmt.Printf("Error in Unmarshal proto message: %s", err.Error())
-			return
-		}
-
+		UdpMess, _ := UdpRecvSingle()
 		switch UdpMess.GetMessageType() {
 		case "DetectorMessage":
 			ParseMessage(*UdpMess.GetDm())
@@ -150,7 +131,6 @@ func receiverService() {
 			InitialNewList(*UdpMess.GetFm())
 		}
 	}
-
 	return
 }
 
@@ -168,8 +148,8 @@ func InitialNewList(L pb.FullMembershipList) {
 func GetMemberListMessage() pb.FullMembershipList {
 	List := make([]*pb.Member, len(MembershipList.members))
 	for i := 0; i < len(MembershipList.members); i++ {
-		List[i].Addr = MembershipList.members[i].addr
-		List[i].SessNum = int32(MembershipList.members[i].sessionCounter)
+		List[i] = &pb.Member{Addr: MembershipList.members[i].addr,
+			SessNum: int32(MembershipList.members[i].sessionCounter)}
 	}
 	fm := pb.FullMembershipList{List: List}
 

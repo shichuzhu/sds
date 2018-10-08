@@ -5,6 +5,7 @@ import (
 	"log"
 	"math/rand"
 	"net"
+	"strconv"
 )
 
 var MyAddr string
@@ -22,9 +23,11 @@ type MembershipListType struct {
 	// Potential global config about MembershipList
 	myIP    net.IP
 	myIndex int
+	MyPort  int
 }
 
 func (t *MembershipListType) insert(index int, memberType MemberType) {
+	fmt.Println("insert")
 	s := &t.members
 	*s = append(*s, MemberType{})
 	copy((*s)[index+1:], (*s)[index:])
@@ -33,6 +36,7 @@ func (t *MembershipListType) insert(index int, memberType MemberType) {
 }
 
 func (t *MembershipListType) delete(index int) {
+	fmt.Println("delete")
 	s := &t.members
 	copy((*s)[index:], (*s)[index+1:])
 	*s = (*s)[:len(*s)-1]
@@ -77,6 +81,7 @@ func (s *MembershipListType) deleteID(id string, sessionID int) {
 }
 
 func (s *MembershipListType) getRandomTargets(num int) []string {
+	num = min(num, len(MembershipList.members))
 	targets := make([]string, num)
 	for i, j := range rand.Perm(len(MembershipList.members))[:num] {
 		targets[i] = s.members[j].addr
@@ -95,17 +100,34 @@ func (s *MembershipListType) updateMyIndex() {
 }
 
 func (s *MembershipListType) getPingTargets(num int) []string {
-	targets := make([]string, NodeNumberToPing)
+	targets := make([]string, num)
 	for i, _ := range targets {
 		targets[i] = s.members[(s.myIndex+i)%len(s.members)].addr
 	}
 	return targets
 }
 
+func InitInstance() {
+	if ackWaitEntries == nil {
+		if MembershipList.MyPort == 0 {
+			MembershipList.MyPort = DefaultUdpPort
+		}
+		ackWaitEntries = make([]AckWaitEntry, NodeNumberToPing)
+		MembershipList.myIP = GetOutboundIP()
+		MyAddr = MembershipList.myIP.String() + ":" + strconv.Itoa(MembershipList.MyPort)
+	}
+}
+
+func SetPortNumber(port int) {
+	MembershipList.MyPort = port
+}
+
+func AddSelfToList(sessionCounter int) {
+	MembershipList.insertNewID(MyAddr, sessionCounter)
+}
+
 func StartFailureDetector() {
-	ackWaitEntries = make([]AckWaitEntry, NodeNumberToPing)
-	MembershipList.myIP = GetOutboundIP()
-	MyAddr = MembershipList.myIP.String()
+	InitXmtr()
 	go receiverService()
 	go senderService()
 }
@@ -134,9 +156,9 @@ func GetListElement() ([]string, []int) {
 	return ret1, ret2
 }
 
-func dumpTable() {
+func DumpTable() {
 	table, _ := GetListElement()
 	for i, t := range table {
-		fmt.Printf("Entry %d has ID: %s", i+1, t)
+		fmt.Printf("Entry %d has ID: %s\n", i+1, t)
 	}
 }
