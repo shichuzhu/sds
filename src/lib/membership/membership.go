@@ -11,6 +11,7 @@ import (
 var MyAddr string
 var MembershipList MembershipListType
 var ackWaitEntries []AckWaitEntry
+var ThreadsOn bool
 
 // Use getter to get list for thread safety issue.
 type MemberType struct {
@@ -26,39 +27,39 @@ type MembershipListType struct {
 	MyPort  int
 }
 
-func (t *MembershipListType) insert(index int, memberType MemberType) {
-	fmt.Println("insert")
-	s := &t.members
+func (ml *MembershipListType) insert(index int, memberType MemberType) {
+	fmt.Println("insert!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	s := &ml.members
 	*s = append(*s, MemberType{})
 	copy((*s)[index+1:], (*s)[index:])
 	(*s)[index] = memberType
-	t.updateMyIndex()
+	ml.updateMyIndex()
 }
 
-func (t *MembershipListType) delete(index int) {
-	fmt.Println("delete")
-	s := &t.members
+func (ml *MembershipListType) delete(index int) {
+	fmt.Println("delete!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!")
+	s := &ml.members
 	copy((*s)[index:], (*s)[index+1:])
 	*s = (*s)[:len(*s)-1]
-	t.updateMyIndex()
+	ml.updateMyIndex()
 }
 
-func (s *MembershipListType) insertNewID(id string, sessionID int) {
+func (ml *MembershipListType) insertNewID(id string, sessionID int) {
 	for i, member := range MembershipList.members {
 		if id == member.addr {
 			if sessionID > member.sessionCounter {
-				s.members[i].sessionCounter = sessionID
+				ml.members[i].sessionCounter = sessionID
 			}
 			return
 		} else if id < member.addr {
-			s.insert(i, MemberType{addr: id, sessionCounter: sessionID})
+			ml.insert(i, MemberType{addr: id, sessionCounter: sessionID})
 			return
 		}
 	}
-	s.insert(len(MembershipList.members), MemberType{addr: id, sessionCounter: sessionID})
+	ml.insert(len(MembershipList.members), MemberType{addr: id, sessionCounter: sessionID})
 }
 
-func (s *MembershipListType) lookupID(id string) (MemberType, bool) {
+func (ml *MembershipListType) lookupID(id string) (MemberType, bool) {
 	for _, member := range MembershipList.members {
 		if id == member.addr {
 			return member, true
@@ -66,12 +67,12 @@ func (s *MembershipListType) lookupID(id string) (MemberType, bool) {
 	}
 	return MemberType{}, false
 }
-func (s *MembershipListType) deleteID(id string, sessionID int) {
-	for i, _ := range MembershipList.members {
+func (ml *MembershipListType) deleteID(id string, sessionID int) {
+	for i := range MembershipList.members {
 		member := &MembershipList.members[i]
 		if member.addr == id {
 			if member.sessionCounter <= sessionID {
-				s.delete(i)
+				ml.delete(i)
 			}
 			return
 		} else if member.addr > id {
@@ -80,29 +81,30 @@ func (s *MembershipListType) deleteID(id string, sessionID int) {
 	}
 }
 
-func (s *MembershipListType) getRandomTargets(num int) []string {
+func (ml *MembershipListType) getRandomTargets(num int) []string {
 	num = min(num, len(MembershipList.members))
 	targets := make([]string, num)
 	for i, j := range rand.Perm(len(MembershipList.members))[:num] {
-		targets[i] = s.members[j].addr
+		targets[i] = ml.members[j].addr
 	}
 
 	return targets
 }
 
-func (s *MembershipListType) updateMyIndex() {
+func (ml *MembershipListType) updateMyIndex() {
 	for i, member := range MembershipList.members {
 		if member.addr == MyAddr {
-			s.myIndex = i
+			ml.myIndex = i
 			return
 		}
 	}
 }
 
-func (s *MembershipListType) getPingTargets(num int) []string {
+func (ml *MembershipListType) getPingTargets(num int) []string {
+	num = max(0, min(NodeNumberToPing, len(MembershipList.members)-1))
 	targets := make([]string, num)
-	for i, _ := range targets {
-		targets[i] = s.members[(s.myIndex+i)%len(s.members)].addr
+	for i := range targets {
+		targets[i] = ml.members[(ml.myIndex+i+1)%len(ml.members)].addr
 	}
 	return targets
 }
@@ -115,11 +117,8 @@ func InitInstance() {
 		ackWaitEntries = make([]AckWaitEntry, NodeNumberToPing)
 		MembershipList.myIP = GetOutboundIP()
 		MyAddr = MembershipList.myIP.String() + ":" + strconv.Itoa(MembershipList.MyPort)
+		AddSelfToList(0)
 	}
-}
-
-func SetPortNumber(port int) {
-	MembershipList.MyPort = port
 }
 
 func AddSelfToList(sessionCounter int) {
@@ -128,8 +127,11 @@ func AddSelfToList(sessionCounter int) {
 
 func StartFailureDetector() {
 	InitXmtr()
-	go receiverService()
-	go senderService()
+	if !ThreadsOn {
+		go receiverService()
+		go senderService()
+		ThreadsOn = true
+	}
 	NetworkStats.InitNetworkStats()
 }
 
@@ -160,6 +162,6 @@ func GetListElement() ([]string, []int) {
 func DumpTable() {
 	table, _ := GetListElement()
 	for i, t := range table {
-		fmt.Printf("Entry %d has ID: %s\n", i+1, t)
+		fmt.Printf("Index %d is Process: %s\n", i, t)
 	}
 }

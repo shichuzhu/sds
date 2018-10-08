@@ -2,8 +2,8 @@ package membership
 
 import (
 	pb "fa18cs425mp/src/protobuf"
-	"fmt"
 	"github.com/golang/protobuf/proto"
+	"log"
 	"sync"
 	"time"
 )
@@ -39,10 +39,26 @@ func ContactIntroducer(introAddr string) {
 	StartFailureDetector()
 }
 
+func ReportFailure(addr string) {
+	if member, exist := MembershipList.lookupID(addr); exist {
+		message, _ := proto.Marshal(
+			&pb.UDPMessage{MessageType: "DetectorMessage",
+				Dm: &pb.DetectorMessage{Header: "Delete", Addr: addr, SessNUm: int32(member.sessionCounter), TTL: 0},
+				Fm: nil}) // TODO: see if any can be omitted.
+		for _, addr := range MembershipList.getRandomTargets(len(MembershipList.members)) {
+			UdpSend(addr, message, 2)
+		}
+		MembershipList.deleteID(addr, int(^uint(0)>>1))
+	}
+	if addr == MyAddr {
+		log.Fatalln("False positive detected, auto terminating.")
+	}
+}
+
 func senderService() error {
 	for {
-		memsToPing := MembershipList.getPingTargets(min(NodeNumberToPing, len(MembershipList.members)))
-		fmt.Printf("memsToPing %s\n", memsToPing)
+		memsToPing := MembershipList.getPingTargets(NodeNumberToPing)
+		log.Printf("memsToPing %s\n", memsToPing)
 		for i, addr := range memsToPing {
 			ackWaitEntries[i] = AckWaitEntry{addr: addr}
 		}
@@ -57,24 +73,12 @@ func senderService() error {
 		}
 		time.Sleep(time.Duration(FailureTimeout) * time.Millisecond)
 		for i := range memsToPing {
-			fmt.Println(i)
 			if ackWaitEntries[i].acked == true {
 				continue
 			} else {
-				addr := ackWaitEntries[i].addr
-				if member, exist := MembershipList.lookupID(addr); exist {
-					message, _ := proto.Marshal(
-						&pb.UDPMessage{MessageType: "DetectorMessage",
-							Dm: &pb.DetectorMessage{Header: "Delete", Addr: addr, SessNUm: int32(member.sessionCounter), TTL: 0},
-							Fm: &pb.FullMembershipList{}}) // TODO: see if any can be omitted.
-					for _, addr := range MembershipList.getRandomTargets(len(MembershipList.members)) {
-						UdpSend(addr, message, 2)
-					}
-					MembershipList.deleteID(ackWaitEntries[i].addr, int(^uint(0)>>1))
-				}
+				ReportFailure(ackWaitEntries[i].addr)
 			}
 		}
-
 	}
 	return nil
 }

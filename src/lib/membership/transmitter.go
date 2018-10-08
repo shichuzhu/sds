@@ -20,7 +20,6 @@ type PacketDropType struct {
 	dropRate float32
 }
 
-var networkStats NetworkStatsType
 var NetworkStats NetworkStatsType
 var xmtr *net.UDPConn
 var buffer []byte
@@ -101,9 +100,9 @@ func UdpRecvSingle() (*pb.UDPMessage, error) {
 	err = proto.Unmarshal(buffer[0:n], &UdpMess)
 	ErrHandler(err)
 	if mesgType := UdpMess.GetMessageType(); mesgType == "DetectorMessage" {
-		fmt.Printf("Received byte %d TYPE %s\n", n, UdpMess.GetDm().GetHeader())
+		log.Printf("Received byte %d TYPE %s\n", n, UdpMess.GetDm().GetHeader())
 	} else {
-		fmt.Printf("Received byte %d TYPE %s\n", n, mesgType)
+		log.Printf("Received byte %d TYPE %s\n", n, mesgType)
 	}
 	return &UdpMess, nil
 }
