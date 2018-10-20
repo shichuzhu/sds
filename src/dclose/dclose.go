@@ -19,7 +19,7 @@ func closeConnection(conn *grpc.ClientConn) error {
 	client := pb.NewServerServicesClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	text, err := client.CloseServer(ctx, &pb.CloseMessage{CloseType: 1})
+	text, err := client.CloseServer(ctx, &pb.IntMessage{Mesg: 1})
 	if err != nil {
 		log.Printf("failure to close server: %s\n", err)
 	} else {

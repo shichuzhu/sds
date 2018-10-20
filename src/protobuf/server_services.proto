@@ -7,14 +7,14 @@ service ServerServices {
     }
     rpc ReturnMatches (StringMessage) returns (stream StringMessage) {
     }
-    rpc CloseServer (CloseMessage) returns (StringMessage) {
+    rpc CloseServer (IntMessage) returns (StringMessage) {
     }
     rpc ActMembership (StringArray) returns (StringMessage) {
     }
 }
 message ConfigInfo {
     int32 log_level = 1;
-    int32 VMIndex = 2;
+    int32 vm_index = 2;
 }
 
 message StringMessage {
@@ -22,33 +22,33 @@ message StringMessage {
 }
 
 message StringArray {
-    repeated string msgs = 1;
+    repeated string mesgs = 1;
 }
 
-message CloseMessage {
-    int32 closeType = 1;
+message IntMessage {
+    int32 mesg = 1;
 }
 
 // Failure detector related messages
 
 message DetectorMessage {
-    string Header = 1;
-    string Addr = 2;
-    int32 SessNUm = 3;
-    int32 TTL = 4;
+    string header = 1;
+    string addr = 2;
+    int32 sess_num = 3;
+    int32 ttl = 4;
 }
 
 message Member {
-    string Addr = 1;
-    int32 SessNum = 2;
+    string addr = 1;
+    int32 sess_num = 2;
 }
 
 message FullMembershipList {
-    repeated Member List = 1;
+    repeated Member list = 1;
 }
 
 message UDPMessage {
-    string MessageType = 1;
-    DetectorMessage Dm = 2;
-    FullMembershipList Fm = 3;
+    string message_type = 1;
+    DetectorMessage dm = 2;
+    FullMembershipList fm = 3;
 }

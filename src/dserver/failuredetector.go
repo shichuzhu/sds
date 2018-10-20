@@ -9,7 +9,7 @@ import (
 )
 
 func (s *serviceServer) ActMembership(_ context.Context, argsMsgs *pb.StringArray) (*pb.StringMessage, error) {
-	args := argsMsgs.GetMsgs()
+	args := argsMsgs.GetMesgs()
 	var response string
 	switch text := args[0]; text {
 	case "ls":

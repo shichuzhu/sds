@@ -33,7 +33,7 @@ func HandlePingMessage(m pb.DetectorMessage) {
 	//create sending message from proto buffer
 	// marshal the message to byte string
 	addr := m.GetAddr()
-	ackMess := pb.DetectorMessage{Header: "Ack", Addr: MyAddr, SessNUm: 0, TTL: 0}
+	ackMess := pb.DetectorMessage{Header: "Ack", Addr: MyAddr, SessNum: 0, Ttl: 0}
 	UdpMess := pb.UDPMessage{MessageType: "DetectorMessage", Dm: &ackMess}
 	mess, _ := proto.Marshal(&UdpMess)
 	// We design to send UDP message
@@ -54,11 +54,11 @@ func HandleAckMessage(m pb.DetectorMessage) {
 
 func HandleJoinMessage(m pb.DetectorMessage) {
 	addr := m.GetAddr()
-	session := m.GetSessNUm()
+	session := m.GetSessNum()
 	MembershipList.insertNewID(addr, int(session))
 
-	TTL := m.GetTTL()
-	forwardMess := pb.DetectorMessage{Header: "Join", Addr: addr, SessNUm: session, TTL: TTL + 1}
+	TTL := m.GetTtl()
+	forwardMess := pb.DetectorMessage{Header: "Join", Addr: addr, SessNum: session, Ttl: TTL + 1}
 	UdpMess := pb.UDPMessage{MessageType: "DetectorMessage", Dm: &forwardMess}
 
 	mess, _ := proto.Marshal(&UdpMess)
@@ -76,11 +76,11 @@ func HandleDeleteMessage(m pb.DetectorMessage) {
 	// prepare the message to send (add to sequence if need)
 	// UDP send message to randomly chosen target
 	addr := m.GetAddr()
-	session := m.GetSessNUm()
+	session := m.GetSessNum()
 	MembershipList.deleteID(addr, int(session))
 
-	TTL := m.GetTTL()
-	forwardMess := pb.DetectorMessage{Header: "Delete", Addr: addr, SessNUm: session, TTL: TTL + 1}
+	TTL := m.GetTtl()
+	forwardMess := pb.DetectorMessage{Header: "Delete", Addr: addr, SessNum: session, Ttl: TTL + 1}
 	UdpMess := pb.UDPMessage{MessageType: "DetectorMessage", Dm: &forwardMess}
 	mess, _ := proto.Marshal(&UdpMess)
 	log.Println("Failure PROPAGATED: ", addr)
@@ -104,7 +104,7 @@ func HandleNewJoinMessage(m pb.DetectorMessage) {
 
 	UdpSend(addr, mess, 4)
 
-	ackMess = pb.DetectorMessage{Header: "Join", Addr: addr, SessNUm: 0, TTL: 0}
+	ackMess = pb.DetectorMessage{Header: "Join", Addr: addr, SessNum: 0, Ttl: 0}
 	UdpMess = pb.UDPMessage{MessageType: "DetectorMessage", Dm: &ackMess}
 	mess, _ = proto.Marshal(&UdpMess)
 

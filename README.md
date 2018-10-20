@@ -41,6 +41,7 @@ Compile the `.proto` file using
 4. Invoking sh -c results in "#" signs unquoted.
 5. Go install will make the binary filename based on package name (which is the name of the directory containing "main"), not the name of file containing "main" function.
 6. To uninstall binaries, use `go clean -i mp/...`
+7. gRPC naming conventions [link](https://developers.google.com/protocol-buffers/docs/style)
 
 ## TODO:
 

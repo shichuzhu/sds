@@ -21,7 +21,7 @@ func configConnection(conn *grpc.ClientConn, index int32) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	text, err := client.ServerConfig(ctx, &pb.ConfigInfo{LogLevel: 1, VMIndex: index})
+	text, err := client.ServerConfig(ctx, &pb.ConfigInfo{LogLevel: 1, VmIndex: index})
 	if err != nil {
 		fmt.Println("Failure in config server at ")
 	}
@@ -37,7 +37,7 @@ func actMembership(conn *grpc.ClientConn, args []string) error {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	text, err := client.ActMembership(ctx, &pb.StringArray{Msgs: args})
+	text, err := client.ActMembership(ctx, &pb.StringArray{Mesgs: args})
 	if err != nil {
 		fmt.Println(err)
 	} else {
