@@ -28,6 +28,7 @@ type MembershipListType struct {
 }
 
 func (ml *MembershipListType) insert(index int, memberType MemberType) {
+	log.Println("Member Added: ", memberType.addr)
 	s := &ml.members
 	*s = append(*s, MemberType{})
 	copy((*s)[index+1:], (*s)[index:])
@@ -36,6 +37,7 @@ func (ml *MembershipListType) insert(index int, memberType MemberType) {
 }
 
 func (ml *MembershipListType) delete(index int) {
+	log.Println("Member Rmved: ", ml.members[index].addr)
 	s := &ml.members
 	copy((*s)[index:], (*s)[index+1:])
 	*s = (*s)[:len(*s)-1]

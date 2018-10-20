@@ -40,6 +40,7 @@ func ContactIntroducer(introAddr string) {
 }
 
 func ReportFailure(addr string) {
+	log.Println("Failure DETECTED: ", addr)
 	if member, exist := MembershipList.lookupID(addr); exist {
 		message, _ := proto.Marshal(
 			&pb.UDPMessage{MessageType: "DetectorMessage",
@@ -58,7 +59,7 @@ func ReportFailure(addr string) {
 func senderService() error {
 	for {
 		memsToPing := MembershipList.getPingTargets(NodeNumberToPing)
-		log.Printf("memsToPing %s\n", memsToPing)
+		//log.Printf("memsToPing %s\n", memsToPing)
 		for i, addr := range memsToPing {
 			ackWaitEntries[i] = AckWaitEntry{addr: addr}
 		}
