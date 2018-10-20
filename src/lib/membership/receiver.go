@@ -37,7 +37,7 @@ func HandlePingMessage(m pb.DetectorMessage) {
 	UdpMess := pb.UDPMessage{MessageType: "DetectorMessage", Dm: &ackMess}
 	mess, _ := proto.Marshal(&UdpMess)
 	// We design to send UDP message
-	UdpSend(addr, mess, 2)
+	UdpSend(addr, mess, 1)
 }
 
 func HandleAckMessage(m pb.DetectorMessage) {
@@ -102,7 +102,7 @@ func HandleNewJoinMessage(m pb.DetectorMessage) {
 	UdpMess := pb.UDPMessage{MessageType: "FullMembershipList", Dm: &ackMess, Fm: &fm}
 	mess, _ := proto.Marshal(&UdpMess)
 
-	UdpSend(addr, mess, 4)
+	UdpSend(addr, mess, 1)
 
 	ackMess = pb.DetectorMessage{Header: "Join", Addr: addr, SessNum: 0, Ttl: 0}
 	UdpMess = pb.UDPMessage{MessageType: "DetectorMessage", Dm: &ackMess}
@@ -110,7 +110,7 @@ func HandleNewJoinMessage(m pb.DetectorMessage) {
 
 	targets := MembershipList.getRandomTargets(3)
 	for _, target := range targets {
-		UdpSend(target, mess, 2)
+		UdpSend(target, mess, 1)
 	}
 
 }

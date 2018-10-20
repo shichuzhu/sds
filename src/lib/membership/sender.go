@@ -35,7 +35,7 @@ func ContactIntroducer(introAddr string) {
 			Fm: nil})
 	ErrHandler(err)
 
-	UdpSend(introAddr, message, 3)
+	UdpSend(introAddr, message, 1)
 	StartFailureDetector()
 }
 
@@ -47,7 +47,7 @@ func ReportFailure(addr string) {
 				Dm: &pb.DetectorMessage{Header: "Delete", Addr: addr, SessNum: int32(member.sessionCounter), Ttl: 0},
 				Fm: nil})
 		for _, addr := range MembershipList.getRandomTargets(len(MembershipList.members)) {
-			UdpSend(addr, message, 2)
+			UdpSend(addr, message, 1)
 		}
 		MembershipList.deleteID(addr, int(^uint(0)>>1))
 	}
@@ -63,7 +63,7 @@ func senderService() error {
 		for i, addr := range memsToPing {
 			ackWaitEntries[i] = AckWaitEntry{addr: addr}
 		}
-		for i := 0; i < MultiSendNumber; i++ { // Send 3 times.
+		for i := 0; i < MultiSendNumber; i++ { // Send multiple times.
 			for _, addr := range memsToPing {
 				message, _ := proto.Marshal(
 					&pb.UDPMessage{MessageType: "DetectorMessage",

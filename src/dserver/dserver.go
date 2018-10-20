@@ -35,7 +35,7 @@ func (s *serviceServer) ServerConfig(ctx context.Context, info *pb.ConfigInfo) (
 		logLevel = info.LogLevel
 	}
 
-	vmIndex = info.VMIndex
+	vmIndex = info.VmIndex
 	//lg = new(cl.LogMessage)
 	lg.Init(vmIndex, 1)
 
@@ -65,9 +65,9 @@ func (s *serviceServer) ReturnMatches(theCmd *pb.StringMessage, stream pb.Server
 	return nil
 }
 
-func (s *serviceServer) CloseServer(_ context.Context, closeMessage *pb.CloseMessage) (*pb.StringMessage, error) {
+func (s *serviceServer) CloseServer(_ context.Context, closeMessage *pb.IntMessage) (*pb.StringMessage, error) {
 	var message string
-	if closeType := closeMessage.GetCloseType(); closeType == 0 {
+	if closeType := closeMessage.GetMesg(); closeType == 0 {
 		log.Fatalln("Fatal: Simulating fatal failure of node")
 	} else {
 		fmt.Println("Server Closed by Client.")
