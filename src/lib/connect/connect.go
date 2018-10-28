@@ -1,4 +1,4 @@
-package Connect_Pack
+package connect
 
 import (
 	"encoding/json"
