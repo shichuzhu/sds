@@ -1,9 +1,8 @@
-package connect
+package main
 
 import (
 	"encoding/json"
 	"errors"
-	pa "fa18cs425mp/src/lib/parseargs"
 	"fmt"
 	"google.golang.org/grpc"
 	"io/ioutil"
@@ -34,23 +33,12 @@ func loadConfig() {
 }
 
 func Connect() ([]*grpc.ClientConn, error) {
-	loadConfig()
 	opts = append(opts, grpc.WithInsecure())
 	opts = append(opts, grpc.WithTimeout(time.Second*3))
 
 	var ret []*grpc.ClientConn
 
-	set := pa.RegisterNodeArgs(nil)
-	if !pa.ParseArgs(set, "") {
-		log.Panicln("Fail to parse Node")
-	}
-	if pa.ServerIds == nil {
-		for i := 0; i < len(config.Addrs); i++ {
-			pa.ServerIds = append(pa.ServerIds, i)
-		}
-	}
-
-	for _, i := range pa.ServerIds {
+	for _, i := range TargetNodes {
 		conn, err := helper(config.Addrs[i].IP, config.Addrs[i].Port)
 		if err != nil {
 			continue

@@ -1,7 +1,6 @@
 package main
 
 import (
-	co "fa18cs425mp/src/lib/connect"
 	pb "fa18cs425mp/src/protobuf"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -27,7 +26,7 @@ func closeConnection(conn *grpc.ClientConn, wg *sync.WaitGroup) error {
 }
 
 func dclose() {
-	conn, err := co.Connect()
+	conn, err := Connect()
 	println(len(conn))
 	if err != nil {
 		log.Println("All the server is closed")

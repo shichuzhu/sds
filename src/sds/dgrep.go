@@ -1,7 +1,6 @@
 package main
 
 import (
-	co "fa18cs425mp/src/lib/connect"
 	pb "fa18cs425mp/src/protobuf"
 	"fmt"
 	"golang.org/x/net/context"
@@ -12,13 +11,6 @@ import (
 	"sync"
 	"time"
 )
-
-type Configuration struct {
-	Addrs []struct {
-		IP   string
-		Port int
-	}
-}
 
 type Dispatcher struct {
 	writerLock sync.Mutex
@@ -58,7 +50,7 @@ func (s *Dispatcher) dispatch(conn *grpc.ClientConn) {
 
 func dgrep() {
 	dispatcher := Dispatcher{}
-	connLists, err := co.Connect()
+	connLists, err := Connect()
 	if err != nil {
 		log.Println("No Server can be connected")
 		os.Exit(1)

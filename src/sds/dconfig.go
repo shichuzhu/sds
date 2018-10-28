@@ -1,8 +1,6 @@
 package main
 
 import (
-	co "fa18cs425mp/src/lib/connect"
-	ag "fa18cs425mp/src/lib/parseargs"
 	pb "fa18cs425mp/src/protobuf"
 	"fmt"
 	"golang.org/x/net/context"
@@ -45,24 +43,24 @@ func actMembership(conn *grpc.ClientConn, args []string, wg *sync.WaitGroup) err
 }
 
 func dconfig() {
-	conn, err := co.Connect()
+	conn, err := Connect()
 	if err != nil {
 		fmt.Println("All the server is closed")
 		os.Exit(0)
 	}
 
 	var wg sync.WaitGroup
-	if len(ag.ArgsCopy) == 0 {
+	if len(ArgsCopy) == 0 {
 		for i := 0; i < len(conn); i++ {
 			wg.Add(1)
 			configConnection(conn[i], int32(i), &wg)
 		}
 	} else {
-		text := ag.ArgsCopy[0]
+		text := ArgsCopy[0]
 		if text == "join" || text == "ls" || text == "leave" {
 			for i := 0; i < len(conn); i++ {
 				wg.Add(1)
-				actMembership(conn[i], ag.ArgsCopy[:], &wg)
+				actMembership(conn[i], ArgsCopy[:], &wg)
 			}
 		}
 	}

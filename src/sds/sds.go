@@ -4,23 +4,44 @@ Package sds stands for simple distributed system. It provides all client operati
 package main
 
 import (
+	"errors"
 	"fmt"
 	"os"
 )
 
-var ArgsCopy []string
+var (
+	ArgsCopy    []string
+	TargetNodes []int
+	Action      string
+)
 
-func main() {
+func parseOverallParas() error {
 	if len(os.Args) <= 1 {
-		fmt.Println("No action specified by 'sds' command.")
-		return
+		return errors.New("No action specified by 'sds' command.")
 	}
 	ArgsCopy = make([]string, len(os.Args))
 	copy(ArgsCopy, os.Args)
-	action := ArgsCopy[1]
-	ArgsCopy = ArgsCopy[1:]
 
-	switch action {
+	flagSet := ParseArgs(nil, &ArgsCopy)
+	if flagSet == nil {
+		return errors.New("Fail to parse Overall parameters")
+	}
+
+	Action = ArgsCopy[0]
+	loadConfig()
+	if TargetNodes == nil {
+		for i := 0; i < len(config.Addrs); i++ {
+			TargetNodes = append(TargetNodes, i)
+		}
+	}
+	return nil
+}
+
+func main() {
+	if err := parseOverallParas(); err != nil {
+		panic(err)
+	}
+	switch Action {
 	case "sdfs":
 		fmt.Println("sdfs invoked")
 	case "grep":
@@ -33,7 +54,7 @@ func main() {
 		fmt.Println("config invoked")
 		dconfig()
 	default:
-		fmt.Println("Invalid action ", action)
+		fmt.Println("Invalid action ", Action)
 	}
 	return
 }
