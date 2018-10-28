@@ -28,6 +28,7 @@ func parseOverallParas() error {
 	}
 
 	Action = ArgsCopy[0]
+	TargetNodes = *flagSet.Lookup("n").Value.(*ArrayFlags)
 	loadConfig()
 	if TargetNodes == nil {
 		for i := 0; i < len(config.Addrs); i++ {
@@ -53,6 +54,9 @@ func main() {
 	case "config":
 		fmt.Println("config invoked")
 		dconfig()
+	case "swim":
+		fmt.Println("swim membership invoked")
+		dswim()
 	default:
 		fmt.Println("Invalid action ", Action)
 	}

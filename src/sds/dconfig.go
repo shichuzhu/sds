@@ -50,18 +50,29 @@ func dconfig() {
 	}
 
 	var wg sync.WaitGroup
-	if len(ArgsCopy) == 0 {
+	for i := 0; i < len(conn); i++ {
+		wg.Add(1)
+		configConnection(conn[i], int32(i), &wg)
+	}
+	wg.Wait()
+}
+
+func dswim() {
+	conn, err := Connect()
+	if err != nil {
+		fmt.Println("All the server is closed")
+		os.Exit(0)
+	}
+
+	var wg sync.WaitGroup
+
+	ArgsCopy = ArgsCopy[1:]
+	text := ArgsCopy[0]
+	if text == "join" || text == "ls" || text == "leave" {
 		for i := 0; i < len(conn); i++ {
 			wg.Add(1)
-			configConnection(conn[i], int32(i), &wg)
-		}
-	} else {
-		text := ArgsCopy[0]
-		if text == "join" || text == "ls" || text == "leave" {
-			for i := 0; i < len(conn); i++ {
-				wg.Add(1)
-				actMembership(conn[i], ArgsCopy[:], &wg)
-			}
+			println("ccaca")
+			go actMembership(conn[i], ArgsCopy[:], &wg)
 		}
 	}
 }

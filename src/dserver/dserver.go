@@ -3,8 +3,6 @@ package main
 import (
 	"bufio"
 	cl "fa18cs425mp/src/lib/loggenerator"
-	ml "fa18cs425mp/src/lib/membership"
-	ms "fa18cs425mp/src/lib/membership"
 	pb "fa18cs425mp/src/protobuf"
 	"flag"
 	"fmt"
@@ -20,10 +18,11 @@ var (
 	port     = flag.Int("port", 10000, "The server port")
 	dataPath = flag.String("dataPath", "data", "The path to files to be grep")
 	//configFile = flag.String("configFile", "remotecfg.json", "The json file containing IP/port info of VMs")
-	closeSigs chan int
-	logLevel  int32
-	vmIndex   int32
-	lg        = cl.LogMessage{}
+	closeSigs  chan int
+	logLevel   int32
+	vmIndex    int32
+	lg         = cl.LogMessage{}
+	grpcServer *grpc.Server
 )
 
 type serviceServer struct {
@@ -78,23 +77,31 @@ func (s *serviceServer) CloseServer(_ context.Context, closeMessage *pb.IntMessa
 	return &pb.StringMessage{Mesg: message}, nil
 }
 
-func main() {
-	flag.Parse()
-	closeSigs = make(chan int)
-
-	ml.StartFailureDetector() //Start failure detector here
-
+func SetupGrpc() {
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%d", *port))
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
-	grpcServer := grpc.NewServer()
+	grpcServer = grpc.NewServer()
 	pb.RegisterServerServicesServer(grpcServer, &serviceServer{})
 	go grpcServer.Serve(lis)
-	ms.InitInstance()
-	ms.StartFailureDetector()
+}
+
+func CleanUp() {
+	grpcServer.GracefulStop()
+	lg.Close()
+}
+
+func main() {
+	closeSigs = make(chan int)
+
+	RegisterFdFlags() // Also call the flag.Parse() inside
+	SetupLogger()
+
+	SetupGrpc()
+	SpawnFailureDetector()
+
 	if <-closeSigs == 1 {
-		grpcServer.GracefulStop()
-		lg.Close()
+		CleanUp()
 	}
 }
