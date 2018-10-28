@@ -11,9 +11,7 @@ import (
 	"time"
 )
 
-var wg sync.WaitGroup
-
-func closeConnection(conn *grpc.ClientConn) error {
+func closeConnection(conn *grpc.ClientConn, wg *sync.WaitGroup) error {
 	defer wg.Done()
 	defer conn.Close() // optional
 	client := pb.NewServerServicesClient(conn)
@@ -28,16 +26,18 @@ func closeConnection(conn *grpc.ClientConn) error {
 	return nil
 }
 
-func main() {
+func dclose() {
 	conn, err := co.Connect()
+	println(len(conn))
 	if err != nil {
 		log.Println("All the server is closed")
 		os.Exit(1)
 	}
 
+	var wg sync.WaitGroup
 	for i := 0; i < len(conn); i++ {
 		wg.Add(1)
-		go closeConnection(conn[i])
+		go closeConnection(conn[i], &wg)
 	}
 	wg.Wait()
 }

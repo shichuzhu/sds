@@ -12,9 +12,7 @@ import (
 	"time"
 )
 
-var wg sync.WaitGroup
-
-func configConnection(conn *grpc.ClientConn, index int32) error {
+func configConnection(conn *grpc.ClientConn, index int32, wg *sync.WaitGroup) error {
 	defer wg.Done()
 	defer conn.Close()
 	client := pb.NewServerServicesClient(conn)
@@ -30,7 +28,7 @@ func configConnection(conn *grpc.ClientConn, index int32) error {
 	return nil
 }
 
-func actMembership(conn *grpc.ClientConn, args []string) error {
+func actMembership(conn *grpc.ClientConn, args []string, wg *sync.WaitGroup) error {
 	defer wg.Done()
 	defer conn.Close()
 	client := pb.NewServerServicesClient(conn)
@@ -46,23 +44,25 @@ func actMembership(conn *grpc.ClientConn, args []string) error {
 	return nil
 }
 
-func main() {
+func dconfig() {
 	conn, err := co.Connect()
 	if err != nil {
 		fmt.Println("All the server is closed")
 		os.Exit(0)
 	}
+
+	var wg sync.WaitGroup
 	if len(ag.ArgsCopy) == 0 {
 		for i := 0; i < len(conn); i++ {
 			wg.Add(1)
-			configConnection(conn[i], int32(i))
+			configConnection(conn[i], int32(i), &wg)
 		}
 	} else {
 		text := ag.ArgsCopy[0]
 		if text == "join" || text == "ls" || text == "leave" {
 			for i := 0; i < len(conn); i++ {
 				wg.Add(1)
-				actMembership(conn[i], ag.ArgsCopy[:])
+				actMembership(conn[i], ag.ArgsCopy[:], &wg)
 			}
 		}
 	}

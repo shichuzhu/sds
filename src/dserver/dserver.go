@@ -43,8 +43,8 @@ func (s *serviceServer) ServerConfig(ctx context.Context, info *pb.ConfigInfo) (
 	return &pb.StringMessage{Mesg: message}, nil
 }
 
-func (s *serviceServer) ReturnMatches(theCmd *pb.StringMessage, stream pb.ServerServices_ReturnMatchesServer) error {
-	cmd := exec.Command("/bin/sh", "-c", theCmd.GetMesg())
+func (s *serviceServer) ReturnMatches(theCmd *pb.StringArray, stream pb.ServerServices_ReturnMatchesServer) error {
+	cmd := exec.Command("/bin/sh", "-c", strings.Join(theCmd.GetMesgs(), " "))
 	cmd.Dir = *dataPath
 	log.Printf("From \"%s\" executing: %s", cmd.Dir, strings.Join(cmd.Args, " "))
 	stdout, err := cmd.StdoutPipe()

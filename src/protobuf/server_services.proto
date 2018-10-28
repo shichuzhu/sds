@@ -5,7 +5,7 @@ package serverservices;
 service ServerServices {
     rpc ServerConfig (ConfigInfo) returns (StringMessage) {
     }
-    rpc ReturnMatches (StringMessage) returns (stream StringMessage) {
+    rpc ReturnMatches (StringArray) returns (stream StringMessage) {
     }
     rpc CloseServer (IntMessage) returns (StringMessage) {
     }
