@@ -1,0 +1,8 @@
+---
+- hosts: cs425
+  remote_user: szhu28
+  tasks:
+   - name: compile the source code
+     command: echo "hello, world"
+     command: rm log.err
+
