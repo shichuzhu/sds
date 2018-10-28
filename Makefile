@@ -9,11 +9,12 @@ clean:
 build:
 	vmsetup/deploy For Each 'go install fa18cs425mp/...'
 
-run: build
+run:
 	vmsetup/deploy Spawn Each '-port 10000 -dataPath "data/mp2"'
 	sleep 2
 # The first blank before -c to let flag render it as non-flag argument
 	sds grep -n 1,2,3 -c ailure '*'
+	sds grep -c 123456 '../mp1/*'
 
 localsetup:
 #	go get -u google.golang.org/grpc

@@ -71,8 +71,8 @@ func dswim() {
 	if text == "join" || text == "ls" || text == "leave" {
 		for i := 0; i < len(conn); i++ {
 			wg.Add(1)
-			println("ccaca")
 			go actMembership(conn[i], ArgsCopy[:], &wg)
 		}
 	}
+	wg.Wait()
 }

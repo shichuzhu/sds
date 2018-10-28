@@ -12,7 +12,8 @@ import (
 )
 
 func SetupLogger() {
-	f, err := os.OpenFile("data/mp2/output.log", os.O_RDWR|os.O_CREATE, 0666)
+	//f, err := os.OpenFile("data/mp2/output.log", os.O_RDWR|os.O_CREATE, 0666)
+	f, err := os.Create(*logFile)
 	if err != nil {
 		log.Fatalf("error opening file: %v", err)
 	}
