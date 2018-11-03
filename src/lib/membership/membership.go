@@ -5,7 +5,10 @@ import (
 	"log"
 	"math/rand"
 	"net"
+	"os"
+	"regexp"
 	"strconv"
+	"time"
 )
 
 var MyAddr string
@@ -17,14 +20,16 @@ var ThreadsOn bool
 type MemberType struct {
 	addr           string
 	sessionCounter int
+	nodeId         int
 }
 
 type MembershipListType struct {
 	members []MemberType
 	// Potential global config about MembershipList
-	myIP    net.IP
-	myIndex int
-	MyPort  int
+	myIP     net.IP
+	myIndex  int
+	MyPort   int
+	MyNodeId int
 }
 
 func (ml *MembershipListType) insert(index int, memberType MemberType) {
@@ -44,7 +49,7 @@ func (ml *MembershipListType) delete(index int) {
 	ml.updateMyIndex()
 }
 
-func (ml *MembershipListType) insertNewID(id string, sessionID int) {
+func (ml *MembershipListType) insertNewID(id string, sessionID int, nodeId int) {
 	for i, member := range MembershipList.members {
 		if id == member.addr {
 			if sessionID > member.sessionCounter {
@@ -52,11 +57,12 @@ func (ml *MembershipListType) insertNewID(id string, sessionID int) {
 			}
 			return
 		} else if id < member.addr {
-			ml.insert(i, MemberType{addr: id, sessionCounter: sessionID})
+			ml.insert(i, MemberType{addr: id, sessionCounter: sessionID, nodeId: nodeId})
 			return
 		}
 	}
-	ml.insert(len(MembershipList.members), MemberType{addr: id, sessionCounter: sessionID})
+	ml.insert(len(MembershipList.members),
+		MemberType{addr: id, sessionCounter: sessionID, nodeId: nodeId})
 }
 
 func (ml *MembershipListType) lookupID(id string) (MemberType, bool) {
@@ -116,13 +122,14 @@ func InitInstance() {
 		}
 		ackWaitEntries = make([]AckWaitEntry, NodeNumberToPing)
 		MembershipList.myIP = GetOutboundIP()
+		MembershipList.MyNodeId = GetNodeIdFromHostname()
 		MyAddr = MembershipList.myIP.String() + ":" + strconv.Itoa(MembershipList.MyPort)
-		AddSelfToList(0)
+		AddSelfToList(0, MembershipList.MyNodeId)
 	}
 }
 
-func AddSelfToList(sessionCounter int) {
-	MembershipList.insertNewID(MyAddr, sessionCounter)
+func AddSelfToList(sessionCounter int, nodeId int) {
+	MembershipList.insertNewID(MyAddr, sessionCounter, nodeId)
 }
 
 func StartFailureDetector() {
@@ -142,25 +149,46 @@ func GetOutboundIP() net.IP {
 		log.Fatal(err)
 	}
 	defer conn.Close()
-
 	localAddr := conn.LocalAddr().(*net.UDPAddr)
-
 	return localAddr.IP
 }
 
-func GetListElement() ([]string, []int) {
+func GetNodeIdFromHostname() int {
+	if hName, err := os.Hostname(); err != nil {
+		ErrHandler(err)
+		return 0
+	} else {
+		re := regexp.MustCompile("fa18-cs425-g44-(\\d{2})\\.cs\\.illinois\\.edu")
+		matches := re.FindStringSubmatch(hName)
+		if len(matches) >= 2 {
+			strId := matches[1]
+			if id, err := strconv.Atoi(strId); err != nil {
+				//ErrHandler(err)
+			} else {
+				return id
+			}
+		}
+	}
+	fmt.Println("Local debug purpose only")
+	rand.Seed(time.Now().UTC().UnixNano())
+	return rand.Int()%RingSize + 1
+}
+
+func GetListElement() ([]string, []int, []int) {
 	ret1 := make([]string, len(MembershipList.members))
 	ret2 := make([]int, len(MembershipList.members))
+	ret3 := make([]int, len(MembershipList.members))
 	for i := 0; i < len(MembershipList.members); i++ {
 		ret1[i] = MembershipList.members[i].addr
 		ret2[i] = MembershipList.members[i].sessionCounter
+		ret3[i] = MembershipList.members[i].nodeId
 	}
 
-	return ret1, ret2
+	return ret1, ret2, ret3
 }
 
 func DumpTable() {
-	table, _ := GetListElement()
+	table, _, _ := GetListElement()
 	for i, t := range table {
 		fmt.Printf("Index %d is Process: %s\n", i, t)
 	}
@@ -168,9 +196,9 @@ func DumpTable() {
 
 func FormDumpTable() string {
 	var response string
-	table, _ := GetListElement()
+	table, _, tid := GetListElement()
 	for i, t := range table {
-		response += fmt.Sprintf("Index %d is Process: %s\n", i, t)
+		response += fmt.Sprintf("NodeId %d is Process: %s\n", tid[i], t)
 	}
 	return response
 }

@@ -31,8 +31,9 @@ func ContactIntroducer(introAddr string) {
 	InitXmtr()
 	message, err := proto.Marshal(
 		&pb.UDPMessage{MessageType: "DetectorMessage",
-			Dm: &pb.DetectorMessage{Header: "NewJoin", Addr: MyAddr, SessNum: 0, Ttl: 0},
-			Fm: nil})
+			Dm: &pb.DetectorMessage{
+				Header: "NewJoin", Addr: MyAddr, SessNum: 0, Ttl: 0,
+				NodeId: int32(MembershipList.MyNodeId)}})
 	ErrHandler(err)
 
 	UdpSend(introAddr, message, 1)
@@ -44,8 +45,7 @@ func ReportFailure(addr string) {
 	if member, exist := MembershipList.lookupID(addr); exist {
 		message, _ := proto.Marshal(
 			&pb.UDPMessage{MessageType: "DetectorMessage",
-				Dm: &pb.DetectorMessage{Header: "Delete", Addr: addr, SessNum: int32(member.sessionCounter), Ttl: 0},
-				Fm: nil})
+				Dm: &pb.DetectorMessage{Header: "Delete", Addr: addr, SessNum: int32(member.sessionCounter), Ttl: 0}})
 		for _, addr := range MembershipList.getRandomTargets(len(MembershipList.members)) {
 			UdpSend(addr, message, 1)
 		}
@@ -67,8 +67,7 @@ func senderService() error {
 			for _, addr := range memsToPing {
 				message, _ := proto.Marshal(
 					&pb.UDPMessage{MessageType: "DetectorMessage",
-						Dm: &pb.DetectorMessage{Header: "Ping", Addr: MyAddr, SessNum: 0, Ttl: 0},
-						Fm: nil})
+						Dm: &pb.DetectorMessage{Header: "Ping", Addr: MyAddr}})
 				UdpSendSingle(addr, message)
 			}
 		}

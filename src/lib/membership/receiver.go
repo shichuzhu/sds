@@ -33,7 +33,7 @@ func HandlePingMessage(m pb.DetectorMessage) {
 	//create sending message from proto buffer
 	// marshal the message to byte string
 	addr := m.GetAddr()
-	ackMess := pb.DetectorMessage{Header: "Ack", Addr: MyAddr, SessNum: 0, Ttl: 0}
+	ackMess := pb.DetectorMessage{Header: "Ack", Addr: MyAddr}
 	UdpMess := pb.UDPMessage{MessageType: "DetectorMessage", Dm: &ackMess}
 	mess, _ := proto.Marshal(&UdpMess)
 	// We design to send UDP message
@@ -49,16 +49,19 @@ func HandleAckMessage(m pb.DetectorMessage) {
 			ackWaitEntries[i].ack()
 		}
 	}
-
 }
 
 func HandleJoinMessage(m pb.DetectorMessage) {
 	addr := m.GetAddr()
 	session := m.GetSessNum()
-	MembershipList.insertNewID(addr, int(session))
+	nodeId := m.GetNodeId()
+	MembershipList.insertNewID(addr, int(session), int(nodeId))
 
 	TTL := m.GetTtl()
-	forwardMess := pb.DetectorMessage{Header: "Join", Addr: addr, SessNum: session, Ttl: TTL + 1}
+	forwardMess := pb.DetectorMessage{
+		Header: "Join", Addr: addr, SessNum: session, Ttl: TTL + 1,
+		NodeId: nodeId,
+	}
 	UdpMess := pb.UDPMessage{MessageType: "DetectorMessage", Dm: &forwardMess}
 
 	mess, _ := proto.Marshal(&UdpMess)
@@ -93,18 +96,21 @@ func HandleDeleteMessage(m pb.DetectorMessage) {
 	}
 }
 
+/*
+Introducer initialize the join message and gossip out
+*/
 func HandleNewJoinMessage(m pb.DetectorMessage) {
 	addr := m.GetAddr()
-	MembershipList.insertNewID(addr, 0) // TODO: change sessionID
+	nodeId := m.GetNodeId()
+	MembershipList.insertNewID(addr, 0, int(nodeId)) // TODO: change sessionID
 	fm := GetMemberListMessage()
-	ackMess := pb.DetectorMessage{}
 
-	UdpMess := pb.UDPMessage{MessageType: "FullMembershipList", Dm: &ackMess, Fm: &fm}
+	UdpMess := pb.UDPMessage{MessageType: "FullMembershipList", Fm: &fm}
 	mess, _ := proto.Marshal(&UdpMess)
 
 	UdpSend(addr, mess, 1)
 
-	ackMess = pb.DetectorMessage{Header: "Join", Addr: addr, SessNum: 0, Ttl: 0}
+	ackMess := pb.DetectorMessage{Header: "Join", Addr: addr, SessNum: 0, Ttl: 0}
 	UdpMess = pb.UDPMessage{MessageType: "DetectorMessage", Dm: &ackMess}
 	mess, _ = proto.Marshal(&UdpMess)
 
@@ -112,7 +118,6 @@ func HandleNewJoinMessage(m pb.DetectorMessage) {
 	for _, target := range targets {
 		UdpSend(target, mess, 1)
 	}
-
 }
 
 func ErrHandler(err error) {
@@ -144,7 +149,7 @@ func InitialNewList(L pb.FullMembershipList) {
 	ML := L.GetList()
 
 	for _, member := range ML {
-		MembershipList.insertNewID(member.GetAddr(), int(member.GetSessNum()))
+		MembershipList.insertNewID(member.GetAddr(), int(member.GetSessNum()), int(member.GetNodeId()))
 	}
 }
 
@@ -152,9 +157,9 @@ func GetMemberListMessage() pb.FullMembershipList {
 	List := make([]*pb.Member, len(MembershipList.members))
 	for i := 0; i < len(MembershipList.members); i++ {
 		List[i] = &pb.Member{Addr: MembershipList.members[i].addr,
-			SessNum: int32(MembershipList.members[i].sessionCounter)}
+			SessNum: int32(MembershipList.members[i].sessionCounter),
+			NodeId:  int32(MembershipList.members[i].nodeId)}
 	}
 	fm := pb.FullMembershipList{List: List}
-
 	return fm
 }

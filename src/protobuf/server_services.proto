@@ -37,11 +37,13 @@ message DetectorMessage {
     string addr = 2;
     int32 sess_num = 3;
     int32 ttl = 4;
+    int32 node_id = 5;
 }
 
 message Member {
     string addr = 1;
     int32 sess_num = 2;
+    int32 node_id = 3;
 }
 
 message FullMembershipList {

@@ -1,4 +1,6 @@
-all: deploy build run
+all: runlocal
+
+#all: deploy build run
 
 deploy:
 	vmsetup/deploy Copy src @go/src/fa18cs425mp/
@@ -25,11 +27,11 @@ buildlocal:
 	go install fa18cs425mp/...
 
 runlocal: buildlocal
-	dserver -port 10000 -dataPath "data/mp1" &
-	dserver -port 10001 -dataPath "data/mp1" &
-	dserver -port 10002 -dataPath "data/mp1" &
-	sleep 1
-	sds grep -c 123456 '*'
+	dserver -port 10000 -pfd 11000 -dataPath "data/mp1" &
+	dserver -port 10001 -pfd 11001 -dataPath "data/mp1" &
+	dserver -port 10002 -pfd 11002 -dataPath "data/mp1" &
+	#sleep 1
+	#sds grep -c 123456 '*'
 
 test:
 	test/mp1/runtest

@@ -1,5 +1,5 @@
 package sdfs
 
-func main() {
+func foo() {
 
 }
