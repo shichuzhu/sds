@@ -11,6 +11,7 @@ service ServerServices {
     }
     rpc ActMembership (StringArray) returns (StringMessage) {
     }
+    // SDFS related functions
 }
 message ConfigInfo {
     int32 log_level = 1;
@@ -52,3 +53,5 @@ message UDPMessage {
     DetectorMessage dm = 2;
     FullMembershipList fm = 3;
 }
+
+// SDFS related messages
