@@ -12,6 +12,8 @@ service ServerServices {
     rpc ActMembership (StringArray) returns (StringMessage) {
     }
     // SDFS related functions
+    rpc TransferFiles (stream FileTransMessage) returns (IntMessage) {
+    }
 }
 message ConfigInfo {
     int32 log_level = 1;
@@ -57,3 +59,13 @@ message UDPMessage {
 }
 
 // SDFS related messages
+message FileTransMessage {
+    message Config {
+        string remote_filepath = 1;
+        int32 rep_number = 2;
+    }
+    oneof file_trans_message {
+        bytes chunk = 1;
+        Config config = 2;
+    }
+}
