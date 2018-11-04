@@ -21,7 +21,7 @@ func memTableIntial() {
 	fileMap = make(map[string]*list.List)
 }
 
-func getFileVersion(fileName string) int {
+func GetFileVersion(fileName string) int {
 	list, present := fileMap[fileName]
 	if !present {
 		return 0
@@ -30,7 +30,7 @@ func getFileVersion(fileName string) int {
 	return list.Front().Value.(int)
 }
 
-func insertFileVersion(fileName string, version int) int {
+func InsertFileVersion(fileName string, version int) int {
 	_, present := fileMap[fileName]
 	if !present {
 		fileMap[fileName] = list.New()

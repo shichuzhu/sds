@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fa18cs425mp/src/lib/sdfs"
 	pb "fa18cs425mp/src/protobuf"
 	"fmt"
 	"io"
@@ -12,9 +13,11 @@ func (s *serviceServer) TransferFiles(stream pb.ServerServices_TransferFilesServ
 	fileName := message.GetConfig().RemoteFilepath
 
 	/*Here we need to get version nmmber to create new file)
-	TODO: Version number create
+	TODO: Change the protocol buffer naming system to adapt the change
 	*/
-	file, err := os.Create(fileName)
+	version := sdfs.GetFileVersion(fileName)
+	localName := sdfs.SdfsToLfs(fileName, version+1)
+	file, err := os.Create(localName)
 	for {
 		message, err = stream.Recv()
 		if err == io.EOF {
@@ -25,7 +28,7 @@ func (s *serviceServer) TransferFiles(stream pb.ServerServices_TransferFilesServ
 			file.Write(content)
 		}
 	}
-
+	sdfs.InsertFileVersion(fileName, version+1)
 	ret := pb.IntMessage{Mesg: 1}
 	err = stream.SendAndClose(&ret)
 

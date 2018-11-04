@@ -25,7 +25,7 @@ func (s *serviceServer) SdfsCall(_ context.Context, argsMsgs *pb.StringArray) (*
 			sdfs.SdfsDelete(args[1])
 		}
 	case "ls":
-		sdfs.SdfsLs()
+		sdfs.SdfsLs(args[2])
 	case "store":
 		sdfs.SdfsStore()
 	default:

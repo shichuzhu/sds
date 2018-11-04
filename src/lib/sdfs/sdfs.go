@@ -16,7 +16,7 @@ func SdfsPut(localFileName, sdfsFilename string) {
 	/*
 		TODO: May Node ID to IP and port number
 	*/
-	var ip string //IP of NODEID
+	ip := nodeId.Addr()
 	FileTransferToNode(ip, localFileName)
 	conn, _ := connect(ip)
 	client := pb.NewServerServicesClient(conn)
