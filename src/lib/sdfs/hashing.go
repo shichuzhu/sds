@@ -5,10 +5,34 @@ import (
 	"hash/fnv"
 	"log"
 	"strconv"
-	"strings"
 )
 
 var RUNES = []rune("01/V")
+
+type Builder struct {
+	arr []rune
+	loc int
+}
+
+func (b *Builder) Grow(n int) {
+	b.arr = make([]rune, n)
+	b.loc = 0
+}
+
+func (b *Builder) WriteRune(r rune) {
+	b.arr[b.loc] = r
+	b.loc++
+}
+
+func (b *Builder) WriteString(s string) {
+	for _, c := range s {
+		b.WriteRune(c)
+	}
+}
+
+func (b *Builder) String() string {
+	return string(b.arr)
+}
 
 func HashToKey(str string) int {
 	h := fnv.New32()
@@ -22,7 +46,7 @@ func FindNodeId(key int, successor int) ms.MemberType {
 
 func SdfsToLfs(s string, v int) string {
 	n := len(s)
-	lfn := strings.Builder{}
+	lfn := &Builder{}
 	lfn.Grow(2*n + 2)
 	for _, c := range s {
 		if c != '/' {
@@ -39,7 +63,7 @@ func SdfsToLfs(s string, v int) string {
 
 func LfsToSdfs(localFilename string) (string, int) {
 	s := []rune(localFilename)
-	sfn := strings.Builder{}
+	sfn := &Builder{}
 	sfn.Grow(len(s) / 2)
 	for i := 0; i < len(s); {
 		if s[i] == RUNES[0] {
