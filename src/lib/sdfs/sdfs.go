@@ -10,6 +10,8 @@ import (
 	"time"
 )
 
+const REPLICA = 4
+
 func SdfsPut(localFileName, sdfsFilename string) {
 	key := HashToKey(sdfsFilename)
 	nodeId := FindNodeId(key, 0)
