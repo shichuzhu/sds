@@ -7,6 +7,7 @@ import (
 	"net"
 	"os"
 	"regexp"
+	"sort"
 	"strconv"
 	"time"
 )
@@ -39,6 +40,7 @@ func (ml *MembershipListType) insert(index int, memberType MemberType) {
 	copy((*s)[index+1:], (*s)[index:])
 	(*s)[index] = memberType
 	ml.updateMyIndex()
+	ml.sort()
 }
 
 func (ml *MembershipListType) delete(index int) {
@@ -47,6 +49,7 @@ func (ml *MembershipListType) delete(index int) {
 	copy((*s)[index:], (*s)[index+1:])
 	*s = (*s)[:len(*s)-1]
 	ml.updateMyIndex()
+	ml.sort()
 }
 
 func (ml *MembershipListType) insertNewID(id string, sessionID int, nodeId int) {
@@ -73,6 +76,33 @@ func (ml *MembershipListType) lookupID(id string) (MemberType, bool) {
 	}
 	return MemberType{}, false
 }
+
+func (ml *MembershipListType) sort() {
+	sort.Slice(MembershipList.members, func(i, j int) bool {
+		return MembershipList.members[i].nodeId < MembershipList.members[j].nodeId
+	})
+}
+
+func (ml *MembershipListType) searchIndexById(key int) int {
+	index := 0
+	for i, member := range MembershipList.members {
+		if member.nodeId >= key {
+			index = i
+			break
+		}
+	}
+	return index
+}
+
+/*
+API to SDFS
+*/
+func NextNofId(n, key int) int {
+	index := MembershipList.searchIndexById(key)
+	index = (index + n) % len(MembershipList.members)
+	return MembershipList.members[index].nodeId
+}
+
 func (ml *MembershipListType) deleteID(id string, sessionID int) {
 	for i := range MembershipList.members {
 		member := &MembershipList.members[i]
