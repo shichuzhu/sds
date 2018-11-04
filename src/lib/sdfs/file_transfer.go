@@ -8,12 +8,11 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"os"
-	"strconv"
 	"time"
 )
 
-func FileTransferToNode(ip string, port int, filePath string) {
-	conn, _ := connect(ip, port)
+func FileTransferToNode(ip string, filePath string) {
+	conn, _ := connect(ip)
 	client := pb.NewServerServicesClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -51,14 +50,13 @@ func FileTransferToNode(ip string, port int, filePath string) {
 
 }
 
-func connect(IP string, port int) (*grpc.ClientConn, error) {
+func connect(IP string) (*grpc.ClientConn, error) {
 	var opts []grpc.DialOption
 	opts = append(opts, grpc.WithInsecure())
 	opts = append(opts, grpc.WithTimeout(time.Second*3))
-	strAddr := IP + ":" + strconv.Itoa(port)
-	conn, err := grpc.Dial(strAddr, opts...)
+	conn, err := grpc.Dial(IP, opts...)
 	if err != nil {
-		message := fmt.Sprintf("CAN NOT CONNECT TO IP %v", strAddr)
+		message := fmt.Sprintf("CAN NOT CONNECT TO IP %v", IP)
 		log.Println(message)
 		return nil, errors.New(message)
 	}

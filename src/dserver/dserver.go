@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	cl "fa18cs425mp/src/lib/loggenerator"
+	"fa18cs425mp/src/lib/sdfs"
 	pb "fa18cs425mp/src/protobuf"
 	"flag"
 	"fmt"

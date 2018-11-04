@@ -1,8 +1,16 @@
 package sdfs
 
-import "container/list"
+import (
+	"container/list"
+	"fmt"
+)
 
 var fileMap map[string]*list.List
+
+type FileVersionPair struct {
+	name  string
+	index int
+}
 
 func memTableIntial() {
 	fileMap = make(map[string]*list.List)
@@ -38,12 +46,11 @@ func insertFileVersion(fileName string, version int) int {
 	return 1
 }
 
-func listAllFile(key int) list.List {
+func listAllFile() list.List {
 	ret := list.New()
-	for k := range fileMap {
-		if HashToKey(k) == key {
-			ret.PushBack(k)
-		}
+	for key := range fileMap {
+		str := fmt.Sprintf(key+" %d", fileMap[key].Len())
+		ret.PushBack(str)
 	}
 
 	return *ret
