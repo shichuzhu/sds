@@ -45,6 +45,7 @@ func main() {
 	switch Action {
 	case "sdfs":
 		fmt.Println("sdfs invoked")
+		dsdfs()
 	case "grep":
 		fmt.Println("grep invoked")
 		dgrep()

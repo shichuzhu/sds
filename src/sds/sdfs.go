@@ -9,6 +9,7 @@ import (
 
 func dsdfs() {
 	// Connect to local gRPC server, always.
+	ArgsCopy = ArgsCopy[1:]
 	if conn, err := ConnectLocal(); err != nil {
 		log.Panic(err)
 	} else {
