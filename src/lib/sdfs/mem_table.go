@@ -17,7 +17,7 @@ type FileVersionPair struct {
 	index int
 }
 
-func memTableIntial() {
+func MemTableIntial() {
 	fileMap = make(map[string]*list.List)
 }
 

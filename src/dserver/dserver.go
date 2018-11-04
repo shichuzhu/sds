@@ -106,6 +106,7 @@ func main() {
 		membership.MembershipList.MyNodeId = *nodeId
 	}
 	SpawnFailureDetector()
+	InitialSdfs()
 
 	if <-closeSigs == 1 {
 		CleanUp()
