@@ -3,6 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
+	"fa18cs425mp/src/lib/membership"
 	"fmt"
 	"google.golang.org/grpc"
 	"io/ioutil"
@@ -61,4 +62,10 @@ func helper(IP string, port int) (*grpc.ClientConn, error) {
 		return nil, errors.New(message)
 	}
 	return conn, nil
+}
+
+func ConnectLocal() (*grpc.ClientConn, error) {
+	localIp := membership.GetOutboundIP().String()
+	samplePort := config.Addrs[0].Port
+	return helper(localIp, samplePort)
 }
