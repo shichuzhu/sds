@@ -3,7 +3,7 @@ package main
 import (
 	"bufio"
 	cl "fa18cs425mp/src/lib/loggenerator"
-	"fa18cs425mp/src/lib/sdfs"
+	"fa18cs425mp/src/lib/membership"
 	pb "fa18cs425mp/src/protobuf"
 	"flag"
 	"fmt"
@@ -19,6 +19,7 @@ var (
 	port     = flag.Int("port", 10000, "The server port")
 	dataPath = flag.String("dataPath", "data", "The path to files to be grep")
 	logFile  = flag.String("log", "data/mp2/output.log", "Filepath to store the log")
+	nodeId   = flag.Int("nodeid", -1, "The nodeid if not randomized")
 	//configFile = flag.String("configFile", "remotecfg.json", "The json file containing IP/port info of VMs")
 	closeSigs  chan int
 	logLevel   int32
@@ -101,6 +102,9 @@ func main() {
 	SetupLogger()
 
 	SetupGrpc()
+	if *nodeId != -1 {
+		membership.MembershipList.MyNodeId = *nodeId
+	}
 	SpawnFailureDetector()
 
 	if <-closeSigs == 1 {

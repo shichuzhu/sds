@@ -13,7 +13,9 @@ func (s *serviceServer) PutFile(ctx context.Context, putMessage *pb.StringMessag
 
 	fileKey := sdfs.HashToKey(sdfsName)
 	for i := 1; i <= 3; i++ {
-		ip := sdfs.FindNodeId(fileKey, i).Addr()
+		tmp := sdfs.FindNodeId(fileKey, i)
+		ip := tmp.Addr()
+		//ip := sdfs.FindNodeId(fileKey, i).Addr()
 		sdfs.FileTransferToNode(ip, localName)
 	}
 

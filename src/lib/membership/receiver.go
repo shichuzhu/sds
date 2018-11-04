@@ -110,7 +110,7 @@ func HandleNewJoinMessage(m pb.DetectorMessage) {
 
 	UdpSend(addr, mess, 1)
 
-	ackMess := pb.DetectorMessage{Header: "Join", Addr: addr, SessNum: 0, Ttl: 0}
+	ackMess := pb.DetectorMessage{Header: "Join", Addr: addr, SessNum: 0, Ttl: 0, NodeId: nodeId}
 	UdpMess = pb.UDPMessage{MessageType: "DetectorMessage", Dm: &ackMess}
 	mess, _ = proto.Marshal(&UdpMess)
 

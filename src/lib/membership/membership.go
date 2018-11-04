@@ -164,7 +164,9 @@ func InitInstance() {
 		}
 		ackWaitEntries = make([]AckWaitEntry, NodeNumberToPing)
 		MembershipList.myIP = GetOutboundIP()
-		MembershipList.MyNodeId = GetNodeIdFromHostname()
+		if MembershipList.MyNodeId == -1 {
+			MembershipList.MyNodeId = GetNodeIdFromHostname()
+		}
 		MyAddr = MembershipList.myIP.String() + ":" + strconv.Itoa(MembershipList.MyPort)
 		AddSelfToList(0, MembershipList.MyNodeId)
 	}
