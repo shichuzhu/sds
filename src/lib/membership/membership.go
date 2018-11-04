@@ -33,6 +33,18 @@ type MembershipListType struct {
 	MyNodeId int
 }
 
+func (s *MemberType) SessionCounter() int {
+	return s.sessionCounter
+}
+
+func (s *MemberType) NodeId() int {
+	return s.nodeId
+}
+
+func (s *MemberType) Addr() string {
+	return s.addr
+}
+
 func (ml *MembershipListType) insert(index int, memberType MemberType) {
 	log.Println("Member Added: ", memberType.addr)
 	s := &ml.members
@@ -97,10 +109,10 @@ func (ml *MembershipListType) searchIndexById(key int) int {
 /*
 API to SDFS
 */
-func NextNofId(n, key int) int {
+func NextNofId(n, key int) MemberType {
 	index := MembershipList.searchIndexById(key)
 	index = (index + n) % len(MembershipList.members)
-	return MembershipList.members[index].nodeId
+	return MembershipList.members[index]
 }
 
 func (ml *MembershipListType) deleteID(id string, sessionID int) {
