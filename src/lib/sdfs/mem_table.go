@@ -7,6 +7,11 @@ import (
 
 var fileMap map[string]*list.List
 
+type nameVersionPair struct {
+	fileName string
+	versions int
+}
+
 type FileVersionPair struct {
 	name  string
 	index int
@@ -58,4 +63,16 @@ func listAllFile() list.List {
 
 func deleteFileFromTable(fileName string) {
 	delete(fileMap, fileName)
+}
+
+func getFileFoeKey(key int) []FileVersionPair {
+	ret := []FileVersionPair{}
+	for k := range fileMap {
+		if HashToKey(k) == key {
+			pair := FileVersionPair{k, fileMap[k].Front().Value.(int)}
+			ret = append(ret, pair)
+		}
+	}
+
+	return ret
 }
