@@ -1,5 +1,1 @@
 package sdfs
-
-func foo() {
-
-}
