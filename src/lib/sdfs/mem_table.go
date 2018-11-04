@@ -9,6 +9,8 @@ func memTableIntial() {
 }
 
 func getFileVersion(fileName string) int {
-	list, ok := fileMap[fileName]
+	list, present := fileMap[fileName]
+	if !present {
 
+	}
 }
