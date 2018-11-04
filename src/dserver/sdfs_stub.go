@@ -34,3 +34,7 @@ func (s *serviceServer) SdfsCall(_ context.Context, argsMsgs *pb.StringArray) (*
 	}
 	return &pb.StringArray{Mesgs: response}, nil
 }
+
+func InitialSdfs() {
+	sdfs.MemTableIntial()
+}
