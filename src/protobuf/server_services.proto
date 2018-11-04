@@ -58,6 +58,7 @@ message UDPMessage {
     FullMembershipList fm = 3;
 }
 
+
 // SDFS related messages
 message FileTransMessage {
     message Config {
