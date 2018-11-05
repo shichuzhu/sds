@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"os"
+	"path/filepath"
 	"time"
 )
 
@@ -15,7 +16,19 @@ func PullKeyFromNode(key, nodeId int) error {
 	return nil
 }
 
-func FileTransferToNode(ip string, filePath string) error {
+/*
+Transfer file to remote server.
+
+localFilePath: local file path. If empty, deriving from sdfsFilePath using latest version
+sdfsFilePath: sdfs file path. If empty, deriving from localFilePath
+ip: remote server gRPC address
+*/
+func FileTransferToNode(ip, localFilePath, sdfsFilePath string) error {
+	if sdfsFilePath == "" {
+		sdfsFilePath, _ = LfsToSdfs(filepath.Base(localFilePath))
+	} else if localFilePath == "" {
+		localFilePath = SdfsToLfs(sdfsFilePath, GetFileVersion(sdfsFilePath))
+	}
 	conn, _ := connect(ip)
 	client := pb.NewServerServicesClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -25,15 +38,15 @@ func FileTransferToNode(ip string, filePath string) error {
 		fmt.Println("Fail to transfer file to client")
 		return err
 	}
-	file, err := os.Open(SdfsRootPath + filePath)
+	file, err := os.Open(localFilePath)
 	if err != nil {
-		fmt.Println("Can not find file path" + filePath)
+		fmt.Println("Can not find file path:", localFilePath)
 		return err
 	}
 
 	message := &pb.FileTransMessage{
 		Message: &pb.FileTransMessage_Config{
-			Config: &pb.FileCfg{RepNumber: 0, RemoteFilepath: filePath}}}
+			Config: &pb.FileCfg{RepNumber: 0, RemoteFilepath: sdfsFilePath}}}
 
 	fileClient.Send(message)
 

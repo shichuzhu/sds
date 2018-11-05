@@ -2,6 +2,7 @@ package sdfs
 
 import (
 	ms "fa18cs425mp/src/lib/membership"
+	"fmt"
 	"hash/fnv"
 	"log"
 	"strconv"
@@ -48,6 +49,7 @@ func SdfsToLfs(s string, v int) string {
 	n := len(s)
 	lfn := &Builder{}
 	lfn.Grow(2*n + 2)
+	lfn.WriteString(fmt.Sprintf("%02d", ms.MembershipList.MyNodeId))
 	for _, c := range s {
 		if c != '/' {
 			lfn.WriteRune(RUNES[0])
@@ -63,6 +65,7 @@ func SdfsToLfs(s string, v int) string {
 
 func LfsToSdfs(localFilename string) (string, int) {
 	s := []rune(localFilename)
+	s = s[2:]
 	sfn := &Builder{}
 	sfn.Grow(len(s) / 2)
 	for i := 0; i < len(s); {

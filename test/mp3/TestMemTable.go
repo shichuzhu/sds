@@ -7,7 +7,7 @@ import (
 
 var fileMap map[string]int
 
-func main() {
+func fakemain2() {
 	MemTableIntial()
 	version := GetFileVersion("hello.txt")
 	fmt.Println(version)

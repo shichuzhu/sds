@@ -13,7 +13,6 @@ import (
 	"log"
 	"net"
 	"os/exec"
-	"strconv"
 	"strings"
 )
 
@@ -108,7 +107,7 @@ func main() {
 		membership.MembershipList.MyNodeId = *nodeId
 	}
 	SpawnFailureDetector()
-	sdfs.SdfsRootPath = *sdfsPath + strconv.Itoa(membership.MembershipList.MyNodeId)
+	sdfs.SdfsRootPath = *sdfsPath
 	InitialSdfs()
 
 	if <-closeSigs == 1 {

@@ -10,6 +10,9 @@ import (
 
 func (s *serviceServer) TransferFiles(stream pb.ServerServices_TransferFilesServer) error {
 	message, err := stream.Recv()
+	if err != nil {
+		return err
+	}
 	fileName := message.GetConfig().RemoteFilepath
 
 	/*Here we need to get version nmmber to create new file)
@@ -22,6 +25,8 @@ func (s *serviceServer) TransferFiles(stream pb.ServerServices_TransferFilesServ
 		message, err = stream.Recv()
 		if err == io.EOF {
 			break
+		} else if err != nil {
+			return err
 		}
 		content := message.GetChunk()
 		if content != nil {
