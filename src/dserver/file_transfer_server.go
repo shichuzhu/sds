@@ -38,8 +38,9 @@ func (s *serviceServer) TransferFiles(stream pb.ServerServices_TransferFilesServ
 	err = stream.SendAndClose(&ret)
 
 	if err != nil {
-		log.Println("Received file " + fileName)
+		log.Println("Error when receiving file ", fileName, " : ", err)
+		return err
 	}
-
+	log.Println("Received file " + fileName)
 	return nil
 }

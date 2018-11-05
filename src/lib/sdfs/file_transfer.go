@@ -2,6 +2,7 @@ package sdfs
 
 import (
 	"errors"
+	"fa18cs425mp/src/lib/membership"
 	pb "fa18cs425mp/src/protobuf"
 	"fmt"
 	"golang.org/x/net/context"
@@ -12,8 +13,37 @@ import (
 	"time"
 )
 
+func IdToIp(nodeId int) string {
+	tmp := membership.NextNofId(0, nodeId)
+	return tmp.Addr()
+}
+
 func PullKeyFromNode(key, nodeId int) error {
-	return nil
+	return nil // TODO: finish this function
+}
+
+func FileTransferToNodeByIp(ip, localFilePath, sdfsFilePath string) error {
+	if conn, err := connect(ip); err != nil {
+		log.Println("Fail to connect to node ", ip)
+		return err
+	} else {
+		defer conn.Close()
+		log.Println("Connect to node ", ip)
+		client := pb.NewServerServicesClient(conn)
+		return FileTransferToNode(&client, localFilePath, sdfsFilePath)
+	}
+}
+
+func GetClientOfNodeId(nodeId int) (*pb.ServerServicesClient, error) {
+	ip := IdToIp(nodeId)
+	if conn, err := connect(ip); err != nil {
+		log.Println("Fail to connect to node ", nodeId)
+		return nil, err
+	} else {
+		log.Println("Connect to node ", nodeId)
+		client := pb.NewServerServicesClient(conn)
+		return &client, nil
+	}
 }
 
 /*
@@ -23,19 +53,16 @@ localFilePath: local file path. If empty, deriving from sdfsFilePath using lates
 sdfsFilePath: sdfs file path. If empty, deriving from localFilePath
 ip: remote server gRPC address
 */
-func FileTransferToNode(ip, localFilePath, sdfsFilePath string) error {
+func FileTransferToNode(client *pb.ServerServicesClient, localFilePath, sdfsFilePath string) error {
 	if sdfsFilePath == "" {
 		sdfsFilePath, _ = LfsToSdfs(filepath.Base(localFilePath))
 	} else if localFilePath == "" {
 		localFilePath = SdfsToLfs(sdfsFilePath, GetFileVersion(sdfsFilePath))
 	}
-	conn, _ := connect(ip)
-	client := pb.NewServerServicesClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	fileClient, err := client.TransferFiles(ctx)
+	fileClient, err := (*client).TransferFiles(ctx)
 	if err != nil {
-		log.Println("Fail to transfer file to: ", ip)
 		return err
 	}
 	file, err := os.Open(localFilePath)
@@ -66,7 +93,7 @@ func FileTransferToNode(ip, localFilePath, sdfsFilePath string) error {
 		return err
 	}
 	if recv.GetMesg() == 1 {
-		log.Printf("File '%s' Transferred to '%s' as '%s'", localFilePath, ip, sdfsFilePath)
+		log.Printf("File '%s' Transferred as '%s'", localFilePath, sdfsFilePath)
 	}
 	return nil
 }
