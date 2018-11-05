@@ -1,6 +1,7 @@
 package membership
 
 import (
+	"fa18cs425mp/src/lib/sdfs"
 	"fmt"
 	"log"
 	"math/rand"
@@ -60,6 +61,7 @@ func (s *MemberType) Addr() string {
 }
 
 func (ml *MembershipListType) insert(index int, memberType MemberType) {
+	// TODO: Sdfs re-replicate
 	log.Println("Member Added: ", memberType.addr)
 	s := &ml.members
 	*s = append(*s, MemberType{})
@@ -70,6 +72,10 @@ func (ml *MembershipListType) insert(index int, memberType MemberType) {
 }
 
 func (ml *MembershipListType) delete(index int) {
+	// Sdfs re-replicate
+	failId := ml.members[index].nodeId
+	sdfs.ReReplicateUponFailure(failId)
+
 	log.Println("Member Rmved: ", ml.members[index].addr)
 	s := &ml.members
 	copy((*s)[index:], (*s)[index+1:])
