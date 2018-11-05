@@ -65,6 +65,8 @@ func helper(IP string, port int) (*grpc.ClientConn, error) {
 }
 
 func ConnectLocal() (*grpc.ClientConn, error) {
+	opts = append(opts, grpc.WithInsecure())
+	opts = append(opts, grpc.WithTimeout(time.Second*3))
 	localIp := membership.GetOutboundIP().String()
 	samplePort := config.Addrs[0].Port
 	return helper(localIp, samplePort)
