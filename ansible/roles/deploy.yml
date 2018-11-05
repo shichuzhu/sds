@@ -11,3 +11,5 @@
    - name: compile the source code
      command: go install fa18cs425mp/...
 
+   - name: Create sdfs folder
+     file: path=data/mp3 state=directory

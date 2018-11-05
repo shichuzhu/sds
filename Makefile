@@ -18,11 +18,24 @@ build:
 	vmsetup/deploy For Each 'go install fa18cs425mp/...'
 
 run:
-	vmsetup/deploy Spawn Each '-port 10000 -dataPath "data/mp2"'
+	ssh szhu28@fa18-cs425-g44-01.cs.illinois.edu 'shopt -s huponexit ; dserver -nodeid 1 -port 10000 -dataPath "data/mp2" > log.out 2> log.err < /dev/null' &
+	ssh szhu28@fa18-cs425-g44-02.cs.illinois.edu 'shopt -s huponexit ; dserver -nodeid 2 -port 10000 -dataPath "data/mp2" > log.out 2> log.err < /dev/null' &
+	ssh szhu28@fa18-cs425-g44-03.cs.illinois.edu 'shopt -s huponexit ; dserver -nodeid 3 -port 10000 -dataPath "data/mp2" > log.out 2> log.err < /dev/null' &
+	ssh szhu28@fa18-cs425-g44-04.cs.illinois.edu 'shopt -s huponexit ; dserver -nodeid 4 -port 10000 -dataPath "data/mp2" > log.out 2> log.err < /dev/null' &
+	ssh szhu28@fa18-cs425-g44-05.cs.illinois.edu 'shopt -s huponexit ; dserver -nodeid 5 -port 10000 -dataPath "data/mp2" > log.out 2> log.err < /dev/null' &
+	ssh szhu28@fa18-cs425-g44-06.cs.illinois.edu 'shopt -s huponexit ; dserver -nodeid 6 -port 10000 -dataPath "data/mp2" > log.out 2> log.err < /dev/null' &
+	ssh szhu28@fa18-cs425-g44-07.cs.illinois.edu 'shopt -s huponexit ; dserver -nodeid 7 -port 10000 -dataPath "data/mp2" > log.out 2> log.err < /dev/null' &
+	ssh szhu28@fa18-cs425-g44-08.cs.illinois.edu 'shopt -s huponexit ; dserver -nodeid 8 -port 10000 -dataPath "data/mp2" > log.out 2> log.err < /dev/null' &
+	ssh szhu28@fa18-cs425-g44-09.cs.illinois.edu 'shopt -s huponexit ; dserver -nodeid 9 -port 10000 -dataPath "data/mp2" > log.out 2> log.err < /dev/null' &
+	ssh szhu28@fa18-cs425-g44-10.cs.illinois.edu 'shopt -s huponexit ; dserver -nodeid 10 -port 10000 -dataPath "data/mp2" > log.out 2> log.err < /dev/null' &
 	sleep 2
-# The first blank before -c to let flag render it as non-flag argument
-	sds grep -n 1,2,3 -c ailure '*'
+	#	sds grep -n 1,2,3 -c ailure '*'
 	sds grep -c 123456 '../mp1/*'
+# The first blank before -c to let flag render it as non-flag argument
+#	vmsetup/deploy Spawn Each '-port 10000 -dataPath "data/mp2"'
+
+join:
+	for i in $$(seq 0 8); do sds -n $$i swim join 172.22.156.148:11000 ; sleep 0.5 ; done
 
 localsetup:
 #	go get -u google.golang.org/grpc

@@ -43,7 +43,7 @@ func SdfsGet(sdfsFilename, localFilename string) {
 		fileMaster := FindNodeId(key, i)
 		ip := IdToIp(fileMaster)
 
-		ret := pullFile(sdfsFilename, ip, 1, &pb.PullFileInfo{IgnoreMemtable: true})
+		ret := pullFile(sdfsFilename, ip, 1, &pb.PullFileInfo{IgnoreMemtable: false})
 		if ret == nil {
 			log.Printf("Cannot find this file at {%d}th successor under name: %s",
 				i, sdfsFilename)
@@ -54,9 +54,11 @@ func SdfsGet(sdfsFilename, localFilename string) {
 		}
 	}
 
-	fileVersion := GetFileVersion(sdfsFilename)
+	fileVersion := GetFileVersion(sdfsFilename) // TODO: get from remote
 	currentLocalName := SdfsToLfs(sdfsFilename, fileVersion)
+	log.Println("cp", SdfsRootPath+currentLocalName, localFilename) // TODO
 	err := exec.Command("cp", SdfsRootPath+currentLocalName, localFilename).Run()
+	err = os.Remove(SdfsRootPath + currentLocalName)
 	if err != nil {
 		log.Println("Error in copy file")
 		return
