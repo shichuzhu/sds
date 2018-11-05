@@ -17,9 +17,12 @@ service ServerServices {
     // SDFS related functions
     rpc TransferFiles (stream FileTransMessage) returns (IntMessage) {
     }
-    rpc PutFile(StringMessage) returns(IntMessage){
+    rpc PullFiles (StringArray) returns (IntMessage) {
+    }
+    rpc PutFile (StringMessage) returns (IntMessage) {
     }
 }
+
 message ConfigInfo {
     int32 log_level = 1;
     int32 vm_index = 2;
@@ -62,7 +65,6 @@ message UDPMessage {
     DetectorMessage dm = 2;
     FullMembershipList fm = 3;
 }
-
 
 // SDFS related messages
 message FileTransMessage {

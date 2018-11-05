@@ -15,12 +15,12 @@ type Builder struct {
 }
 
 func (b *Builder) Grow(n int) {
-	b.arr = make([]rune, n)
+	b.arr = make([]rune, 0, n)
 	b.loc = 0
 }
 
 func (b *Builder) WriteRune(r rune) {
-	b.arr[b.loc] = r
+	b.arr = append(b.arr, r)
 	b.loc++
 }
 

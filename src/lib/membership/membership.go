@@ -115,6 +115,36 @@ func NextNofId(n, key int) MemberType {
 	return MembershipList.members[index]
 }
 
+func GetKeysOfId(nodeId int) []int {
+	ml := &MembershipList
+	index := ml.searchIndexById(nodeId)
+	retArr := make([]int, 0)
+	prevId := MembershipList.members[(index-1)%len(MembershipList.members)].nodeId
+	for key := index; key != prevId; {
+		retArr = append(retArr, key)
+		key = (key - 1) % RingSize
+	}
+	return retArr
+}
+
+func GetDistByKey(from, to int) int {
+	fromInd := MembershipList.searchIndexById(from)
+	toInd := MembershipList.searchIndexById(to)
+	if toInd < fromInd {
+		toInd += len(MembershipList.members)
+	}
+	return toInd - fromInd
+}
+
+func PrevKOfKey(k, key int) int {
+	if len(MembershipList.members) <= k {
+		return key
+	}
+	index := MembershipList.searchIndexById(key)
+	index = (index - k) % len(MembershipList.members)
+	return MembershipList.members[index].nodeId
+}
+
 func (ml *MembershipListType) deleteID(id string, sessionID int) {
 	for i := range MembershipList.members {
 		member := &MembershipList.members[i]
@@ -135,7 +165,6 @@ func (ml *MembershipListType) getRandomTargets(num int) []string {
 	for i, j := range rand.Perm(len(MembershipList.members))[:num] {
 		targets[i] = ml.members[j].addr
 	}
-
 	return targets
 }
 

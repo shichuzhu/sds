@@ -11,6 +11,10 @@ import (
 	"time"
 )
 
+func PullKeyFromNode(key, nodeId int) error {
+	return nil
+}
+
 func FileTransferToNode(ip string, filePath string) {
 	conn, _ := connect(ip)
 	client := pb.NewServerServicesClient(conn)
@@ -20,16 +24,13 @@ func FileTransferToNode(ip string, filePath string) {
 	file, err := os.Open(filePath)
 	if err != nil {
 		fmt.Println("Can not find file path" + filePath)
+		return
 	}
 
 	message := &pb.FileTransMessage{
 		FileTransMessage: &pb.FileTransMessage_Config_{
 			Config: &pb.FileTransMessage_Config{
-				RemoteFilepath: filePath,
-				RepNumber:      0,
-			},
-		},
-	}
+				RemoteFilepath: filePath, RepNumber: 0}}}
 	fileClient.Send(message)
 
 	buf := make([]byte, 1024)
@@ -47,7 +48,6 @@ func FileTransferToNode(ip string, filePath string) {
 	if recv.GetMesg() == 1 {
 		fmt.Println("File has been successfully transfer to ")
 	}
-
 }
 
 func connect(IP string) (*grpc.ClientConn, error) {

@@ -73,6 +73,5 @@ func getFileFoeKey(key int) []FileVersionPair {
 			ret = append(ret, pair)
 		}
 	}
-
 	return ret
 }
