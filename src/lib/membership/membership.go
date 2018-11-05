@@ -22,6 +22,7 @@ type MemberType struct {
 	addr           string
 	sessionCounter int
 	nodeId         int
+	grpcAddr       string
 }
 
 type MembershipListType struct {
@@ -42,7 +43,20 @@ func (s *MemberType) NodeId() int {
 }
 
 func (s *MemberType) Addr() string {
-	return s.addr
+	// TODO: naive version of TCP port = UDP port - 1000
+	if s.grpcAddr == "" {
+		str := s.addr
+		re := regexp.MustCompile("(.*):(\\d*)")
+		matches := re.FindStringSubmatch(str)
+		if len(matches) >= 3 {
+			if udpPort, err := strconv.Atoi(matches[2]); err != nil {
+				log.Panicln("Invalid port number")
+			} else {
+				return matches[1] + ":" + strconv.Itoa(udpPort-1000)
+			}
+		}
+	}
+	return s.grpcAddr
 }
 
 func (ml *MembershipListType) insert(index int, memberType MemberType) {

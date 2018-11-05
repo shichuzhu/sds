@@ -6,7 +6,7 @@ import (
 	"strconv"
 )
 
-func main() {
+func fakemain() {
 
 	if hName, err := os.Hostname(); err != nil {
 		return
