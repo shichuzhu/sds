@@ -25,7 +25,7 @@ func FileTransferToNode(ip string, filePath string) error {
 		fmt.Println("Fail to transfer file to client")
 		return err
 	}
-	file, err := os.Open(filePath)
+	file, err := os.Open(SdfsRootPath + filePath)
 	if err != nil {
 		fmt.Println("Can not find file path" + filePath)
 		return err

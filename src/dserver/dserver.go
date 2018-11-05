@@ -4,6 +4,7 @@ import (
 	"bufio"
 	cl "fa18cs425mp/src/lib/loggenerator"
 	"fa18cs425mp/src/lib/membership"
+	"fa18cs425mp/src/lib/sdfs"
 	pb "fa18cs425mp/src/protobuf"
 	"flag"
 	"fmt"
@@ -12,15 +13,16 @@ import (
 	"log"
 	"net"
 	"os/exec"
+	"strconv"
 	"strings"
 )
 
 var (
-	port     = flag.Int("port", 10000, "The server port")
-	dataPath = flag.String("dataPath", "data", "The path to files to be grep")
-	logFile  = flag.String("log", "data/mp2/output.log", "Filepath to store the log")
-	nodeId   = flag.Int("nodeid", -1, "The nodeid if not randomized")
-	//configFile = flag.String("configFile", "remotecfg.json", "The json file containing IP/port info of VMs")
+	port       = flag.Int("port", 10000, "The server port")
+	dataPath   = flag.String("dataPath", "data", "The path to files to be grep")
+	logFile    = flag.String("log", "data/mp2/output.log", "Filepath to store the log")
+	nodeId     = flag.Int("nodeid", -1, "The nodeid if not randomized")
+	sdfsPath   = flag.String("sdfsPath", "data/mp3/", "The path to sdfs files to be stored")
 	closeSigs  chan int
 	logLevel   int32
 	vmIndex    int32
@@ -106,6 +108,7 @@ func main() {
 		membership.MembershipList.MyNodeId = *nodeId
 	}
 	SpawnFailureDetector()
+	sdfs.SdfsRootPath = *sdfsPath + strconv.Itoa(membership.MembershipList.MyNodeId)
 	InitialSdfs()
 
 	if <-closeSigs == 1 {

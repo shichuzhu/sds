@@ -12,6 +12,8 @@ import (
 
 const REPLICA = 4
 
+var SdfsRootPath string
+
 func SdfsPut(localFileName, sdfsFilename string) {
 	key := HashToKey(sdfsFilename)
 	nodeId := FindNodeId(key, 0)

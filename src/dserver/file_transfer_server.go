@@ -17,7 +17,7 @@ func (s *serviceServer) TransferFiles(stream pb.ServerServices_TransferFilesServ
 	*/
 	version := sdfs.GetFileVersion(fileName)
 	localName := sdfs.SdfsToLfs(fileName, version+1)
-	file, err := os.Create(localName)
+	file, err := os.Create(sdfs.SdfsRootPath + localName)
 	for {
 		message, err = stream.Recv()
 		if err == io.EOF {
