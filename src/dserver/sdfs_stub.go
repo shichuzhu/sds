@@ -7,6 +7,7 @@ import (
 	pb "fa18cs425mp/src/protobuf"
 	"golang.org/x/net/context"
 	"log"
+	"os"
 	"strconv"
 )
 
@@ -31,7 +32,7 @@ func (s *serviceServer) SdfsCall(_ context.Context, argsMsgs *pb.StringArray) (*
 			sdfs.SdfsLs(args[1])
 		}
 	case "store":
-		sdfs.SdfsStore()
+		response = sdfs.SdfsStore()
 	case "get-versions":
 		if len(args) == 3 {
 			numVar, err := strconv.Atoi(args[2])
@@ -49,6 +50,8 @@ func (s *serviceServer) SdfsCall(_ context.Context, argsMsgs *pb.StringArray) (*
 
 func InitialSdfs() {
 	sdfs2fd.Communicate = make(chan int)
+	os.RemoveAll(sdfs.SdfsRootPath)
+	os.Mkdir(sdfs.SdfsRootPath, os.ModePerm)
 	sdfs.MemTableIntial()
 	go sdfs.ReReplicateHandler()
 }

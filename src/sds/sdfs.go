@@ -2,6 +2,7 @@ package main
 
 import (
 	pb "fa18cs425mp/src/protobuf"
+	"fmt"
 	"golang.org/x/net/context"
 	"log"
 	"time"
@@ -21,7 +22,7 @@ func dsdfs() {
 			log.Panic(err)
 		} else {
 			// Wait for result/ack.
-			log.Println(mesg)
+			fmt.Println(mesg.GetMesgs())
 		}
 	}
 }

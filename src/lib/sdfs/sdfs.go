@@ -72,11 +72,14 @@ func SdfsDelete(sdfsFilename string) {
 func SdfsLs(fileName string) {
 }
 
-func SdfsStore() {
+func SdfsStore() []string {
 	listOfFile := listAllFile()
+	retStr := make([]string, 0)
 	for e := listOfFile.Front(); e != nil; e = e.Next() {
-		log.Println(e.Value)
+		//log.Println(e.Value)
+		retStr = append(retStr, e.Value.(string))
 	}
+	return retStr
 }
 
 func connectPut(IP string) (*grpc.ClientConn, error) {
