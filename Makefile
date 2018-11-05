@@ -35,7 +35,7 @@ run:
 #	vmsetup/deploy Spawn Each '-port 10000 -dataPath "data/mp2"'
 
 join:
-	for i in $$(seq 0 8); do sds -n $$i swim join 172.22.156.148:11000 ; sleep 1 ; done
+	for i in $$(seq 0 8); do sds -n $$i swim join 172.22.156.148:11000 ; sleep 0.5 ; done
 
 localsetup:
 #	go get -u google.golang.org/grpc
