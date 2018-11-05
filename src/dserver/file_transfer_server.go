@@ -14,12 +14,11 @@ func (s *serviceServer) TransferFiles(stream pb.ServerServices_TransferFilesServ
 		return err
 	}
 	fileName := message.GetConfig().RemoteFilepath
-
-	/*Here we need to get version nmmber to create new file)
-	TODO: Change the protocol buffer naming system to adapt the change
-	*/
-	version := sdfs.GetFileVersion(fileName)
-	localName := sdfs.SdfsToLfs(fileName, version+1)
+	version := int(message.GetConfig().FileVersion)
+	if version == 0 {
+		version = sdfs.GetFileVersion(fileName) + 1
+	}
+	localName := sdfs.SdfsToLfs(fileName, version)
 	file, err := os.Create(sdfs.SdfsRootPath + localName)
 	for {
 		message, err = stream.Recv()
@@ -33,7 +32,7 @@ func (s *serviceServer) TransferFiles(stream pb.ServerServices_TransferFilesServ
 			file.Write(content)
 		}
 	}
-	sdfs.InsertFileVersion(fileName, version+1)
+	sdfs.InsertFileVersion(fileName, version)
 	ret := pb.IntMessage{Mesg: 1}
 	err = stream.SendAndClose(&ret)
 

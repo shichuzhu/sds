@@ -54,10 +54,12 @@ sdfsFilePath: sdfs file path. If empty, deriving from localFilePath
 ip: remote server gRPC address
 */
 func FileTransferToNode(client *pb.ServerServicesClient, localFilePath, sdfsFilePath string) error {
+	version := 0
 	if sdfsFilePath == "" {
-		sdfsFilePath, _ = LfsToSdfs(filepath.Base(localFilePath))
+		sdfsFilePath, version = LfsToSdfs(filepath.Base(localFilePath))
 	} else if localFilePath == "" {
-		localFilePath = SdfsToLfs(sdfsFilePath, GetFileVersion(sdfsFilePath))
+		version = GetFileVersion(sdfsFilePath)
+		localFilePath = SdfsToLfs(sdfsFilePath, version)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -73,7 +75,8 @@ func FileTransferToNode(client *pb.ServerServicesClient, localFilePath, sdfsFile
 
 	message := &pb.FileTransMessage{
 		Message: &pb.FileTransMessage_Config{
-			Config: &pb.FileCfg{RepNumber: 0, RemoteFilepath: sdfsFilePath}}}
+			Config: &pb.FileCfg{RepNumber: 0, FileVersion: int32(version),
+				RemoteFilepath: sdfsFilePath}}}
 
 	fileClient.Send(message)
 
