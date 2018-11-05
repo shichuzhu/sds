@@ -7,8 +7,13 @@ import (
 )
 
 func ReReplicateHandler() {
-	for failId := range sdfs2fd.Communicate {
-		ReReplicateUponFailure(failId)
+	for {
+		failId, more := <-sdfs2fd.Communicate
+		if more {
+			ReReplicateUponFailure(failId)
+		} else {
+			return
+		}
 	}
 }
 

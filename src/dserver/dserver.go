@@ -5,6 +5,7 @@ import (
 	cl "fa18cs425mp/src/lib/loggenerator"
 	"fa18cs425mp/src/lib/membership"
 	"fa18cs425mp/src/lib/sdfs"
+	"fa18cs425mp/src/lib/sdfs/sdfs2fd"
 	pb "fa18cs425mp/src/protobuf"
 	"flag"
 	"fmt"
@@ -111,7 +112,7 @@ func main() {
 
 	sdfs.SdfsRootPath = *sdfsPath
 	InitialSdfs()
-	//defer close(sdfs2fd.Communicate)
+	defer close(sdfs2fd.Communicate)
 
 	if <-closeSigs == 1 {
 		CleanUp()

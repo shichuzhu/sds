@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fa18cs425mp/src/lib/sdfs"
+	"fa18cs425mp/src/lib/sdfs/sdfs2fd"
 	pb "fa18cs425mp/src/protobuf"
 	"golang.org/x/net/context"
 	"log"
@@ -47,6 +48,7 @@ func (s *serviceServer) SdfsCall(_ context.Context, argsMsgs *pb.StringArray) (*
 }
 
 func InitialSdfs() {
+	sdfs2fd.Communicate = make(chan int)
 	sdfs.MemTableIntial()
-	sdfs.ReReplicateHandler()
+	go sdfs.ReReplicateHandler()
 }
