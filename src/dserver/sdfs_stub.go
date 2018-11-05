@@ -48,4 +48,5 @@ func (s *serviceServer) SdfsCall(_ context.Context, argsMsgs *pb.StringArray) (*
 
 func InitialSdfs() {
 	sdfs.MemTableIntial()
+	sdfs.ReReplicateHandler()
 }

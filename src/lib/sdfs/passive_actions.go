@@ -2,13 +2,20 @@ package sdfs
 
 import (
 	"fa18cs425mp/src/lib/membership"
+	"fa18cs425mp/src/lib/sdfs/sdfs2fd"
 	"log"
 )
+
+func ReReplicateHandler() {
+	for failId := range sdfs2fd.Communicate {
+		ReReplicateUponFailure(failId)
+	}
+}
 
 func ReReplicateUponFailure(failId int) {
 	fetchedKeys := GetFetchKeys(failId)
 	if len(fetchedKeys) > 0 {
-		go FetchKeys(fetchedKeys)
+		FetchKeys(fetchedKeys)
 	}
 }
 

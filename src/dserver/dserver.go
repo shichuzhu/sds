@@ -78,7 +78,6 @@ func (s *serviceServer) CloseServer(_ context.Context, closeMessage *pb.IntMessa
 		log.Println("Server Closed by Client.")
 		closeSigs <- 1
 		message = fmt.Sprintf("Server %v Successfully closed", vmIndex)
-
 	}
 	return &pb.StringMessage{Mesg: message}, nil
 }
@@ -112,6 +111,7 @@ func main() {
 
 	sdfs.SdfsRootPath = *sdfsPath
 	InitialSdfs()
+	//defer close(sdfs2fd.Communicate)
 
 	if <-closeSigs == 1 {
 		CleanUp()
