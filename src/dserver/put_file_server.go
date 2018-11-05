@@ -9,7 +9,7 @@ import (
 func (s *serviceServer) PutFile(ctx context.Context, putMessage *pb.StringMessage) (*pb.IntMessage, error) {
 	sdfsName := putMessage.Mesg
 	version := sdfs.GetFileVersion(sdfsName)
-	localName := sdfs.SdfsToLfs(sdfsName, version)
+	localName := sdfs.SdfsToLfs(sdfsName, version+1)
 
 	fileKey := sdfs.HashToKey(sdfsName)
 	for i := 1; i <= 3; i++ {

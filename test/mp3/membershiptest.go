@@ -1,8 +1,14 @@
 package main
 
-func main() {
+import (
+	"os"
+	"regexp"
+	"strconv"
+)
 
-	/*if hName, err := os.Hostname(); err != nil {
+func fakemain() {
+
+	if hName, err := os.Hostname(); err != nil {
 		return
 	} else {
 		re := regexp.MustCompile("fa18-cs425-g44-(\\d{2})\\.cs\\.illinois\\.edu")
@@ -12,6 +18,5 @@ func main() {
 		} else {
 			println(id)
 		}
-	}*/
-	testTransferFile("")
+	}
 }
