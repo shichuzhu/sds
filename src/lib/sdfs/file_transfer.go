@@ -35,12 +35,12 @@ func FileTransferToNode(ip, localFilePath, sdfsFilePath string) error {
 	defer cancel()
 	fileClient, err := client.TransferFiles(ctx)
 	if err != nil {
-		fmt.Println("Fail to transfer file to client")
+		log.Println("Fail to transfer file to: ", ip)
 		return err
 	}
 	file, err := os.Open(localFilePath)
 	if err != nil {
-		fmt.Println("Can not find file path:", localFilePath)
+		log.Println("Can not find local file path:", localFilePath)
 		return err
 	}
 
@@ -66,7 +66,7 @@ func FileTransferToNode(ip, localFilePath, sdfsFilePath string) error {
 		return err
 	}
 	if recv.GetMesg() == 1 {
-		fmt.Println("File has been successfully transfer to ")
+		log.Printf("File '%s' Transferred to '%s' as '%s'", localFilePath, ip, sdfsFilePath)
 	}
 	return nil
 }

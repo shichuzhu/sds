@@ -3,8 +3,8 @@ package main
 import (
 	"fa18cs425mp/src/lib/sdfs"
 	pb "fa18cs425mp/src/protobuf"
-	"fmt"
 	"io"
+	"log"
 	"os"
 )
 
@@ -38,7 +38,7 @@ func (s *serviceServer) TransferFiles(stream pb.ServerServices_TransferFilesServ
 	err = stream.SendAndClose(&ret)
 
 	if err != nil {
-		fmt.Println("This client has successfully receive file " + fileName)
+		log.Println("Received file " + fileName)
 	}
 
 	return nil

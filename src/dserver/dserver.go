@@ -19,7 +19,7 @@ import (
 var (
 	port       = flag.Int("port", 10000, "The server port")
 	dataPath   = flag.String("dataPath", "data", "The path to files to be grep")
-	logFile    = flag.String("log", "data/mp2/output.log", "Filepath to store the log")
+	logDir     = flag.String("log", "data/mp2", "Directory to store the log")
 	nodeId     = flag.Int("nodeid", -1, "The nodeid if not randomized")
 	sdfsPath   = flag.String("sdfsPath", "data/mp3/", "The path to sdfs files to be stored")
 	closeSigs  chan int
@@ -43,8 +43,6 @@ func (s *serviceServer) ServerConfig(ctx context.Context, info *pb.ConfigInfo) (
 	} else {
 		vmIndex = info.VmIndex
 	}
-	//lg = new(cl.LogMessage)
-	lg.Init(vmIndex, 1)
 
 	message := fmt.Sprintf("Config information receive successfully by Server %v", vmIndex)
 	return &pb.StringMessage{Mesg: message}, nil
@@ -77,7 +75,7 @@ func (s *serviceServer) CloseServer(_ context.Context, closeMessage *pb.IntMessa
 	if closeType := closeMessage.GetMesg(); closeType == 0 {
 		log.Fatalln("Fatal: Simulating fatal failure of node")
 	} else {
-		fmt.Println("Server Closed by Client.")
+		log.Println("Server Closed by Client.")
 		closeSigs <- 1
 		message = fmt.Sprintf("Server %v Successfully closed", vmIndex)
 
@@ -97,6 +95,7 @@ func SetupGrpc() {
 
 func CleanUp() {
 	grpcServer.GracefulStop()
+	log.Println("This is the last log before closing the log file.")
 	lg.Close()
 }
 
@@ -104,17 +103,16 @@ func main() {
 	closeSigs = make(chan int)
 
 	RegisterFdFlags() // Also call the flag.Parse() inside
-	SetupLogger()
-
 	SetupGrpc()
 	if *nodeId != -1 {
 		membership.MembershipList.MyNodeId = *nodeId
 	}
+	SetupLogger()
 	SpawnFailureDetector()
+
 	sdfs.SdfsRootPath = *sdfsPath
 	InitialSdfs()
 
-	log.Println("where do i go???????????")
 	if <-closeSigs == 1 {
 		CleanUp()
 	}

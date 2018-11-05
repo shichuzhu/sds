@@ -19,7 +19,7 @@ func SdfsPut(localFileName, sdfsFilename string) {
 	nodeId := FindNodeId(key, 0)
 	ip := nodeId.Addr()
 	if err := FileTransferToNode(ip, localFileName, sdfsFilename); err != nil {
-		fmt.Println("Initial transfer to master failed")
+		log.Println("Initial transfer to master failed")
 		return
 	}
 
@@ -29,11 +29,11 @@ func SdfsPut(localFileName, sdfsFilename string) {
 	defer cancel()
 	retMessage, err := client.PutFile(ctx, &pb.StringMessage{Mesg: sdfsFilename})
 	if err != nil {
-		fmt.Println("Failure during in putting file")
+		log.Println("Failure during in putting file")
 		return
 	}
 	if retMessage.Mesg == 1 {
-		fmt.Println("Successfully put file into replicas")
+		log.Println("Successfully put file into replicas")
 	}
 }
 func SdfsGet(sdfsFilename, localFilename string) {
@@ -46,7 +46,7 @@ func SdfsLs(fileName string) {
 func SdfsStore() {
 	listOfFile := listAllFile()
 	for e := listOfFile.Front(); e != nil; e = e.Next() {
-		fmt.Println(e.Value)
+		log.Println(e.Value)
 	}
 }
 

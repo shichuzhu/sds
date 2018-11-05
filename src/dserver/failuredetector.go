@@ -7,18 +7,11 @@ import (
 	"flag"
 	"fmt"
 	"golang.org/x/net/context"
-	"log"
-	"os"
 )
 
 func SetupLogger() {
-	//f, err := os.OpenFile("data/mp2/output.log", os.O_RDWR|os.O_CREATE, 0666)
-	f, err := os.Create(*logFile)
-	if err != nil {
-		log.Fatalf("error opening file: %v", err)
-	}
-	//defer f.Close()
-	log.SetOutput(f)
+	vmIndex = int32(ms.MembershipList.MyNodeId)
+	lg.Init(vmIndex, 1, *logDir)
 }
 
 func RegisterFdFlags() {
