@@ -19,7 +19,7 @@ var SdfsRootPath string
 func SdfsPut(localFileName, sdfsFilename string) {
 	key := HashToKey(sdfsFilename)
 	client, _ := GetClientOfNodeId(FindNodeId(key, 0))
-	if err := FileTransferToNode(client, localFileName, sdfsFilename); err != nil {
+	if err := FileTransferToNode(client, localFileName, sdfsFilename, false); err != nil {
 		log.Println("Initial transfer to master failed")
 		return
 	}
@@ -40,8 +40,8 @@ func SdfsGet(sdfsFilename, localFilename string) {
 	fileMaster := FindNodeId(key, 0)
 	ip := IdToIp(fileMaster)
 
-	ret := pullFile(sdfsFilename, ip, 1)
-	if ret == -1 {
+	ret := pullFile(sdfsFilename, ip, 1, &pb.PullFileInfo{IgnoreMemtable: true})
+	if ret == nil {
 		log.Println("Cannot find this file under name: " + sdfsFilename)
 		return
 	}
@@ -107,15 +107,16 @@ func SdfsGetVersions(sdfsFilename string, numVersions int, localfilename string)
 	fileMaster := FindNodeId(key, 0)
 	ip := IdToIp(fileMaster)
 
-	pullFile(sdfsFilename, ip, numVersions)
-	versions := GetFileVersion(sdfsFilename)
-	if versions == 0 {
-		log.Println("We didn't find file at file system")
+	retConfig := pullFile(sdfsFilename, ip, numVersions, &pb.PullFileInfo{IgnoreMemtable: true})
+	if retConfig == nil {
 		return
 	}
-
-	currVersions := GetFileVersion(sdfsFilename)
-	for i := currVersions; i != 0; i-- {
+	currVersions := int(retConfig.LatestVersion)
+	endVersion := currVersions - numVersions
+	if endVersion < 0 {
+		endVersion = 0
+	}
+	for i := currVersions; i != endVersion; i-- {
 		localFileName := SdfsToLfs(sdfsFilename, i)
 		localFile, err := os.Open(SdfsRootPath + localFileName)
 		if err != nil {

@@ -13,8 +13,9 @@ func (s *serviceServer) TransferFiles(stream pb.ServerServices_TransferFilesServ
 	if err != nil {
 		return err
 	}
-	fileName := message.GetConfig().RemoteFilepath
-	version := int(message.GetConfig().FileVersion)
+	config := message.GetConfig()
+	fileName := config.RemoteFilepath
+	version := int(config.FileVersion)
 	if version == 0 {
 		version = sdfs.GetFileVersion(fileName) + 1
 	}
@@ -32,7 +33,11 @@ func (s *serviceServer) TransferFiles(stream pb.ServerServices_TransferFilesServ
 			file.Write(content)
 		}
 	}
-	sdfs.InsertFileVersion(fileName, version)
+	if config.IgnoreMemtable {
+		log.Println("Dummy transfer, not updating MemTable!!!")
+	} else {
+		sdfs.InsertFileVersion(fileName, version)
+	}
 	ret := pb.IntMessage{Mesg: 1}
 	err = stream.SendAndClose(&ret)
 

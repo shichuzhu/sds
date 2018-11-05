@@ -17,11 +17,11 @@ service ServerServices {
     // SDFS related functions
     rpc TransferFiles (stream FileTransMessage) returns (IntMessage) {
     }
-    rpc PullFiles (PullFileInfo) returns (IntMessage) {
+    rpc PullFiles (PullFileInfo) returns (PullFileInfo) {
     }
     rpc PutFile (StringMessage) returns (IntMessage) {
     }
-    rpc DeleteFile (StringMessage) returns (IntMessage){
+    rpc DeleteFile (StringMessage) returns (IntMessage) {
     }
 }
 
@@ -73,6 +73,7 @@ message FileCfg {
     string remote_filepath = 1;
     int32 rep_number = 2;
     int32 file_version = 3;
+    bool ignore_memtable = 4;
 }
 
 message FileTransMessage {
@@ -87,4 +88,8 @@ message PullFileInfo {
     string file_name = 1;
     int32 num_of_file = 2;
     int32 myID = 3;
+    // input config
+    bool ignore_memtable = 4;
+    // returned values
+    int32 latest_version = 9;
 }

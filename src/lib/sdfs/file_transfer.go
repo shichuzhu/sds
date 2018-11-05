@@ -22,7 +22,7 @@ func PullKeyFromNode(key, nodeId int) error {
 	return nil // TODO: finish this function
 }
 
-func FileTransferToNodeByIp(ip, localFilePath, sdfsFilePath string) error {
+func FileTransferToNodeByIp(ip, localFilePath, sdfsFilePath string, igMT bool) error {
 	if conn, err := connect(ip); err != nil {
 		log.Println("Fail to connect to node ", ip)
 		return err
@@ -30,7 +30,7 @@ func FileTransferToNodeByIp(ip, localFilePath, sdfsFilePath string) error {
 		defer conn.Close()
 		log.Println("Connect to node ", ip)
 		client := pb.NewServerServicesClient(conn)
-		return FileTransferToNode(&client, localFilePath, sdfsFilePath)
+		return FileTransferToNode(&client, localFilePath, sdfsFilePath, igMT)
 	}
 }
 
@@ -53,7 +53,7 @@ localFilePath: local file path. If empty, deriving from sdfsFilePath using lates
 sdfsFilePath: sdfs file path. If empty, deriving from localFilePath
 ip: remote server gRPC address
 */
-func FileTransferToNode(client *pb.ServerServicesClient, localFilePath, sdfsFilePath string) error {
+func FileTransferToNode(client *pb.ServerServicesClient, localFilePath, sdfsFilePath string, igMT bool) error {
 	version := 0
 	if sdfsFilePath == "" {
 		sdfsFilePath, version = LfsToSdfs(filepath.Base(localFilePath))
@@ -76,7 +76,7 @@ func FileTransferToNode(client *pb.ServerServicesClient, localFilePath, sdfsFile
 	message := &pb.FileTransMessage{
 		Message: &pb.FileTransMessage_Config{
 			Config: &pb.FileCfg{RepNumber: 0, FileVersion: int32(version),
-				RemoteFilepath: sdfsFilePath}}}
+				RemoteFilepath: sdfsFilePath, IgnoreMemtable: igMT}}}
 
 	fileClient.Send(message)
 

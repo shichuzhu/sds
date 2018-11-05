@@ -15,7 +15,7 @@ func (s *serviceServer) PutFile(ctx context.Context, putMessage *pb.StringMessag
 	for i := 1; i <= 3; i++ {
 		tmp := sdfs.FindNodeMember(fileKey, i)
 		ip := tmp.Addr()
-		if err := sdfs.FileTransferToNodeByIp(ip, localName, ""); err != nil {
+		if err := sdfs.FileTransferToNodeByIp(ip, localName, "", false); err != nil {
 			return nil, err
 		}
 	}
