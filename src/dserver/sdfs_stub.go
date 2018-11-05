@@ -6,6 +6,7 @@ import (
 	pb "fa18cs425mp/src/protobuf"
 	"golang.org/x/net/context"
 	"log"
+	"strconv"
 )
 
 func (s *serviceServer) SdfsCall(_ context.Context, argsMsgs *pb.StringArray) (*pb.StringArray, error) {
@@ -30,6 +31,14 @@ func (s *serviceServer) SdfsCall(_ context.Context, argsMsgs *pb.StringArray) (*
 		}
 	case "store":
 		sdfs.SdfsStore()
+	case "get-versions":
+		if len(args) == 3 {
+			numVar, err := strconv.Atoi(args[2])
+			if err != nil {
+				return nil, errors.New("Please input integer for version number")
+			}
+			sdfs.SdfsGetVersions(args[1], numVar, args[3])
+		}
 	default:
 		log.Println("Invalid input.")
 		return nil, errors.New("Invalid input")
