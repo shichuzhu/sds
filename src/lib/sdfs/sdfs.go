@@ -7,6 +7,7 @@ import (
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"log"
+	"os"
 	"time"
 )
 
@@ -37,6 +38,30 @@ func SdfsPut(localFileName, sdfsFilename string) {
 	}
 }
 func SdfsGet(sdfsFilename, localFilename string) {
+	key := HashToKey(sdfsFilename)
+	fileMaster := FindNodeId(key, 0)
+	/*
+		TODO:Find IP for the particular key
+	*/
+
+	var ip string
+	ret := pullFile(sdfsFilename, ip, 1)
+	if ret == -1 {
+		log.Println("Cannot find this file under name: " + sdfsFilename)
+		return
+	}
+
+	fileVersion := GetFileVersion(sdfsFilename)
+	currentLocalName := SdfsToLfs(sdfsFilename, fileVersion)
+	err := os.Rename(SdfsRootPath+currentLocalName, SdfsRootPath+localFilename)
+	if err != nil {
+		log.Println("Error in change file name")
+		return
+	}
+
+	log.Println("Successfully get file " + sdfsFilename + " From system")
+	return
+
 }
 func SdfsDelete(sdfsFilename string) {
 }

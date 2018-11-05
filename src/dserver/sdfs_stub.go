@@ -30,6 +30,7 @@ func (s *serviceServer) SdfsCall(_ context.Context, argsMsgs *pb.StringArray) (*
 		}
 	case "store":
 		sdfs.SdfsStore()
+	case ""
 	default:
 		log.Println("Invalid input.")
 		return nil, errors.New("Invalid input")

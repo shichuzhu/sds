@@ -17,8 +17,8 @@ service ServerServices {
     // SDFS related functions
     rpc TransferFiles (stream FileTransMessage) returns (IntMessage) {
     }
-    /*rpc PullFiles (IntMessage) returns (IntMessage) {
-    }*/
+    rpc PullFiles (PullFileInfo) returns (IntMessage) {
+    }
     rpc PutFile (StringMessage) returns (IntMessage) {
     }
 }
@@ -77,4 +77,11 @@ message FileTransMessage {
         bytes chunk = 1;
         FileCfg config = 2;
     }
+}
+
+//For pull file
+message PullFileInfo {
+    string file_name = 1;
+    int32 num_of_file = 2;
+    int32 myID = 3;
 }
