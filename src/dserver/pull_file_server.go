@@ -18,7 +18,7 @@ func (s *serviceServer) PullFiles(ctx context.Context, info *pb.PullFileInfo) (*
 	/*
 		TODO: transfer id to ip (in tcp)
 	*/
-	var ip string
+	ip := sdfs.IdToIp(targetID)
 	var numToTransfer int
 	if targetNum < versions {
 		numToTransfer = targetNum
@@ -28,7 +28,7 @@ func (s *serviceServer) PullFiles(ctx context.Context, info *pb.PullFileInfo) (*
 
 	for i := 0; i < numToTransfer; i++ {
 		localFileNmae := sdfs.SdfsToLfs(targetFile, versions-i)
-		sdfs.FileTransferToNode(ip, localFileNmae, "")
+		sdfs.FileTransferToNodeByIp(ip, localFileNmae, "")
 	}
 
 	return &pb.IntMessage{Mesg: int32(numToTransfer)}, nil
