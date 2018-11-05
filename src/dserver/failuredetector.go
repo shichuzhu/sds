@@ -1,11 +1,11 @@
 package main
 
 import (
+	"errors"
 	ms "fa18cs425mp/src/lib/membership"
 	pb "fa18cs425mp/src/protobuf"
 	"flag"
 	"fmt"
-	"github.com/pkg/errors"
 	"golang.org/x/net/context"
 	"log"
 	"os"

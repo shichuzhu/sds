@@ -674,6 +674,8 @@ type ServerServicesClient interface {
 	SdfsCall(ctx context.Context, in *StringArray, opts ...grpc.CallOption) (*StringArray, error)
 	// SDFS related functions
 	TransferFiles(ctx context.Context, opts ...grpc.CallOption) (ServerServices_TransferFilesClient, error)
+	//    rpc PullFiles (StringArray) returns (IntMessage) {
+	//    }
 	PutFile(ctx context.Context, in *StringMessage, opts ...grpc.CallOption) (*IntMessage, error)
 }
 
@@ -806,6 +808,8 @@ type ServerServicesServer interface {
 	SdfsCall(context.Context, *StringArray) (*StringArray, error)
 	// SDFS related functions
 	TransferFiles(ServerServices_TransferFilesServer) error
+	//    rpc PullFiles (StringArray) returns (IntMessage) {
+	//    }
 	PutFile(context.Context, *StringMessage) (*IntMessage, error)
 }
 
