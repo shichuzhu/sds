@@ -17,8 +17,8 @@ service ServerServices {
     // SDFS related functions
     rpc TransferFiles (stream FileTransMessage) returns (IntMessage) {
     }
-    rpc PullFiles (IntMessage) returns (IntMessage) {
-    }
+    /*rpc PullFiles (IntMessage) returns (IntMessage) {
+    }*/
     rpc PutFile (StringMessage) returns (IntMessage) {
     }
 }
