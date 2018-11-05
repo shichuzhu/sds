@@ -38,7 +38,11 @@ func (s *serviceServer) ServerConfig(ctx context.Context, info *pb.ConfigInfo) (
 		logLevel = info.LogLevel
 	}
 
-	vmIndex = info.VmIndex
+	if info.VmIndex == -1 {
+		vmIndex = int32(membership.MembershipList.MyNodeId)
+	} else {
+		vmIndex = info.VmIndex
+	}
 	//lg = new(cl.LogMessage)
 	lg.Init(vmIndex, 1)
 
@@ -110,6 +114,7 @@ func main() {
 	sdfs.SdfsRootPath = *sdfsPath
 	InitialSdfs()
 
+	log.Println("where do i go???????????")
 	if <-closeSigs == 1 {
 		CleanUp()
 	}

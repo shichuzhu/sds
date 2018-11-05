@@ -32,7 +32,9 @@ runlocal: buildlocal
 	dserver -port 10003 -pfd 11003 -dataPath "data/mp1" -nodeid 3 &
 	dserver -port 10004 -pfd 11004 -dataPath "data/mp1" -nodeid 4 &
 	dserver -port 10005 -pfd 11005 -dataPath "data/mp1" -nodeid 5 &
-	#sleep 1
+	sleep 0.5
+	sds swim join 128.174.245.229:11001
+	sleep 0.5
 	#sds grep -c 123456 '*'
 
 test:

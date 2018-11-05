@@ -17,7 +17,7 @@ func configConnection(conn *grpc.ClientConn, index int32, wg *sync.WaitGroup) er
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 
-	text, err := client.ServerConfig(ctx, &pb.ConfigInfo{LogLevel: 1, VmIndex: index})
+	text, err := client.ServerConfig(ctx, &pb.ConfigInfo{LogLevel: 1, VmIndex: -1})
 	if err != nil {
 		fmt.Println("Failure in config server at ")
 	}
