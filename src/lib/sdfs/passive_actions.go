@@ -3,6 +3,7 @@ package sdfs
 import (
 	"fa18cs425mp/src/lib/membership"
 	"fa18cs425mp/src/lib/sdfs/sdfs2fd"
+	"fmt"
 	"log"
 )
 
@@ -10,6 +11,7 @@ func ReReplicateHandler() {
 	for {
 		failId, more := <-sdfs2fd.Communicate
 		if more {
+			fmt.Println("channel got ", failId)
 			ReReplicateUponFailure(failId)
 		} else {
 			return

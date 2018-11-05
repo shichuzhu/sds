@@ -60,6 +60,10 @@ func (s *MemberType) Addr() string {
 	return s.grpcAddr
 }
 
+func PosMod(a, b int) int {
+	return (a%b + b) % b
+}
+
 func (ml *MembershipListType) insert(index int, memberType MemberType) {
 	// TODO: Sdfs re-replicate
 	log.Println("Member Added: ", memberType.addr)
@@ -74,9 +78,11 @@ func (ml *MembershipListType) insert(index int, memberType MemberType) {
 func (ml *MembershipListType) delete(index int) {
 	// Sdfs re-replicate
 	failId := ml.members[index].nodeId
+	fmt.Println("channel to send: ", failId)
 	sdfs2fd.Communicate <- failId
 
-	log.Println("Member Rmved: ", ml.members[index].addr)
+	//log.Println("Member Rmved: ", ml.members[index].addr)
+	fmt.Println("Member Rmved: ", ml.members[index].addr)
 	s := &ml.members
 	copy((*s)[index:], (*s)[index+1:])
 	*s = (*s)[:len(*s)-1]
@@ -139,10 +145,10 @@ func GetKeysOfId(nodeId int) []int {
 	ml := &MembershipList
 	index := ml.searchIndexById(nodeId)
 	retArr := make([]int, 0)
-	prevId := MembershipList.members[(index-1)%len(MembershipList.members)].nodeId
+	prevId := MembershipList.members[PosMod(index-1, len(MembershipList.members))].nodeId
 	for key := index; key != prevId; {
 		retArr = append(retArr, key)
-		key = (key - 1) % RingSize
+		key = PosMod(key-1, RingSize)
 	}
 	return retArr
 }
@@ -161,7 +167,7 @@ func PrevKOfKey(k, key int) int {
 		return key
 	}
 	index := MembershipList.searchIndexById(key)
-	index = (index - k) % len(MembershipList.members)
+	index = PosMod(index-k, len(MembershipList.members))
 	return MembershipList.members[index].nodeId
 }
 
