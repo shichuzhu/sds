@@ -16,18 +16,15 @@ var SdfsRootPath string
 
 func SdfsPut(localFileName, sdfsFilename string) {
 	key := HashToKey(sdfsFilename)
-	nodeId := FindNodeId(key, 0)
-	ip := nodeId.Addr()
-	if err := FileTransferToNode(ip, localFileName, sdfsFilename); err != nil {
+	client, _ := GetClientOfNodeId(FindNodeId(key, 0))
+	if err := FileTransferToNode(client, localFileName, sdfsFilename); err != nil {
 		log.Println("Initial transfer to master failed")
 		return
 	}
 
-	conn, _ := connect(ip)
-	client := pb.NewServerServicesClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	retMessage, err := client.PutFile(ctx, &pb.StringMessage{Mesg: sdfsFilename})
+	retMessage, err := (*client).PutFile(ctx, &pb.StringMessage{Mesg: sdfsFilename})
 	if err != nil {
 		log.Println("Failure during in putting file")
 		return

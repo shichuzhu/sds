@@ -41,8 +41,13 @@ func HashToKey(str string) int {
 	return int(h.Sum32() % ms.RingSize)
 }
 
-func FindNodeId(key int, successor int) ms.MemberType {
+func FindNodeMember(key int, successor int) ms.MemberType {
 	return ms.NextNofId(successor, key)
+}
+
+func FindNodeId(key int, successor int) int {
+	tmp := ms.NextNofId(successor, key)
+	return tmp.NodeId()
 }
 
 func SdfsToLfs(s string, v int) string {
