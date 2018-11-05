@@ -19,7 +19,18 @@ func IdToIp(nodeId int) string {
 }
 
 func PullKeyFromNode(key, nodeId int) error {
-	return nil // TODO: finish this function
+	info := &pb.PullFileInfo{FetchType: 1,
+		MyID:     int32(membership.MembershipList.MyNodeId),
+		FetchKey: int32(key)}
+	client, err := GetClientOfNodeId(nodeId)
+	if err != nil {
+		return err
+	}
+	_, err = (*client).PullFiles(context.Background(), info)
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func FileTransferToNodeByIp(ip, localFilePath, sdfsFilePath string, igMT bool) error {
