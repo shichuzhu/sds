@@ -97,9 +97,9 @@ func (ml *MembershipListType) insertNewID(id string, sessionID int, nodeId int) 
 				ml.members[i].sessionCounter = sessionID
 			}
 			return
-		} else if id < member.addr {
-			ml.insert(i, MemberType{addr: id, sessionCounter: sessionID, nodeId: nodeId})
-			return
+			//} else if id < member.addr {
+			//	ml.insert(i, MemberType{addr: id, sessionCounter: sessionID, nodeId: nodeId})
+			//	return
 		}
 	}
 	ml.insert(len(MembershipList.members),
@@ -179,8 +179,8 @@ func (ml *MembershipListType) deleteID(id string, sessionID int) {
 				ml.delete(i)
 			}
 			return
-		} else if member.addr > id {
-			return
+			//} else if member.addr > id {
+			//	return
 		}
 	}
 }
