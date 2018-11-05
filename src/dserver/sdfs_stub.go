@@ -29,7 +29,7 @@ func (s *serviceServer) SdfsCall(_ context.Context, argsMsgs *pb.StringArray) (*
 		}
 	case "ls":
 		if len(args) == 2 {
-			sdfs.SdfsLs(args[1])
+			response = sdfs.SdfsLs(args[1])
 		}
 	case "store":
 		response = sdfs.SdfsStore()

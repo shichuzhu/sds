@@ -8,6 +8,7 @@ import (
 	"google.golang.org/grpc"
 	"log"
 	"os"
+	"os/exec"
 	"strconv"
 	"time"
 )
@@ -35,6 +36,7 @@ func SdfsPut(localFileName, sdfsFilename string) {
 		log.Println("Successfully put file into replicas")
 	}
 }
+
 func SdfsGet(sdfsFilename, localFilename string) {
 	key := HashToKey(sdfsFilename)
 	fileMaster := FindNodeId(key, 0)
@@ -48,16 +50,16 @@ func SdfsGet(sdfsFilename, localFilename string) {
 
 	fileVersion := GetFileVersion(sdfsFilename)
 	currentLocalName := SdfsToLfs(sdfsFilename, fileVersion)
-	err := os.Rename(SdfsRootPath+currentLocalName, SdfsRootPath+localFilename)
+	err := exec.Command("cp", SdfsRootPath+currentLocalName, localFilename).Run()
 	if err != nil {
-		log.Println("Error in change file name")
+		log.Println("Error in copy file")
 		return
 	}
 
 	log.Println("Successfully get file " + sdfsFilename + " From system")
 	return
-
 }
+
 func SdfsDelete(sdfsFilename string) {
 	fileKey := HashToKey(sdfsFilename)
 	for i := 0; i < 4; i++ {
@@ -69,7 +71,14 @@ func SdfsDelete(sdfsFilename string) {
 		}
 	}
 }
-func SdfsLs(fileName string) {
+
+func SdfsLs(fileName string) []string {
+	retStr := make([]string, 0, 4)
+	fileKey := HashToKey(fileName)
+	for i := 0; i < 4; i++ {
+		retStr = append(retStr, strconv.Itoa(FindNodeId(fileKey, i)))
+	}
+	return retStr
 }
 
 func SdfsStore() []string {
