@@ -27,7 +27,7 @@ buildlocal:
 	go install fa18cs425mp/...
 
 runlocal: buildlocal
-#	dserver -port 10001 -pfd 11001 -dataPath "data/mp1" -nodeid 1 &
+	dserver -port 10001 -pfd 11001 -dataPath "data/mp1" -nodeid 1 &
 	dserver -port 10002 -pfd 11002 -dataPath "data/mp1" -nodeid 2 &
 	dserver -port 10003 -pfd 11003 -dataPath "data/mp1" -nodeid 3 &
 	dserver -port 10004 -pfd 11004 -dataPath "data/mp1" -nodeid 4 &
