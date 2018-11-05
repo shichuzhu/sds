@@ -38,14 +38,20 @@ func SdfsPut(localFileName, sdfsFilename string) {
 }
 
 func SdfsGet(sdfsFilename, localFilename string) {
-	key := HashToKey(sdfsFilename)
-	fileMaster := FindNodeId(key, 0)
-	ip := IdToIp(fileMaster)
+	for i := 0; i < 4; i++ {
+		key := HashToKey(sdfsFilename)
+		fileMaster := FindNodeId(key, i)
+		ip := IdToIp(fileMaster)
 
-	ret := pullFile(sdfsFilename, ip, 1, &pb.PullFileInfo{IgnoreMemtable: true})
-	if ret == nil {
-		log.Println("Cannot find this file under name: " + sdfsFilename)
-		return
+		ret := pullFile(sdfsFilename, ip, 1, &pb.PullFileInfo{IgnoreMemtable: true})
+		if ret == nil {
+			log.Printf("Cannot find this file at {%d}th successor under name: %s",
+				i, sdfsFilename)
+			continue
+		} else {
+			log.Println("Successfully get file " + sdfsFilename + " From system")
+			break
+		}
 	}
 
 	fileVersion := GetFileVersion(sdfsFilename)
@@ -55,8 +61,6 @@ func SdfsGet(sdfsFilename, localFilename string) {
 		log.Println("Error in copy file")
 		return
 	}
-
-	log.Println("Successfully get file " + sdfsFilename + " From system")
 	return
 }
 
