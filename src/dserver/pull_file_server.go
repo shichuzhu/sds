@@ -13,7 +13,7 @@ func (s *serviceServer) PullFiles(ctx context.Context, info *pb.PullFileInfo) (*
 
 	versions := sdfs.GetFileVersion(targetFile)
 	if versions == 0 {
-		return &pb.IntMessage{-1}, nil
+		return &pb.IntMessage{Mesg: -1}, nil
 	}
 	/*
 		TODO: transfer id to ip (in tcp)

@@ -2,7 +2,6 @@ package sdfs
 
 import (
 	"errors"
-	"fa18cs425mp/src/lib/sdfs"
 	pb "fa18cs425mp/src/protobuf"
 	"fmt"
 	"golang.org/x/net/context"
@@ -97,7 +96,7 @@ func SdfsGetVersions(sdfsFilename string, numVersions int, localfilename string)
 	ip := IdToIp(fileMaster)
 
 	pullFile(sdfsFilename, ip, numVersions)
-	versions := sdfs.GetFileVersion(sdfsFilename)
+	versions := GetFileVersion(sdfsFilename)
 	if versions == 0 {
 		log.Println("We didn't find file at file system")
 		return
