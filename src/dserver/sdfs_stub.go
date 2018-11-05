@@ -49,7 +49,7 @@ func (s *serviceServer) SdfsCall(_ context.Context, argsMsgs *pb.StringArray) (*
 }
 
 func InitialSdfs() {
-	sdfs2fd.Communicate = make(chan int)
+	sdfs2fd.Communicate = make(chan int, sdfs.REPLICA-1)
 	os.RemoveAll(sdfs.SdfsRootPath)
 	os.Mkdir(sdfs.SdfsRootPath, os.ModePerm)
 	sdfs.MemTableIntial()
