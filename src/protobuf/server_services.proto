@@ -90,6 +90,10 @@ message PullFileInfo {
     int32 myID = 3;
     // input config
     bool ignore_memtable = 4;
+    int32 fetch_key = 5;
+    // type 0: PullOneFile, type 1: PullAllKey, type 2: query existence
+    int32 fetch_type = 6;
     // returned values
+    bool file_exist = 8;
     int32 latest_version = 9;
 }

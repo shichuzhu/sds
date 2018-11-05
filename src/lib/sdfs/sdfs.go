@@ -76,13 +76,31 @@ func SdfsLs(fileName string) []string {
 	retStr := make([]string, 0, 4)
 	fileKey := HashToKey(fileName)
 	for i := 0; i < 4; i++ {
-		retStr = append(retStr, strconv.Itoa(FindNodeId(fileKey, i)))
+		nodeId := FindNodeId(fileKey, i)
+		retStr = append(retStr, strconv.Itoa(nodeId))
+		if i == 0 {
+			if client, err := GetClientOfNodeId(nodeId); err != nil {
+				return nil
+			} else {
+				ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+				defer cancel()
+
+				retMessage, err := (*client).PullFiles(ctx, &pb.PullFileInfo{
+					FileName: fileName, FetchType: 2})
+				if err != nil {
+					log.Println("Error in calling delete file")
+					return nil
+				} else if !retMessage.FileExist {
+					return nil
+				}
+			}
+		}
 	}
 	return retStr
 }
 
 func SdfsStore() []string {
-	listOfFile := listAllFile()
+	listOfFile := ListAllFile()
 	retStr := make([]string, 0)
 	for e := listOfFile.Front(); e != nil; e = e.Next() {
 		//log.Println(e.Value)
@@ -144,6 +162,5 @@ func SdfsGetVersions(sdfsFilename string, numVersions int, localfilename string)
 		}
 		file.WriteString("\n\n")
 	}
-
 	return
 }

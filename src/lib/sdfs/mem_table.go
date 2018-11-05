@@ -26,7 +26,6 @@ func GetFileVersion(fileName string) int {
 	if !present {
 		return 0
 	}
-
 	return version
 }
 
@@ -35,7 +34,7 @@ func InsertFileVersion(fileName string, version int) int {
 	return version
 }
 
-func listAllFile() list.List {
+func ListAllFile() list.List {
 	ret := list.New()
 	for key := range fileMap {
 		str := fmt.Sprintf(key+" %d", fileMap[key])
