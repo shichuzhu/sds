@@ -45,7 +45,7 @@ func listAllFile() list.List {
 	return *ret
 }
 
-func deleteFileFromTable(fileName string) {
+func DeleteFileFromTable(fileName string) {
 	delete(fileMap, fileName)
 }
 

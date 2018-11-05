@@ -60,6 +60,15 @@ func SdfsGet(sdfsFilename, localFilename string) {
 
 }
 func SdfsDelete(sdfsFilename string) {
+	fileKey := HashToKey(sdfsFilename)
+	for i := 0; i < 4; i++ {
+		NodeID := FindNodeId(fileKey, i)
+		ret := callDeleteFile(sdfsFilename, NodeID)
+
+		if ret == -1 {
+			log.Println("Error in delete file")
+		}
+	}
 }
 func SdfsLs(fileName string) {
 }

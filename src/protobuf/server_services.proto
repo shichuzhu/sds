@@ -21,6 +21,8 @@ service ServerServices {
     }
     rpc PutFile (StringMessage) returns (IntMessage) {
     }
+    rpc DeleteFile (StringMessage) returns (IntMessage){
+    }
 }
 
 message ConfigInfo {
