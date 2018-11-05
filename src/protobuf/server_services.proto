@@ -67,13 +67,14 @@ message UDPMessage {
 }
 
 // SDFS related messages
+message FileCfg {
+    string remote_filepath = 1;
+    int32 rep_number = 2;
+}
+
 message FileTransMessage {
-    message Config {
-        string remote_filepath = 1;
-        int32 rep_number = 2;
-    }
-    oneof file_trans_message {
+    oneof message {
         bytes chunk = 1;
-        Config config = 2;
+        FileCfg config = 2;
     }
 }

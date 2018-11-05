@@ -25,13 +25,12 @@ func SdfsPut(localFileName, sdfsFilename string) {
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
 	retMessage, err := client.PutFile(ctx, &pb.StringMessage{Mesg: sdfsFilename})
-
 	if err != nil {
 		fmt.Println("Failure during in putting file")
+		return
 	}
-
 	if retMessage.Mesg == 1 {
-		fmt.Println("Successfully put file into 4 replicas")
+		fmt.Println("Successfully put file into replicas")
 	}
 }
 func SdfsGet(sdfsFilename, localFilename string) {

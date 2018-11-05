@@ -15,22 +15,26 @@ func PullKeyFromNode(key, nodeId int) error {
 	return nil
 }
 
-func FileTransferToNode(ip string, filePath string) {
+func FileTransferToNode(ip string, filePath string) error {
 	conn, _ := connect(ip)
 	client := pb.NewServerServicesClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	fileClient, _ := client.TransferFiles(ctx)
+	fileClient, err := client.TransferFiles(ctx)
+	if err != nil {
+		fmt.Println("Fail to transfer file to client")
+		return err
+	}
 	file, err := os.Open(filePath)
 	if err != nil {
 		fmt.Println("Can not find file path" + filePath)
-		return
+		return err
 	}
 
 	message := &pb.FileTransMessage{
-		FileTransMessage: &pb.FileTransMessage_Config_{
-			Config: &pb.FileTransMessage_Config{
-				RemoteFilepath: filePath, RepNumber: 0}}}
+		Message: &pb.FileTransMessage_Config{
+			Config: &pb.FileCfg{RepNumber: 0, RemoteFilepath: filePath}}}
+
 	fileClient.Send(message)
 
 	buf := make([]byte, 1024)
@@ -38,16 +42,20 @@ func FileTransferToNode(ip string, filePath string) {
 	n, _ := file.Read(buf)
 	for n != 0 {
 		message = &pb.FileTransMessage{
-			FileTransMessage: &pb.FileTransMessage_Chunk{Chunk: buf[0:n]},
+			Message: &pb.FileTransMessage_Chunk{Chunk: buf[0:n]},
 		}
 		fileClient.Send(message)
 		n, _ = file.Read(buf)
 	}
 
 	recv, err := fileClient.CloseAndRecv()
+	if err != nil {
+		return err
+	}
 	if recv.GetMesg() == 1 {
 		fmt.Println("File has been successfully transfer to ")
 	}
+	return nil
 }
 
 func connect(IP string) (*grpc.ClientConn, error) {
