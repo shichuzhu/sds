@@ -68,7 +68,7 @@ func ConnectLocal() (*grpc.ClientConn, error) {
 	opts = append(opts, grpc.WithInsecure())
 	opts = append(opts, grpc.WithTimeout(time.Second*3))
 	localIp := membership.GetOutboundIP().String()
-	samplePort := 10001 // TODO: Change to 10000 when at remote VMs!!!!!
+	samplePort := 10000 // TODO: Change to 10000 when at remote VMs!!!!!
 	if len(config.Addrs) == 0 {
 	} else {
 		samplePort = config.Addrs[0].Port
