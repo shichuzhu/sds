@@ -1,4 +1,10 @@
-all: runlocal
+all: onetest
+
+onetest:
+	sds sdfs put sample.txt sampletxt
+	sleep 0.3
+	sds sdfs put sample.txt sampletxt
+	sleep 0.3
 
 #all: deploy build run
 

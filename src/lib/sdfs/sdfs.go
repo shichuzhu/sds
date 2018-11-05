@@ -96,7 +96,7 @@ func connectPut(IP string) (*grpc.ClientConn, error) {
 }
 
 func SdfsGetVersions(sdfsFilename string, numVersions int, localfilename string) {
-	file, err := os.Create(SdfsRootPath + localfilename)
+	file, err := os.Create(localfilename)
 	defer file.Close()
 
 	if err != nil {

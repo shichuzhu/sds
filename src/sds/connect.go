@@ -26,10 +26,10 @@ var opts []grpc.DialOption
 func loadConfig() {
 	fileContent, err := ioutil.ReadFile(configFileName)
 	if err != nil {
-		log.Fatalln("Cannot read the config file")
+		log.Println("Cannot read the config file")
 	}
 	if err := json.Unmarshal(fileContent, &config); err != nil {
-		log.Fatalln("Fail to parse the JSON config file")
+		log.Println("Fail to parse the JSON config file")
 	}
 }
 
@@ -68,6 +68,10 @@ func ConnectLocal() (*grpc.ClientConn, error) {
 	opts = append(opts, grpc.WithInsecure())
 	opts = append(opts, grpc.WithTimeout(time.Second*3))
 	localIp := membership.GetOutboundIP().String()
-	samplePort := config.Addrs[0].Port
+	samplePort := 10001 // TODO: Change to 10000 when at remote VMs!!!!!
+	if len(config.Addrs) == 0 {
+	} else {
+		samplePort = config.Addrs[0].Port
+	}
 	return helper(localIp, samplePort)
 }

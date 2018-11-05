@@ -34,7 +34,7 @@ func (s *serviceServer) SdfsCall(_ context.Context, argsMsgs *pb.StringArray) (*
 	case "store":
 		response = sdfs.SdfsStore()
 	case "get-versions":
-		if len(args) == 3 {
+		if len(args) == 4 {
 			numVar, err := strconv.Atoi(args[2])
 			if err != nil {
 				return nil, errors.New("Please input integer for version number")
