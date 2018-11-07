@@ -1,0 +1,13 @@
+---
+- hosts: cs425
+  remote_user: szhu28
+  tasks:
+   - name: gen small file
+     command: dd if=/dev/urandom of=10B bs=10 count=1
+
+   - name: gen medium file
+     command: dd if=/dev/urandom of=1M bs=1M count=1
+
+   - name: gen big file
+     command: dd if=/dev/urandom of=30M bs=30M count=1
+
