@@ -1,0 +1,33 @@
+---
+- hosts: cs425
+  remote_user: szhu28
+  tasks:
+  - name: Capture files in path and register
+    shell: >
+      ls -1 ~
+    register: files
+
+  - name: Remove all except
+    file:
+      path: "~/{{ item }}"
+      state: absent
+    with_items: "{{ files.stdout_lines }}"
+    when: >
+      item not in [ 'go', 'data', 'cfg.json' ]
+
+  - name: Clean data directory
+    file:
+      path: "{{ item }}"
+      state: absent
+    with_items:
+    - ~/data/mp2
+    - ~/data/mp3
+
+  - name: Recreate data directories
+    file:
+      path: "{{ item }}"
+      state: directory
+    with_items:
+    - ~/data/mp2
+    - ~/data/mp3
+

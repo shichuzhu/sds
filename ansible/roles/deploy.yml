@@ -2,14 +2,11 @@
 - hosts: cs425
   remote_user: szhu28
   tasks:
-   - name: copy code to VMs
-     synchronize:
+  - name: copy code to VMs
+    synchronize:
       delete: yes
       src: /mnt/data/shared/gmaildrive/workspace/fa18byclass/CS425/fa18cs425mp/src
       dest: /home/szhu28/go/src/fa18cs425mp/
 
-   - name: compile the source code
-     command: go install fa18cs425mp/...
-
-   - name: Create sdfs folder
-     file: path=data/mp3 state=directory
+  - name: compile the source code
+    command: go install fa18cs425mp/...
