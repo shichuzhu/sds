@@ -1,4 +1,4 @@
-package mp3
+package sdfs_test
 
 import (
 	"container/list"

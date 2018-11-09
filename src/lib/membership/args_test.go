@@ -1,4 +1,4 @@
-package mp2_test
+package membership_test
 
 import (
 	"fmt"
