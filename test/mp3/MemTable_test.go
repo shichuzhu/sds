@@ -1,13 +1,14 @@
-package main
+package mp3
 
 import (
 	"container/list"
 	"fmt"
+	"testing"
 )
 
 var fileMap map[string]int
 
-func fakemain2() {
+func TestMemTable(t *testing.T) {
 	MemTableIntial()
 	version := GetFileVersion("hello.txt")
 	fmt.Println(version)

@@ -1,11 +1,11 @@
-package main
+package mp2_test
 
 import (
 	"fmt"
 	"os"
 )
 
-func main() {
+func main_test_mp2() {
 	if len(os.Args) <= 1 {
 		fmt.Println("No action specified by 'sds' command.")
 		return

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net"
 	"sync"
+	"testing"
 	"time"
 )
 
@@ -59,8 +60,9 @@ func massiveClient() {
 	}
 }
 
-func Testmain() {
+func TestMain(m *testing.M) {
+	go main()
+	time.Sleep(time.Second * 2)
 	testDial()
 	massiveClient()
-
 }

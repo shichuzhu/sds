@@ -1,12 +1,13 @@
-package main
+package mp3
 
 import (
 	"os"
 	"regexp"
 	"strconv"
+	"testing"
 )
 
-func fakemain() {
+func TestMemTableIntial(t *testing.T) {
 
 	if hName, err := os.Hostname(); err != nil {
 		return
