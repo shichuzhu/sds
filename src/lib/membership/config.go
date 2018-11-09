@@ -4,6 +4,7 @@ import "fmt"
 
 const FailureTimeout int = 1800 // in millisecond
 const DefaultUdpPort int = 11000
+const DefaultTcpPort int = 10000
 const NodeNumberToPing = 3
 const MultiSendNumber = 1
 const RingSize = 10

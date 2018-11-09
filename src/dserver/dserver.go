@@ -18,7 +18,7 @@ import (
 )
 
 var (
-	port       = flag.Int("port", 10000, "The server port")
+	port       = flag.Int("port", membership.DefaultTcpPort, "The server port")
 	dataPath   = flag.String("dataPath", "data", "The path to files to be grep")
 	logDir     = flag.String("log", "data/mp2", "Directory to store the log")
 	nodeId     = flag.Int("nodeid", -1, "The nodeid if not randomized")

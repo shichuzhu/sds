@@ -78,11 +78,10 @@ func (ml *MembershipListType) insert(index int, memberType MemberType) {
 func (ml *MembershipListType) delete(index int) {
 	// Sdfs re-replicate
 	failId := ml.members[index].nodeId
-	fmt.Println("channel to send: ", failId)
+	log.Println("channel to send: ", failId)
 	sdfs2fd.Communicate <- failId
 
-	//log.Println("Member Rmved: ", ml.members[index].addr)
-	fmt.Println("Member Rmved: ", ml.members[index].addr)
+	log.Println("Member Rmved: ", ml.members[index].addr)
 	s := &ml.members
 	copy((*s)[index:], (*s)[index+1:])
 	*s = (*s)[:len(*s)-1]
@@ -97,9 +96,6 @@ func (ml *MembershipListType) insertNewID(id string, sessionID int, nodeId int) 
 				ml.members[i].sessionCounter = sessionID
 			}
 			return
-			//} else if id < member.addr {
-			//	ml.insert(i, MemberType{addr: id, sessionCounter: sessionID, nodeId: nodeId})
-			//	return
 		}
 	}
 	ml.insert(len(MembershipList.members),
