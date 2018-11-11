@@ -1,6 +1,6 @@
-package membership
+package utils
 
-func max(a, b int) int {
+func Max(a, b int) int {
 	if a < b {
 		return b
 	} else {
@@ -8,7 +8,7 @@ func max(a, b int) int {
 	}
 }
 
-func min(a, b int) int {
+func Min(a, b int) int {
 	if a > b {
 		return b
 	} else {

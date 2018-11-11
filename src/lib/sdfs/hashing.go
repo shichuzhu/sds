@@ -2,6 +2,7 @@ package sdfs
 
 import (
 	ms "fa18cs425mp/src/lib/membership"
+	"fa18cs425mp/src/lib/utils"
 	"fmt"
 	"hash/fnv"
 	"log"
@@ -9,31 +10,6 @@ import (
 )
 
 var RUNES = []rune("01/V")
-
-type Builder struct {
-	arr []rune
-	loc int
-}
-
-func (b *Builder) Grow(n int) {
-	b.arr = make([]rune, 0, n)
-	b.loc = 0
-}
-
-func (b *Builder) WriteRune(r rune) {
-	b.arr = append(b.arr, r)
-	b.loc++
-}
-
-func (b *Builder) WriteString(s string) {
-	for _, c := range s {
-		b.WriteRune(c)
-	}
-}
-
-func (b *Builder) String() string {
-	return string(b.arr)
-}
 
 func HashToKey(str string) int {
 	h := fnv.New32()
@@ -52,7 +28,7 @@ func FindNodeId(key int, successor int) int {
 
 func SdfsToLfs(s string, v int) string {
 	n := len(s)
-	lfn := &Builder{}
+	lfn := &utils.Builder{}
 	lfn.Grow(2*n + 2)
 	lfn.WriteString(fmt.Sprintf("%02d", ms.MembershipList.MyNodeId))
 	for _, c := range s {
@@ -71,7 +47,7 @@ func SdfsToLfs(s string, v int) string {
 func LfsToSdfs(localFilename string) (string, int) {
 	s := []rune(localFilename)
 	s = s[2:]
-	sfn := &Builder{}
+	sfn := &utils.Builder{}
 	sfn.Grow(len(s) / 2)
 	for i := 0; i < len(s); {
 		if s[i] == RUNES[0] {

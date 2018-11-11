@@ -2,6 +2,7 @@ package membership
 
 import (
 	"fa18cs425mp/src/lib/sdfs/sdfs2fd"
+	"fa18cs425mp/src/lib/utils"
 	"fmt"
 	"log"
 	"math/rand"
@@ -182,7 +183,7 @@ func (ml *MembershipListType) deleteID(id string, sessionID int) {
 }
 
 func (ml *MembershipListType) getRandomTargets(num int) []string {
-	num = min(num, len(MembershipList.members))
+	num = utils.Min(num, len(MembershipList.members))
 	targets := make([]string, num)
 	for i, j := range rand.Perm(len(MembershipList.members))[:num] {
 		targets[i] = ml.members[j].addr
@@ -200,7 +201,7 @@ func (ml *MembershipListType) updateMyIndex() {
 }
 
 func (ml *MembershipListType) getPingTargets(num int) []string {
-	num = max(0, min(NodeNumberToPing, len(MembershipList.members)-1))
+	num = utils.Max(0, utils.Min(NodeNumberToPing, len(MembershipList.members)-1))
 	targets := make([]string, num)
 	for i := range targets {
 		targets[i] = ml.members[(ml.myIndex+i+1)%len(ml.members)].addr
