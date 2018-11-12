@@ -96,6 +96,7 @@ func (ml *MembershipListType) sort() {
 }
 
 func (ml *MembershipListType) searchIndexById(key int) int {
+	key = utils.PosMod(key, RingSize)
 	index := 0
 	for i, member := range MemList.members {
 		if member.nodeId >= key {
@@ -227,7 +228,7 @@ func GetNodeIdFromHostname() int {
 	}
 	fmt.Println("Cannot derive nodeID from host, random generating one")
 	rand.Seed(time.Now().UTC().UnixNano())
-	return rand.Int()%RingSize + 1
+	return rand.Int() % RingSize
 }
 
 func GetListElement() ([]string, []int, []int) {
