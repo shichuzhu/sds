@@ -11,11 +11,9 @@ const (
 )
 
 type LogMessage struct {
-	vmIndex int32
-	logMode int32
-	file    *os.File
-	err     error
-	logger  *log.Logger
+	file   *os.File
+	err    error
+	logger *log.Logger
 }
 
 func (T *LogMessage) Print(str string) {
@@ -24,13 +22,11 @@ func (T *LogMessage) Print(str string) {
 
 func (T *LogMessage) Close() {
 	T.file.Close()
-	log.Printf("Log File for server %d has closed.\n", T.vmIndex)
+	log.Println("Log File has closed.")
 }
 
-func (T *LogMessage) Init(index, mode int32, path string) {
-	T.vmIndex = index
-	T.logMode = mode
-	FileName := fmt.Sprintf(path+"/"+NAME, T.vmIndex)
+func (T *LogMessage) InitLogger(index int, path string) {
+	FileName := fmt.Sprintf(path+"/"+NAME, index)
 	T.file, T.err = os.Create(FileName)
 	if T.err != nil {
 		fmt.Println("Unable to create the file.")

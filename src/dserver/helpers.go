@@ -28,6 +28,5 @@ func CleanUp() {
 }
 
 func SetupLogger() {
-	vmIndex = int32(memlist.MemList.MyNodeId)
-	lg.Init(vmIndex, 1, *logDir)
+	lg.InitLogger(memlist.MemList.MyNodeId, *logDir)
 }

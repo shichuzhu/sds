@@ -16,9 +16,9 @@ func closeConnection(conn *grpc.ClientConn, wg *sync.WaitGroup) error {
 	client := pb.NewServerServicesClient(conn)
 	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
-	text, err := client.CloseServer(ctx, &pb.IntMessage{Mesg: 1})
+	text, err := client.CloseServer(ctx, &pb.IntMessage{Mesg: 0})
 	if err != nil {
-		log.Printf("failure to close server: %s\n", err)
+		log.Printf("Error on close RPC: %s\n", err)
 	} else {
 		log.Println(*text)
 	}

@@ -8,14 +8,14 @@ import (
 	"fa18cs425mp/src/shared/sdfs2fd"
 	"flag"
 	"google.golang.org/grpc"
+	"log"
+	"os"
 )
 
 var (
 	dataPath   = flag.String("datapath", cfg.Cfg.GrepDir, "The path to files to be grep")
 	logDir     = flag.String("log", cfg.Cfg.LogDir, "Directory to store the log")
 	closeSigs  chan int
-	logLevel   int32
-	vmIndex    int32
 	lg         = utils.LogMessage{}
 	grpcServer *grpc.Server
 )
@@ -23,15 +23,21 @@ var (
 func main() {
 	flag.Parse()
 	closeSigs = make(chan int, 1)
+	memlist.SetupLocalMemList()
 
-	SetupGRpc()
 	SetupLogger()
-	memlist.SpawnFailureDetector()
+	SetupGRpc()
+	memlist.StartFailureDetector()
 
 	sdfs.InitialSdfs()
 	defer close(sdfs2fd.Communicate)
 
-	if <-closeSigs == 1 {
+	switch <-closeSigs {
+	case 1:
 		CleanUp()
+		log.Println("Server Closed by Client.")
+	case 2:
+		log.Fatalln("Fatal: Simulating fatal failure of node")
+		os.Exit(0)
 	}
 }

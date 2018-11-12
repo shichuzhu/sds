@@ -17,18 +17,7 @@ type serviceServer struct {
 }
 
 func (s *serviceServer) ServerConfig(ctx context.Context, info *pb.ConfigInfo) (*pb.StringMessage, error) {
-	if info.LogLevel >= 0 && info.LogLevel < 4 {
-		logLevel = info.LogLevel
-	}
-
-	if info.VmIndex == -1 {
-		vmIndex = int32(memlist.MemList.MyNodeId)
-	} else {
-		vmIndex = info.VmIndex
-	}
-
-	message := fmt.Sprintf("Config information receive successfully by Server %v", vmIndex)
-	return &pb.StringMessage{Mesg: message}, nil
+	return &pb.StringMessage{Mesg: "Log level set"}, nil
 }
 
 func (s *serviceServer) ReturnMatches(theCmd *pb.StringArray, stream pb.ServerServices_ReturnMatchesServer) error {
@@ -55,13 +44,7 @@ func (s *serviceServer) ReturnMatches(theCmd *pb.StringArray, stream pb.ServerSe
 
 func (s *serviceServer) CloseServer(_ context.Context, closeMessage *pb.IntMessage) (*pb.StringMessage, error) {
 	var message string
-	if closeType := closeMessage.GetMesg(); closeType == 0 {
-		log.Fatalln("Fatal: Simulating fatal failure of node")
-	} else {
-		log.Println("Server Closed by Client.")
-		closeSigs <- 1
-		message = fmt.Sprintf("Server %v Successfully closed", vmIndex)
-	}
+	closeSigs <- int(closeMessage.GetMesg())
 	return &pb.StringMessage{Mesg: message}, nil
 }
 

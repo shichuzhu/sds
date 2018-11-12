@@ -36,7 +36,7 @@ var (
 	nodeId  = flag.Int("nodeid", -1, "The nodeid if not randomized")
 )
 
-func SpawnFailureDetector() {
+func SetupLocalMemList() {
 	MemList.MyPort = *port
 	MemList.myIP = GetOutboundIP()
 	MyAddr = MemList.myIP.String() + ":" + strconv.Itoa(MemList.MyPort)
@@ -56,5 +56,4 @@ func SpawnFailureDetector() {
 	MemList.insertNewID(tmp)
 
 	PacketDrop.SetDropRate(float32(*drop))
-	StartFailureDetector()
 }
