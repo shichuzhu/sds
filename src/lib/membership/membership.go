@@ -1,8 +1,8 @@
 package membership
 
 import (
-	"fa18cs425mp/src/lib/sdfs/sdfs2fd"
 	"fa18cs425mp/src/lib/utils"
+	"fa18cs425mp/src/shared/sdfs2fd"
 	"fmt"
 	"log"
 	"math/rand"
@@ -59,10 +59,6 @@ func (s *MemberType) Addr() string {
 		}
 	}
 	return s.grpcAddr
-}
-
-func PosMod(a, b int) int {
-	return (a%b + b) % b
 }
 
 func (ml *MembershipListType) insert(index int, memberType MemberType) {
@@ -142,10 +138,10 @@ func GetKeysOfId(nodeId int) []int {
 	ml := &MembershipList
 	index := ml.searchIndexById(nodeId)
 	retArr := make([]int, 0)
-	prevId := MembershipList.members[PosMod(index-1, len(MembershipList.members))].nodeId
+	prevId := MembershipList.members[utils.PosMod(index-1, len(MembershipList.members))].nodeId
 	for key := index; key != prevId; {
 		retArr = append(retArr, key)
-		key = PosMod(key-1, RingSize)
+		key = utils.PosMod(key-1, RingSize)
 	}
 	return retArr
 }
@@ -164,7 +160,7 @@ func PrevKOfKey(k, key int) int {
 		return key
 	}
 	index := MembershipList.searchIndexById(key)
-	index = PosMod(index-k, len(MembershipList.members))
+	index = utils.PosMod(index-k, len(MembershipList.members))
 	return MembershipList.members[index].nodeId
 }
 

@@ -2,7 +2,7 @@ package sdfs
 
 import (
 	"fa18cs425mp/src/lib/membership"
-	"fa18cs425mp/src/lib/sdfs/sdfs2fd"
+	"fa18cs425mp/src/shared/sdfs2fd"
 	"fmt"
 	"log"
 )

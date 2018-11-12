@@ -15,3 +15,7 @@ func Min(a, b int) int {
 		return a
 	}
 }
+
+func PosMod(a, b int) int {
+	return (a%b + b) % b
+}

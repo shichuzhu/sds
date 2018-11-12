@@ -17,7 +17,5 @@ func callDeleteFile(sdfsFileNmae string, nodeID int) int {
 		log.Println("Error in calling delete file")
 		return -1
 	}
-
 	return int(retMessage.Mesg)
-
 }

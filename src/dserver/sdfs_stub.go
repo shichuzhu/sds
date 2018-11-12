@@ -3,8 +3,8 @@ package main
 import (
 	"errors"
 	"fa18cs425mp/src/lib/sdfs"
-	"fa18cs425mp/src/lib/sdfs/sdfs2fd"
 	pb "fa18cs425mp/src/protobuf"
+	"fa18cs425mp/src/shared/sdfs2fd"
 	"golang.org/x/net/context"
 	"log"
 	"os"
