@@ -1,5 +1,25 @@
 # FA18CS425MP
 
+## MP3
+
+### Installation
+
+Deploy the code, cfg.json and compile the codes on VMs by running `ansible-playbook roles/deploy.yml` under the `ansible` directory. Also run `make buildlocal` to make sure the binaries are available locally.
+
+### Run demo
+
+1. `cp remotecfg.json cfg.json` to switch to the remote (VM) mode.
+2. `make run` will spawn the processes on every VMs and setup the gRPC server and Failure detection UDP ports.
+3. `make join` to connect all VMs together. Each VM will now have the full membership list.
+4. To use the SDFS functionality, go to any live VM and run `sds sdfs put/get/ls/store/get-versions` commands.
+5. To fail any nodes, say, VM1 and VM2, run `sds -n 0,1 close`.
+6. To tear down the systems, run `sds close`.
+
+### Notes
+
+1. Local files are stored under data/mp3/ directories of each VM.
+2. Logs are recorded under data/mp2/ directories.
+
 ## MP2
 
 ### Installation
