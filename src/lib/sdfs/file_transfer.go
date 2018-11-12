@@ -2,7 +2,7 @@ package sdfs
 
 import (
 	"errors"
-	"fa18cs425mp/src/lib/membership"
+	"fa18cs425mp/src/lib/memlist"
 	"fa18cs425mp/src/pb"
 	"fmt"
 	"golang.org/x/net/context"
@@ -14,13 +14,13 @@ import (
 )
 
 func IdToIp(nodeId int) string {
-	tmp := membership.NextNofId(0, nodeId)
+	tmp := memlist.NextNofId(0, nodeId)
 	return tmp.Addr()
 }
 
 func PullKeyFromNode(key, nodeId int) error {
 	info := &pb.PullFileInfo{FetchType: 1,
-		MyID:     int32(membership.MembershipList.MyNodeId),
+		MyID:     int32(memlist.MembershipList.MyNodeId),
 		FetchKey: int32(key)}
 	client, err := GetClientOfNodeId(nodeId)
 	if err != nil {

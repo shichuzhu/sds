@@ -1,7 +1,7 @@
 package sdfs
 
 import (
-	ms "fa18cs425mp/src/lib/membership"
+	ms "fa18cs425mp/src/lib/memlist"
 	"fa18cs425mp/src/lib/utils"
 	"fmt"
 	"hash/fnv"

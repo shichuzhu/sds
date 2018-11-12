@@ -1,4 +1,4 @@
-package membership_test
+package memlist_test
 
 import (
 	"fmt"

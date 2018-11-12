@@ -1,7 +1,7 @@
 package sdfs
 
 import (
-	"fa18cs425mp/src/lib/membership"
+	"fa18cs425mp/src/lib/memlist"
 	"fa18cs425mp/src/shared/sdfs2fd"
 	"fmt"
 	"log"
@@ -27,11 +27,11 @@ func ReReplicateUponFailure(failId int) {
 }
 
 func GetFetchKeys(failId int) []int {
-	myId := membership.MembershipList.MyNodeId
+	myId := memlist.MembershipList.MyNodeId
 	//lostKeyList := membership.GetKeysOfId(failId)
-	if dist := membership.GetDistByKey(failId, myId); dist <= REPLICA {
-		pullId := membership.PrevKOfKey(REPLICA, myId)
-		return membership.GetKeysOfId(pullId)
+	if dist := memlist.GetDistByKey(failId, myId); dist <= REPLICA {
+		pullId := memlist.PrevKOfKey(REPLICA, myId)
+		return memlist.GetKeysOfId(pullId)
 	}
 	return nil
 }

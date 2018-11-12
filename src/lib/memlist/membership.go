@@ -1,4 +1,4 @@
-package membership
+package memlist
 
 import (
 	"fa18cs425mp/src/lib/utils"

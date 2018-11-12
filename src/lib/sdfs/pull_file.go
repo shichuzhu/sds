@@ -2,7 +2,7 @@ package sdfs
 
 import (
 	"errors"
-	"fa18cs425mp/src/lib/membership"
+	"fa18cs425mp/src/lib/memlist"
 	"fa18cs425mp/src/pb"
 	"golang.org/x/net/context"
 	"log"
@@ -87,7 +87,7 @@ func pullFile(sdsFileName string, ip string, versions int, config *pb.PullFileIn
 	//defer cancel()
 
 	info := &pb.PullFileInfo{FileName: sdsFileName, NumOfFile: int32(versions),
-		MyID: int32(membership.MembershipList.MyNodeId)}
+		MyID: int32(memlist.MembershipList.MyNodeId)}
 	if config != nil {
 		info.IgnoreMemtable = config.IgnoreMemtable
 	}

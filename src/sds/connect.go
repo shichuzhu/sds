@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"errors"
-	"fa18cs425mp/src/lib/membership"
+	"fa18cs425mp/src/lib/memlist"
 	"fmt"
 	"google.golang.org/grpc"
 	"io/ioutil"
@@ -67,8 +67,8 @@ func helper(IP string, port int) (*grpc.ClientConn, error) {
 func ConnectLocal() (*grpc.ClientConn, error) {
 	opts = append(opts, grpc.WithInsecure())
 	opts = append(opts, grpc.WithTimeout(time.Second*3))
-	localIp := membership.GetOutboundIP().String()
-	samplePort := membership.DefaultTcpPort // Change at need to connect to local server
+	localIp := memlist.GetOutboundIP().String()
+	samplePort := memlist.DefaultTcpPort // Change at need to connect to local server
 	if len(config.Addrs) != 0 {
 		samplePort = config.Addrs[0].Port
 	}
