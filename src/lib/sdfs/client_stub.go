@@ -48,6 +48,7 @@ func (s *SdfsServer) SdfsCall(_ context.Context, argsMsgs *pb.StringArray) (*pb.
 }
 
 func InitialSdfs() {
+	SdfsRootPath = *SdfsRootPathp
 	sdfs2fd.Communicate = make(chan int, REPLICA-1)
 	os.RemoveAll(SdfsRootPath)
 	os.Mkdir(SdfsRootPath, os.ModePerm)

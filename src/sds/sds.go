@@ -5,6 +5,7 @@ package main
 
 import (
 	"errors"
+	"fa18cs425mp/src/shared/cfg"
 	"fmt"
 	"os"
 )
@@ -29,9 +30,8 @@ func parseOverallParas() error {
 
 	Action = ArgsCopy[0]
 	TargetNodes = *flagSet.Lookup("n").Value.(*ArrayFlags)
-	loadConfig()
 	if TargetNodes == nil {
-		for i := 0; i < len(config.Addrs); i++ {
+		for i := 0; i < len(cfg.Cfg.Addrs); i++ {
 			TargetNodes = append(TargetNodes, i)
 		}
 	}

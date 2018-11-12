@@ -3,6 +3,8 @@ package sdfs
 import (
 	"errors"
 	"fa18cs425mp/src/pb"
+	"fa18cs425mp/src/shared/cfg"
+	"flag"
 	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -15,6 +17,7 @@ import (
 
 const REPLICA = 4
 
+var SdfsRootPathp = flag.String("sdfspath", cfg.Cfg.SdfsDir, "The path to sdfs files to be stored")
 var SdfsRootPath string
 
 func SdfsPut(localFileName, sdfsFilename string) {

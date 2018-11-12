@@ -1,13 +1,16 @@
 package memlist
 
-import "fmt"
+import (
+	"fa18cs425mp/src/shared/cfg"
+	"fmt"
+)
 
-const FailureTimeout int = 1800 // in millisecond
-const DefaultUdpPort int = 11000
-const DefaultTcpPort int = 10000
-const NodeNumberToPing = 3
-const MultiSendNumber = 1
-const RingSize = 10
+var (
+	FailureTimeout   = cfg.Cfg.Memlist.FailureTimeout // in millisecond
+	NodeNumberToPing = cfg.Cfg.Memlist.NodeNumberToPing
+	MultiSendNumber  = cfg.Cfg.Memlist.MultiSendNumber
+	RingSize         = cfg.Cfg.Memlist.RingSize
+)
 
 func ListInfo() {
 	DumpTable() // Will print to stdout
@@ -17,7 +20,7 @@ func ListInfo() {
 func FormListInfo() string {
 	var response string
 	response += FormDumpTable()
-	response += fmt.Sprintf("Current process NodeId %d is %s\n", MembershipList.MyNodeId, MyAddr)
+	response += fmt.Sprintf("Current process NodeId %d is %s\n", MemList.MyNodeId, MyAddr)
 	return response
 }
 

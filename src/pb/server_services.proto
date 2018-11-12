@@ -49,16 +49,15 @@ message IntMessage {
 
 message DetectorMessage {
     string header = 1;
-    string addr = 2;
-    int32 sess_num = 3;
-    int32 ttl = 4;
-    int32 node_id = 5;
+    int32 ttl = 2;
+    Member mem = 3;
 }
 
 message Member {
     string addr = 1;
     int32 sess_num = 2;
     int32 node_id = 3;
+    string grpc_addr = 4;
 }
 
 message FullMembershipList {

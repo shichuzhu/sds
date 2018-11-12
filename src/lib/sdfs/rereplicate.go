@@ -27,7 +27,7 @@ func ReReplicateUponFailure(failId int) {
 }
 
 func GetFetchKeys(failId int) []int {
-	myId := memlist.MembershipList.MyNodeId
+	myId := memlist.MemList.MyNodeId
 	//lostKeyList := membership.GetKeysOfId(failId)
 	if dist := memlist.GetDistByKey(failId, myId); dist <= REPLICA {
 		pullId := memlist.PrevKOfKey(REPLICA, myId)

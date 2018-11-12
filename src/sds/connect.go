@@ -1,37 +1,17 @@
 package main
 
 import (
-	"encoding/json"
 	"errors"
 	"fa18cs425mp/src/lib/memlist"
+	"fa18cs425mp/src/shared/cfg"
 	"fmt"
 	"google.golang.org/grpc"
-	"io/ioutil"
 	"log"
 	"strconv"
 	"time"
 )
 
-type Configuration struct {
-	Addrs []struct {
-		IP   string
-		Port int
-	}
-}
-
-var configFileName = "cfg.json"
-var config Configuration
 var opts []grpc.DialOption
-
-func loadConfig() {
-	fileContent, err := ioutil.ReadFile(configFileName)
-	if err != nil {
-		log.Println("Cannot read the config file")
-	}
-	if err := json.Unmarshal(fileContent, &config); err != nil {
-		log.Println("Fail to parse the JSON config file")
-	}
-}
 
 func Connect() ([]*grpc.ClientConn, error) {
 	opts = append(opts, grpc.WithInsecure())
@@ -40,7 +20,7 @@ func Connect() ([]*grpc.ClientConn, error) {
 	var ret []*grpc.ClientConn
 
 	for _, i := range TargetNodes {
-		conn, err := helper(config.Addrs[i].IP, config.Addrs[i].Port)
+		conn, err := helper(cfg.Cfg.Addrs[i].IP, cfg.Cfg.Addrs[i].Port)
 		if err != nil {
 			continue
 		}
@@ -68,9 +48,5 @@ func ConnectLocal() (*grpc.ClientConn, error) {
 	opts = append(opts, grpc.WithInsecure())
 	opts = append(opts, grpc.WithTimeout(time.Second*3))
 	localIp := memlist.GetOutboundIP().String()
-	samplePort := memlist.DefaultTcpPort // Change at need to connect to local server
-	if len(config.Addrs) != 0 {
-		samplePort = config.Addrs[0].Port
-	}
-	return helper(localIp, samplePort)
+	return helper(localIp, cfg.Cfg.DefaultTCPPort)
 }

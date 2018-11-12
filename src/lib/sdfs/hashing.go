@@ -14,7 +14,7 @@ var RUNES = []rune("01/V")
 func HashToKey(str string) int {
 	h := fnv.New32()
 	h.Write([]byte(str))
-	return int(h.Sum32() % ms.RingSize)
+	return int(h.Sum32()) % ms.RingSize
 }
 
 func FindNodeMember(key int, successor int) *ms.MemberType {
@@ -30,7 +30,7 @@ func SdfsToLfs(s string, v int) string {
 	n := len(s)
 	lfn := &utils.Builder{}
 	lfn.Grow(2*n + 2)
-	lfn.WriteString(fmt.Sprintf("%02d", ms.MembershipList.MyNodeId))
+	lfn.WriteString(fmt.Sprintf("%02d", ms.MemList.MyNodeId))
 	for _, c := range s {
 		if c != '/' {
 			lfn.WriteRune(RUNES[0])

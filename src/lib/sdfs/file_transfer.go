@@ -20,7 +20,7 @@ func IdToIp(nodeId int) string {
 
 func PullKeyFromNode(key, nodeId int) error {
 	info := &pb.PullFileInfo{FetchType: 1,
-		MyID:     int32(memlist.MembershipList.MyNodeId),
+		MyID:     int32(memlist.MemList.MyNodeId),
 		FetchKey: int32(key)}
 	client, err := GetClientOfNodeId(nodeId)
 	if err != nil {

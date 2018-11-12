@@ -27,13 +27,14 @@ func (s *AckWaitEntry) reset() {
 }
 
 func ContactIntroducer(introAddr string) {
-	InitInstance()
-	InitXmtr()
 	message, err := proto.Marshal(
 		&pb.UDPMessage{MessageType: "DetectorMessage",
 			Dm: &pb.DetectorMessage{
-				Header: "NewJoin", Addr: MyAddr, SessNum: 0, Ttl: 0,
-				NodeId: int32(MembershipList.MyNodeId)}})
+				Header: "NewJoin", Ttl: 0, Mem: &pb.Member{
+					Addr:     MyAddr,
+					GrpcAddr: MemList.members[MemList.myIndex].grpcAddr,
+					SessNum:  0,
+					NodeId:   int32(MemList.MyNodeId)}}})
 	ErrHandler(err)
 
 	UdpSend(introAddr, message, 1)
@@ -42,14 +43,14 @@ func ContactIntroducer(introAddr string) {
 
 func ReportFailure(addr string) {
 	log.Println("Failure DETECTED: ", addr)
-	if member, exist := MembershipList.lookupID(addr); exist {
+	if member, exist := MemList.lookupID(addr); exist {
 		message, _ := proto.Marshal(
 			&pb.UDPMessage{MessageType: "DetectorMessage",
-				Dm: &pb.DetectorMessage{Header: "Delete", Addr: addr, SessNum: int32(member.sessionCounter), Ttl: 0}})
-		for _, addr := range MembershipList.getRandomTargets(len(MembershipList.members)) {
+				Dm: &pb.DetectorMessage{Header: "Delete", Mem: mem2pb(&member), Ttl: 0}})
+		for _, addr := range MemList.getRandomTargets(len(MemList.members)) {
 			UdpSend(addr, message, 1)
 		}
-		MembershipList.deleteID(addr, int(^uint(0)>>1))
+		MemList.deleteID(addr, int(^uint(0)>>1))
 	}
 	if addr == MyAddr {
 		log.Fatalln("False positive detected, auto terminating.")
@@ -58,7 +59,7 @@ func ReportFailure(addr string) {
 
 func senderService() error {
 	for {
-		memsToPing := MembershipList.getPingTargets(NodeNumberToPing)
+		memsToPing := MemList.getPingTargets(NodeNumberToPing)
 		//log.Printf("memsToPing %s\n", memsToPing)
 		for i, addr := range memsToPing {
 			ackWaitEntries[i] = AckWaitEntry{addr: addr}
@@ -67,7 +68,7 @@ func senderService() error {
 			for _, addr := range memsToPing {
 				message, _ := proto.Marshal(
 					&pb.UDPMessage{MessageType: "DetectorMessage",
-						Dm: &pb.DetectorMessage{Header: "Ping", Addr: MyAddr}})
+						Dm: &pb.DetectorMessage{Header: "Ping", Mem: &pb.Member{Addr: MyAddr}}})
 				UdpSendSingle(addr, message)
 			}
 		}

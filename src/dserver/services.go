@@ -22,7 +22,7 @@ func (s *serviceServer) ServerConfig(ctx context.Context, info *pb.ConfigInfo) (
 	}
 
 	if info.VmIndex == -1 {
-		vmIndex = int32(memlist.MembershipList.MyNodeId)
+		vmIndex = int32(memlist.MemList.MyNodeId)
 	} else {
 		vmIndex = info.VmIndex
 	}

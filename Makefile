@@ -46,16 +46,16 @@ buildlocal:
 	go install fa18cs425mp/...
 
 runlocal: buildlocal
-	dserver -port 10001 -pfd 11001 -dataPath "data/mp1" -nodeid 1 &
-	dserver -port 10002 -pfd 11002 -dataPath "data/mp1" -nodeid 2 &
-	dserver -port 10003 -pfd 11003 -dataPath "data/mp1" -nodeid 3 &
-	dserver -port 10004 -pfd 11004 -dataPath "data/mp1" -nodeid 4 &
-	dserver -port 10005 -pfd 11005 -dataPath "data/mp1" -nodeid 5 &
-	dserver -port 10006 -pfd 11006 -dataPath "data/mp1" -nodeid 6 &
-	dserver -port 10007 -pfd 11007 -dataPath "data/mp1" -nodeid 7 &
-	dserver -port 10008 -pfd 11008 -dataPath "data/mp1" -nodeid 8 &
-	dserver -port 10009 -pfd 11009 -dataPath "data/mp1" -nodeid 9 &
-	dserver -port 10010 -pfd 11010 -dataPath "data/mp1" -nodeid 10 &
+	dserver -port 10001 -pfd 11001 -nodeid 1 &
+	dserver -port 10002 -pfd 11002 -nodeid 2 &
+	dserver -port 10003 -pfd 11003 -nodeid 3 &
+	dserver -port 10004 -pfd 11004 -nodeid 4 &
+#	dserver -port 10005 -pfd 11005 -nodeid 5 &
+#	dserver -port 10006 -pfd 11006 -nodeid 6 &
+#	dserver -port 10007 -pfd 11007 -nodeid 7 &
+#	dserver -port 10008 -pfd 11008 -nodeid 8 &
+#	dserver -port 10009 -pfd 11009 -nodeid 9 &
+#	dserver -port 10010 -pfd 11010 -nodeid 10 &
 	sleep 0.5
 	sds swim join 128.174.245.229:11001
 	sleep 0.5

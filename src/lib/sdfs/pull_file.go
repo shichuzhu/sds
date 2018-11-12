@@ -87,7 +87,7 @@ func pullFile(sdsFileName string, ip string, versions int, config *pb.PullFileIn
 	//defer cancel()
 
 	info := &pb.PullFileInfo{FileName: sdsFileName, NumOfFile: int32(versions),
-		MyID: int32(memlist.MembershipList.MyNodeId)}
+		MyID: int32(memlist.MemList.MyNodeId)}
 	if config != nil {
 		info.IgnoreMemtable = config.IgnoreMemtable
 	}
