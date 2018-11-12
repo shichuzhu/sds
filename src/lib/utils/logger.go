@@ -1,4 +1,4 @@
-package CS425_LOG
+package utils
 
 import (
 	"fmt"

@@ -2,10 +2,10 @@ package main
 
 import (
 	"bufio"
-	cl "fa18cs425mp/src/lib/loggenerator"
 	"fa18cs425mp/src/lib/membership"
 	"fa18cs425mp/src/lib/sdfs"
 	"fa18cs425mp/src/lib/sdfs/sdfs2fd"
+	"fa18cs425mp/src/lib/utils"
 	pb "fa18cs425mp/src/protobuf"
 	"flag"
 	"fmt"
@@ -26,7 +26,7 @@ var (
 	closeSigs  chan int
 	logLevel   int32
 	vmIndex    int32
-	lg         = cl.LogMessage{}
+	lg         = utils.LogMessage{}
 	grpcServer *grpc.Server
 )
 
