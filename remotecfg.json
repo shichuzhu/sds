@@ -1,9 +1,9 @@
 {
   "defaultUdpPort": 11000,
   "defaultTcpPort": 10000,
-  "logDir": "data/mp2",
-  "sdfsDir": "data/mp3",
-  "grepDir": "data",
+  "logDir": "data/mp2/",
+  "sdfsDir": "data/mp3/",
+  "grepDir": "data/",
   "memlist": {
     "failureTimeout": 1800,
     "nodeNumberToPing": 3,

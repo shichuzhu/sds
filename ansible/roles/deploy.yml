@@ -8,5 +8,11 @@
       src: /mnt/data/shared/gmaildrive/workspace/fa18byclass/CS425/fa18cs425mp/src
       dest: /home/szhu28/go/src/fa18cs425mp/
 
+  - name: copy config file to VMs
+    synchronize:
+      delete: yes
+      src: /mnt/data/shared/gmaildrive/workspace/fa18byclass/CS425/fa18cs425mp/remotecfg.json
+      dest: /home/szhu28/cfg.json
+
   - name: compile the source code
     command: go install fa18cs425mp/...

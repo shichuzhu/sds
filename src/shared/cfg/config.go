@@ -41,5 +41,5 @@ func init() {
 		fmt.Println("Fail to parse the JSON config file")
 		return
 	}
-	fmt.Println("Successfully parsed the JSON config file")
+	//fmt.Println("Successfully parsed the JSON config file")
 }

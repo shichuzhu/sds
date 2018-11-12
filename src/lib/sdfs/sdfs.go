@@ -32,7 +32,7 @@ func SdfsPut(localFileName, sdfsFilename string) {
 	defer cancel()
 	retMessage, err := (*client).PutFile(ctx, &pb.StringMessage{Mesg: sdfsFilename})
 	if err != nil {
-		log.Println("Failure during in putting file")
+		log.Println("Failure during putting file")
 		return
 	}
 	if retMessage.Mesg == 1 {
