@@ -9,9 +9,9 @@ import (
 
 func ReReplicateHandler() {
 	for {
-		failId, more := <-sdfs2fd.Communicate
+		failId, more := <-sdfs2fd.Fd2Sdfs
 		if more {
-			fmt.Println("channel got ", failId)
+			fmt.Printf("Node %d channel got %d\n", memlist.MemList.MyNodeId, failId)
 			ReReplicateUponFailure(failId)
 		} else {
 			return
@@ -21,6 +21,8 @@ func ReReplicateHandler() {
 
 func ReReplicateUponFailure(failId int) {
 	fetchedKeys := GetFetchKeys(failId)
+	sdfs2fd.Sdfs2Fd <- 1 // Sync the FD to remove node
+	<-sdfs2fd.Fd2Sdfs    // Wait until deletion completed
 	if len(fetchedKeys) > 0 {
 		FetchKeys(fetchedKeys)
 	}
@@ -40,6 +42,10 @@ func FetchKeys(keys []int) {
 	for _, key := range keys {
 		for suc := 0; suc < 4; suc++ {
 			pullId := FindNodeId(key, suc)
+			if pullId == memlist.MemList.MyNodeId {
+				log.Printf("Key %d exists locally already, skip fetching", key)
+				break
+			}
 			if err := PullKeyFromNode(key, pullId); err != nil {
 				log.Println(err)
 				log.Printf("Fail to fetch key %d from the {%d}th successor, trying next", key, suc)

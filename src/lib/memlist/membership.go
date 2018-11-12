@@ -52,14 +52,17 @@ func (ml *MembershipListType) delete(index int) {
 	// Sdfs re-replicate
 	failId := ml.members[index].nodeId
 	log.Println("channel to send: ", failId)
-	sdfs2fd.Communicate <- failId
+	fmt.Println("channel to send: ", failId)
+	sdfs2fd.Fd2Sdfs <- failId
 
+	<-sdfs2fd.Sdfs2Fd // Barrier to avoid read-write conflict
 	log.Println("Member Rmved: ", ml.members[index].addr)
 	s := &ml.members
 	copy((*s)[index:], (*s)[index+1:])
 	*s = (*s)[:len(*s)-1]
 	ml.updateMyIndex()
 	ml.sort()
+	sdfs2fd.Fd2Sdfs <- 1
 }
 
 func (ml *MembershipListType) insertNewID(m *MemberType) {

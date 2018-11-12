@@ -30,7 +30,7 @@ func main() {
 	memlist.StartFailureDetector()
 
 	sdfs.InitialSdfs()
-	defer close(sdfs2fd.Communicate)
+	defer close(sdfs2fd.Fd2Sdfs)
 
 	switch <-closeSigs {
 	case 1:
