@@ -1,7 +1,7 @@
 package membership
 
 import (
-	pb "fa18cs425mp/src/protobuf"
+	"fa18cs425mp/src/pb"
 	"github.com/golang/protobuf/proto"
 	"log"
 )

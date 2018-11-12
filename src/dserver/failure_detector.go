@@ -3,7 +3,7 @@ package main
 import (
 	"errors"
 	ms "fa18cs425mp/src/lib/membership"
-	pb "fa18cs425mp/src/protobuf"
+	"fa18cs425mp/src/pb"
 	"flag"
 	"fmt"
 	"golang.org/x/net/context"

@@ -45,7 +45,7 @@ func (s *MemberType) NodeId() int {
 }
 
 func (s *MemberType) Addr() string {
-	// TODO: naive version of TCP port = UDP port - 1000
+	// default TCP port = UDP port - 1000
 	if s.grpcAddr == "" {
 		str := s.addr
 		re := regexp.MustCompile("(.*):(\\d*)")
@@ -128,10 +128,10 @@ func (ml *MembershipListType) searchIndexById(key int) int {
 /*
 API to SDFS
 */
-func NextNofId(n, key int) MemberType {
+func NextNofId(n, key int) *MemberType {
 	index := MembershipList.searchIndexById(key)
 	index = (index + n) % len(MembershipList.members)
-	return MembershipList.members[index]
+	return &MembershipList.members[index]
 }
 
 func GetKeysOfId(nodeId int) []int {

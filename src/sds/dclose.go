@@ -1,7 +1,7 @@
 package main
 
 import (
-	pb "fa18cs425mp/src/protobuf"
+	"fa18cs425mp/src/pb"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"log"

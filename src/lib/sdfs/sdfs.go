@@ -2,7 +2,7 @@ package sdfs
 
 import (
 	"errors"
-	pb "fa18cs425mp/src/protobuf"
+	"fa18cs425mp/src/pb"
 	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -169,4 +169,17 @@ func SdfsGetVersions(sdfsFilename string, numVersions int, localfilename string)
 		file.WriteString("\n\n")
 	}
 	return
+}
+
+func callDeleteFile(sdfsFileNmae string, nodeID int) int {
+	client, _ := GetClientOfNodeId(FindNodeId(nodeID, 0))
+	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+	defer cancel()
+
+	retMessage, err := (*client).DeleteFile(ctx, &pb.StringMessage{Mesg: sdfsFileNmae})
+	if err != nil {
+		log.Println("Error in calling delete file")
+		return -1
+	}
+	return int(retMessage.Mesg)
 }

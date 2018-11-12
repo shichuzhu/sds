@@ -3,7 +3,7 @@ package sdfs
 import (
 	"errors"
 	"fa18cs425mp/src/lib/membership"
-	pb "fa18cs425mp/src/protobuf"
+	"fa18cs425mp/src/pb"
 	"fmt"
 	"golang.org/x/net/context"
 	"google.golang.org/grpc"
@@ -40,19 +40,19 @@ func FileTransferToNodeByIp(ip, localFilePath, sdfsFilePath string, igMT bool) e
 	} else {
 		defer conn.Close()
 		log.Println("Connect to node ", ip)
-		client := pb.NewServerServicesClient(conn)
+		client := pb.NewSdfsServicesClient(conn)
 		return FileTransferToNode(&client, localFilePath, sdfsFilePath, igMT)
 	}
 }
 
-func GetClientOfNodeId(nodeId int) (*pb.ServerServicesClient, error) {
+func GetClientOfNodeId(nodeId int) (*pb.SdfsServicesClient, error) {
 	ip := IdToIp(nodeId)
 	if conn, err := connect(ip); err != nil {
 		log.Println("Fail to connect to node ", nodeId)
 		return nil, err
 	} else {
 		log.Println("Connect to node ", nodeId)
-		client := pb.NewServerServicesClient(conn)
+		client := pb.NewSdfsServicesClient(conn)
 		return &client, nil
 	}
 }
@@ -64,7 +64,7 @@ localFilePath: local file path. If empty, deriving from sdfsFilePath using lates
 sdfsFilePath: sdfs file path. If empty, deriving from localFilePath
 ip: remote server gRPC address
 */
-func FileTransferToNode(client *pb.ServerServicesClient, localFilePath, sdfsFilePath string, igMT bool) error {
+func FileTransferToNode(client *pb.SdfsServicesClient, localFilePath, sdfsFilePath string, igMT bool) error {
 	version := 0
 	if sdfsFilePath == "" {
 		sdfsFilePath, version = LfsToSdfs(filepath.Base(localFilePath))

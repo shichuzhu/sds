@@ -5,7 +5,7 @@ import (
 	"fa18cs425mp/src/lib/membership"
 	"fa18cs425mp/src/lib/sdfs"
 	"fa18cs425mp/src/lib/utils"
-	pb "fa18cs425mp/src/protobuf"
+	"fa18cs425mp/src/pb"
 	"fa18cs425mp/src/shared/sdfs2fd"
 	"flag"
 	"fmt"
@@ -90,6 +90,7 @@ func SetupGrpc() {
 	}
 	grpcServer = grpc.NewServer()
 	pb.RegisterServerServicesServer(grpcServer, &serviceServer{})
+	pb.RegisterSdfsServicesServer(grpcServer, &sdfs.SdfsServer{})
 	go grpcServer.Serve(lis)
 }
 
@@ -111,7 +112,7 @@ func main() {
 	SpawnFailureDetector()
 
 	sdfs.SdfsRootPath = *sdfsPath
-	InitialSdfs()
+	sdfs.InitialSdfs()
 	defer close(sdfs2fd.Communicate)
 
 	if <-closeSigs == 1 {

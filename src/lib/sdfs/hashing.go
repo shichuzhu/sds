@@ -17,7 +17,7 @@ func HashToKey(str string) int {
 	return int(h.Sum32() % ms.RingSize)
 }
 
-func FindNodeMember(key int, successor int) ms.MemberType {
+func FindNodeMember(key int, successor int) *ms.MemberType {
 	return ms.NextNofId(successor, key)
 }
 

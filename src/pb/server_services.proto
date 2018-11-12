@@ -1,5 +1,5 @@
 syntax = "proto3";
-package serverservices;
+package pb;
 
 // gRPC related messages
 service ServerServices {
@@ -11,6 +11,9 @@ service ServerServices {
     }
     rpc ActMembership (StringArray) returns (StringMessage) {
     }
+}
+
+service SdfsServices {
     // SDFS client stub
     rpc SdfsCall (StringArray) returns (StringArray) {
     }
