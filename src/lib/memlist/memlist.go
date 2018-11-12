@@ -5,6 +5,7 @@ import (
 	"flag"
 	"net"
 	"strconv"
+	"sync"
 )
 
 var MyAddr string
@@ -34,6 +35,7 @@ var (
 	TcpPort = flag.Int("port", cfg.Cfg.DefaultTCPPort, "The server port")
 	drop    = flag.Float64("drop", 0.0, "Simulated packet drop rate.")
 	nodeId  = flag.Int("nodeid", -1, "The nodeid if not randomized")
+	lk      = sync.Mutex{}
 )
 
 func SetupLocalMemList() {

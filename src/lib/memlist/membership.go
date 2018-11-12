@@ -51,8 +51,7 @@ func (ml *MembershipListType) insert(index int, memberType *MemberType) {
 func (ml *MembershipListType) delete(index int) {
 	// Sdfs re-replicate
 	failId := ml.members[index].nodeId
-	log.Println("channel to send: ", failId)
-	fmt.Println("channel to send: ", failId)
+	//log.Println("channel to send: ", failId)
 	sdfs2fd.Fd2Sdfs <- failId
 
 	<-sdfs2fd.Sdfs2Fd // Barrier to avoid read-write conflict
@@ -66,6 +65,8 @@ func (ml *MembershipListType) delete(index int) {
 }
 
 func (ml *MembershipListType) insertNewID(m *MemberType) {
+	lk.Lock()
+	defer lk.Unlock()
 	id := m.addr
 	sessionID := m.sessionCounter
 	for i, member := range MemList.members {
@@ -145,6 +146,8 @@ func PrevKOfKey(k, key int) int {
 }
 
 func (ml *MembershipListType) deleteID(id string, sessionID int) {
+	lk.Lock()
+	defer lk.Unlock()
 	for i := range MemList.members {
 		member := &MemList.members[i]
 		if member.addr == id {

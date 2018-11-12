@@ -3,7 +3,6 @@ package sdfs
 import (
 	"fa18cs425mp/src/lib/memlist"
 	"fa18cs425mp/src/shared/sdfs2fd"
-	"fmt"
 	"log"
 )
 
@@ -11,7 +10,6 @@ func ReReplicateHandler() {
 	for {
 		failId, more := <-sdfs2fd.Fd2Sdfs
 		if more {
-			fmt.Printf("Node %d channel got %d\n", memlist.MemList.MyNodeId, failId)
 			ReReplicateUponFailure(failId)
 		} else {
 			return
