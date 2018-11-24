@@ -98,7 +98,7 @@ func HandleDeleteMessage(m pb.DetectorMessage) {
 	forwardMess := pb.DetectorMessage{Header: "Delete", Mem: m.GetMem(), Ttl: TTL + 1}
 	UdpMess := pb.UDPMessage{MessageType: "DetectorMessage", Dm: &forwardMess}
 	mess, _ := proto.Marshal(&UdpMess)
-	log.Println("Failure PROPAGATED: ", addr)
+	//log.Println("Failure PROPAGATED: ", addr)
 	if TTL < 4 {
 		targets := MemList.getRandomTargets(3)
 
@@ -151,7 +151,6 @@ func receiverService() {
 			InitialNewList(*UdpMess.GetFm())
 		}
 	}
-	return
 }
 
 /*

@@ -14,14 +14,14 @@ func (i *ArrayFlags) String() string {
 	return fmt.Sprint(*i)
 }
 
-func (intArr *ArrayFlags) Set(value string) error {
+func (i *ArrayFlags) Set(value string) error {
 	strArr := strings.Split(value, ",")
 	for _, strItem := range strArr {
 		if strItem != "" {
 			if intItem, err := strconv.Atoi(strItem); err != nil {
 				log.Panicln("Can't parse command-line arguments.")
 			} else {
-				*intArr = append(*intArr, intItem)
+				*i = append(*i, intItem)
 			}
 		}
 	}

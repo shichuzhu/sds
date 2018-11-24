@@ -9,15 +9,15 @@ import (
 	"os"
 )
 
-type SdfsServer struct{}
+type Server struct{}
 
-func (s *SdfsServer) DeleteFile(ctx context.Context, message *pb.StringMessage) (*pb.IntMessage, error) {
+func (s *Server) DeleteFile(ctx context.Context, message *pb.StringMessage) (*pb.IntMessage, error) {
 	fileName := message.Mesg
 	versions := GetFileVersion(fileName)
 	ret := 1
 	for i := versions; i != 0; i-- {
-		localName := SdfsToLfs(fileName, i)
-		err := os.Remove(SdfsRootPath + localName)
+		localName := SdfsnameToLfs(fileName, i)
+		err := os.Remove(RootPath + localName)
 		if err != nil {
 			log.Println("Error in deleting file")
 			ret = -1
@@ -28,7 +28,7 @@ func (s *SdfsServer) DeleteFile(ctx context.Context, message *pb.StringMessage) 
 	return &pb.IntMessage{Mesg: int32(ret)}, nil
 }
 
-func (s *SdfsServer) TransferFiles(stream pb.SdfsServices_TransferFilesServer) error {
+func (s *Server) TransferFiles(stream pb.SdfsServices_TransferFilesServer) error {
 	message, err := stream.Recv()
 	if err != nil {
 		return err
@@ -39,8 +39,8 @@ func (s *SdfsServer) TransferFiles(stream pb.SdfsServices_TransferFilesServer) e
 	if version == 0 {
 		version = GetFileVersion(fileName) + 1
 	}
-	localName := SdfsToLfs(fileName, version)
-	file, err := os.Create(SdfsRootPath + localName)
+	localName := SdfsnameToLfs(fileName, version)
+	file, err := os.Create(RootPath + localName)
 	for {
 		message, err = stream.Recv()
 		if err == io.EOF {
@@ -50,7 +50,7 @@ func (s *SdfsServer) TransferFiles(stream pb.SdfsServices_TransferFilesServer) e
 		}
 		content := message.GetChunk()
 		if content != nil {
-			file.Write(content)
+			_, _ = file.Write(content)
 		}
 	}
 	if config.IgnoreMemtable {
@@ -69,23 +69,23 @@ func (s *SdfsServer) TransferFiles(stream pb.SdfsServices_TransferFilesServer) e
 	return nil
 }
 
-func (s *SdfsServer) PullFiles(ctx context.Context, info *pb.PullFileInfo) (*pb.PullFileInfo, error) {
+func (s *Server) PullFiles(ctx context.Context, info *pb.PullFileInfo) (*pb.PullFileInfo, error) {
 	switch info.FetchType {
 	case 0:
-		return PutSingleSdfsFile(ctx, info)
+		return PutSingleSdfsFile(info)
 	case 1:
 		return FetchEntireKey(ctx, info)
 	case 2:
-		return QueryExistence(ctx, info)
+		return QueryExistence(info)
 	default:
-		return nil, errors.New("Unknown FetchType")
+		return nil, errors.New("unknown FetchType")
 	}
 }
 
-func (s *SdfsServer) PutFile(ctx context.Context, putMessage *pb.StringMessage) (*pb.IntMessage, error) {
+func (s *Server) PutFile(ctx context.Context, putMessage *pb.StringMessage) (*pb.IntMessage, error) {
 	sdfsName := putMessage.Mesg
 	version := GetFileVersion(sdfsName)
-	localName := SdfsRootPath + SdfsToLfs(sdfsName, version)
+	localName := RootPath + SdfsnameToLfs(sdfsName, version)
 
 	fileKey := HashToKey(sdfsName)
 	for i := 1; i <= 3; i++ {

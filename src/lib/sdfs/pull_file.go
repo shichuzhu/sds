@@ -33,8 +33,8 @@ func FetchEntireKey(ctx context.Context, info *pb.PullFileInfo) (*pb.PullFileInf
 			}
 
 			for i := 0; i < numToTransfer; i++ {
-				localFileName := SdfsToLfs(targetFile, versions-i)
-				FileTransferToNode(client, SdfsRootPath+localFileName, "", false)
+				localFileName := SdfsnameToLfs(targetFile, versions-i)
+				_ = FileTransferToNode(client, RootPath+localFileName, "", false)
 			}
 		}
 	}
@@ -43,7 +43,7 @@ func FetchEntireKey(ctx context.Context, info *pb.PullFileInfo) (*pb.PullFileInf
 }
 
 // Used by sdfs ls
-func QueryExistence(ctx context.Context, info *pb.PullFileInfo) (*pb.PullFileInfo, error) {
+func QueryExistence(info *pb.PullFileInfo) (*pb.PullFileInfo, error) {
 	targetFile := info.FileName
 	if version := GetFileVersion(targetFile); version != 0 {
 		log.Println("Queried file exists: ", targetFile)
@@ -54,7 +54,7 @@ func QueryExistence(ctx context.Context, info *pb.PullFileInfo) (*pb.PullFileInf
 	}
 }
 
-func PutSingleSdfsFile(ctx context.Context, info *pb.PullFileInfo) (*pb.PullFileInfo, error) {
+func PutSingleSdfsFile(info *pb.PullFileInfo) (*pb.PullFileInfo, error) {
 	targetID := int(info.MyID)
 	targetFile := info.FileName
 	targetNum := int(info.NumOfFile)
@@ -62,7 +62,7 @@ func PutSingleSdfsFile(ctx context.Context, info *pb.PullFileInfo) (*pb.PullFile
 
 	versions := GetFileVersion(targetFile)
 	if versions == 0 {
-		return nil, errors.New("No file on remote server")
+		return nil, errors.New("no file on remote server")
 	}
 	ip := IdToIp(targetID)
 	var numToTransfer int
@@ -73,8 +73,8 @@ func PutSingleSdfsFile(ctx context.Context, info *pb.PullFileInfo) (*pb.PullFile
 	}
 
 	for i := 0; i < numToTransfer; i++ {
-		localFileName := SdfsToLfs(targetFile, versions-i)
-		err := FileTransferToNodeByIp(ip, SdfsRootPath+localFileName, "", igMT)
+		localFileName := SdfsnameToLfs(targetFile, versions-i)
+		err := FileTransferToNodeByIp(ip, RootPath+localFileName, "", igMT)
 		if err != nil {
 			log.Printf("Fail to transfer file %s to ip: %s\n", targetFile, ip)
 		}

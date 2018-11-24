@@ -1,13 +1,10 @@
 package sdfs
 
 import (
-	"errors"
 	"fa18cs425mp/src/pb"
 	"fa18cs425mp/src/shared/cfg"
 	"flag"
-	"fmt"
 	"golang.org/x/net/context"
-	"google.golang.org/grpc"
 	"log"
 	"os"
 	"os/exec"
@@ -17,10 +14,10 @@ import (
 
 const REPLICA = 4
 
-var SdfsRootPathp = flag.String("sdfspath", cfg.Cfg.SdfsDir, "The path to sdfs files to be stored")
-var SdfsRootPath string
+var RootPathp = flag.String("sdfspath", cfg.Cfg.SdfsDir, "The path to sdfs files to be stored")
+var RootPath string
 
-func SdfsPut(localFileName, sdfsFilename string) {
+func Put(localFileName, sdfsFilename string) {
 	key := HashToKey(sdfsFilename)
 	client, _ := GetClientOfNodeId(FindNodeId(key, 0))
 	if err := FileTransferToNode(client, localFileName, sdfsFilename, false); err != nil {
@@ -40,7 +37,7 @@ func SdfsPut(localFileName, sdfsFilename string) {
 	}
 }
 
-func SdfsGet(sdfsFilename, localFilename string) {
+func Get(sdfsFilename, localFilename string) {
 	for i := 0; i < 4; i++ {
 		key := HashToKey(sdfsFilename)
 		fileMaster := FindNodeId(key, i)
@@ -58,10 +55,10 @@ func SdfsGet(sdfsFilename, localFilename string) {
 	}
 
 	fileVersion := GetFileVersion(sdfsFilename) // TODO: get from remote
-	currentLocalName := SdfsToLfs(sdfsFilename, fileVersion)
-	log.Println("cp", SdfsRootPath+currentLocalName, localFilename) // TODO
-	err := exec.Command("cp", SdfsRootPath+currentLocalName, localFilename).Run()
-	err = os.Remove(SdfsRootPath + currentLocalName)
+	currentLocalName := SdfsnameToLfs(sdfsFilename, fileVersion)
+	log.Println("cp", RootPath+currentLocalName, localFilename) // TODO
+	err := exec.Command("cp", RootPath+currentLocalName, localFilename).Run()
+	err = os.Remove(RootPath + currentLocalName)
 	if err != nil {
 		log.Println("Error in copy file")
 		return
@@ -69,7 +66,7 @@ func SdfsGet(sdfsFilename, localFilename string) {
 	return
 }
 
-func SdfsDelete(sdfsFilename string) {
+func Delete(sdfsFilename string) {
 	fileKey := HashToKey(sdfsFilename)
 	for i := 0; i < 4; i++ {
 		NodeID := FindNodeId(fileKey, i)
@@ -81,7 +78,7 @@ func SdfsDelete(sdfsFilename string) {
 	}
 }
 
-func SdfsLs(fileName string) []string {
+func Ls(fileName string) []string {
 	retStr := make([]string, 0, 4)
 	fileKey := HashToKey(fileName)
 	for i := 0; i < 4; i++ {
@@ -91,8 +88,8 @@ func SdfsLs(fileName string) []string {
 			if client, err := GetClientOfNodeId(nodeId); err != nil {
 				return nil
 			} else {
-				ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
-				defer cancel()
+				ctx, _ := context.WithTimeout(context.Background(), 30*time.Second)
+				//defer cancel()
 
 				retMessage, err := (*client).PullFiles(ctx, &pb.PullFileInfo{
 					FileName: fileName, FetchType: 2})
@@ -108,7 +105,7 @@ func SdfsLs(fileName string) []string {
 	return retStr
 }
 
-func SdfsStore() []string {
+func Store() []string {
 	listOfFile := ListAllFile()
 	retStr := make([]string, 0)
 	for e := listOfFile.Front(); e != nil; e = e.Next() {
@@ -118,20 +115,20 @@ func SdfsStore() []string {
 	return retStr
 }
 
-func connectPut(IP string) (*grpc.ClientConn, error) {
-	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithInsecure())
-	opts = append(opts, grpc.WithTimeout(time.Second*15))
-	conn, err := grpc.Dial(IP, opts...)
-	if err != nil {
-		message := fmt.Sprintf("CAN NOT CONNECT TO IP %v", IP)
-		log.Println(message)
-		return nil, errors.New(message)
-	}
-	return conn, nil
-}
+//func connectPut(IP string) (*grpc.ClientConn, error) {
+//	var opts []grpc.DialOption
+//	opts = append(opts, grpc.WithInsecure())
+//	opts = append(opts, grpc.WithTimeout(time.Second*15))
+//	conn, err := grpc.Dial(IP, opts...)
+//	if err != nil {
+//		message := fmt.Sprintf("CAN NOT CONNECT TO IP %v", IP)
+//		log.Println(message)
+//		return nil, errors.New(message)
+//	}
+//	return conn, nil
+//}
 
-func SdfsGetVersions(sdfsFilename string, numVersions int, localfilename string) {
+func GetVersions(sdfsFilename string, numVersions int, localfilename string) {
 	file, err := os.Create(localfilename)
 	defer file.Close()
 
@@ -153,23 +150,23 @@ func SdfsGetVersions(sdfsFilename string, numVersions int, localfilename string)
 		endVersion = 0
 	}
 	for i := currVersions; i != endVersion; i-- {
-		localFileName := SdfsToLfs(sdfsFilename, i)
-		localFile, err := os.Open(SdfsRootPath + localFileName)
+		localFileName := SdfsnameToLfs(sdfsFilename, i)
+		localFile, err := os.Open(RootPath + localFileName)
 		if err != nil {
 			log.Println("Cannot get local file" + localFileName)
 			continue
 		}
 		index := strconv.Itoa(i)
-		file.WriteString("File version: " + index + "\n\n")
+		_, _ = file.WriteString("File version: " + index + "\n\n")
 
 		buffer := make([]byte, 1024)
 		n, _ := localFile.Read(buffer)
 
 		for n != 0 {
-			file.Write(buffer[0:n])
+			_, _ = file.Write(buffer[0:n])
 			n, _ = localFile.Read(buffer)
 		}
-		file.WriteString("\n\n")
+		_, _ = file.WriteString("\n\n")
 	}
 	return
 }

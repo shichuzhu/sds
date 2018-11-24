@@ -12,11 +12,6 @@ var (
 	RingSize         = cfg.Cfg.Memlist.RingSize
 )
 
-func ListInfo() {
-	DumpTable() // Will print to stdout
-	fmt.Println("Current process ID is ", MyAddr)
-}
-
 func FormListInfo() string {
 	var response string
 	response += FormDumpTable()

@@ -10,7 +10,7 @@ import (
 	"time"
 )
 
-func configConnection(conn *grpc.ClientConn, index int32, wg *sync.WaitGroup) error {
+func configConnection(conn *grpc.ClientConn, wg *sync.WaitGroup) error {
 	defer wg.Done()
 	defer conn.Close()
 	client := pb.NewServerServicesClient(conn)
@@ -52,7 +52,7 @@ func dconfig() {
 	var wg sync.WaitGroup
 	for i := 0; i < len(conn); i++ {
 		wg.Add(1)
-		configConnection(conn[i], int32(i), &wg)
+		_ = configConnection(conn[i], &wg)
 	}
 	wg.Wait()
 }

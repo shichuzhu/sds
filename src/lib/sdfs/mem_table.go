@@ -7,10 +7,10 @@ import (
 
 var fileMap map[string]int
 
-type nameVersionPair struct {
-	fileName     string
-	lastVersions int
-}
+//type nameVersionPair struct {
+//	fileName     string
+//	lastVersions int
+//}
 
 type FileVersionPair struct {
 	name  string
@@ -48,13 +48,13 @@ func DeleteFileFromTable(fileName string) {
 	delete(fileMap, fileName)
 }
 
-func getFileFoeKey(key int) []FileVersionPair {
-	ret := []FileVersionPair{}
-	for k := range fileMap {
-		if HashToKey(k) == key {
-			pair := FileVersionPair{k, fileMap[k]}
-			ret = append(ret, pair)
-		}
-	}
-	return ret
-}
+//func getFileFoeKey(key int) []FileVersionPair {
+//	ret := []FileVersionPair{}
+//	for k := range fileMap {
+//		if HashToKey(k) == key {
+//			pair := FileVersionPair{k, fileMap[k]}
+//			ret = append(ret, pair)
+//		}
+//	}
+//	return ret
+//}

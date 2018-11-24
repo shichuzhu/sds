@@ -57,7 +57,7 @@ func ReportFailure(addr string) {
 	}
 }
 
-func senderService() error {
+func senderService() {
 	for {
 		memsToPing := MemList.getPingTargets(NodeNumberToPing)
 		//log.Printf("memsToPing %s\n", memsToPing)
@@ -81,5 +81,4 @@ func senderService() error {
 			}
 		}
 	}
-	return nil
 }

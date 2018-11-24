@@ -17,7 +17,7 @@ func SetupGRpc() {
 	}
 	grpcServer = grpc.NewServer()
 	pb.RegisterServerServicesServer(grpcServer, &serviceServer{})
-	pb.RegisterSdfsServicesServer(grpcServer, &sdfs.SdfsServer{})
+	pb.RegisterSdfsServicesServer(grpcServer, &sdfs.Server{})
 	go grpcServer.Serve(lis)
 }
 

@@ -60,7 +60,7 @@ func (s *serviceServer) ActMembership(_ context.Context, argsMsgs *pb.StringArra
 		memlist.JoinByIntroducer(args[1])
 	default:
 		fmt.Println("Invalid input.")
-		return nil, errors.New("Invalid input")
+		return nil, errors.New("invalid input")
 	}
 	return &pb.StringMessage{Mesg: response}, nil
 }

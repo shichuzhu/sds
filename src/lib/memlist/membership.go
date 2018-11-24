@@ -244,13 +244,6 @@ func GetListElement() ([]string, []int, []int) {
 	return ret1, ret2, ret3
 }
 
-func DumpTable() {
-	table, _, _ := GetListElement()
-	for i, t := range table {
-		fmt.Printf("Index %d is Process: %s\n", i, t)
-	}
-}
-
 func FormDumpTable() string {
 	var response string
 	table, _, tid := GetListElement()

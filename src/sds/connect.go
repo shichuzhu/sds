@@ -5,18 +5,25 @@ import (
 	"fa18cs425mp/src/lib/memlist"
 	"fa18cs425mp/src/shared/cfg"
 	"fmt"
+	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"log"
 	"strconv"
 	"time"
 )
 
-var opts []grpc.DialOption
+var (
+	ctx    context.Context
+	opts   []grpc.DialOption
+	cancel context.CancelFunc
+)
+
+func init() {
+	ctx, cancel = context.WithTimeout(context.Background(), 3*time.Second)
+	opts = append(opts, grpc.WithInsecure())
+}
 
 func Connect() ([]*grpc.ClientConn, error) {
-	opts = append(opts, grpc.WithInsecure())
-	opts = append(opts, grpc.WithTimeout(time.Second*3))
-
 	var ret []*grpc.ClientConn
 
 	for _, i := range TargetNodes {
@@ -34,8 +41,9 @@ func Connect() ([]*grpc.ClientConn, error) {
 }
 
 func helper(IP string, port int) (*grpc.ClientConn, error) {
+	defer cancel()
 	strAddr := IP + ":" + strconv.Itoa(port)
-	conn, err := grpc.Dial(strAddr, opts...)
+	conn, err := grpc.DialContext(ctx, strAddr, opts...)
 	if err != nil {
 		message := fmt.Sprintf("CAN NOT CONNECT TO IP %v", strAddr)
 		log.Println(message)
@@ -45,8 +53,6 @@ func helper(IP string, port int) (*grpc.ClientConn, error) {
 }
 
 func ConnectLocal() (*grpc.ClientConn, error) {
-	opts = append(opts, grpc.WithInsecure())
-	opts = append(opts, grpc.WithTimeout(time.Second*3))
 	localIp := memlist.GetOutboundIP().String()
 	return helper(localIp, cfg.Cfg.DefaultTCPPort)
 }

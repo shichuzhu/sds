@@ -18,14 +18,14 @@ var (
 
 func parseOverallParas() error {
 	if len(os.Args) <= 1 {
-		return errors.New("No action specified by 'sds' command.")
+		return errors.New("no action specified by 'sds' command")
 	}
 	ArgsCopy = make([]string, len(os.Args))
 	copy(ArgsCopy, os.Args)
 
 	flagSet := ParseArgs(nil, &ArgsCopy)
 	if flagSet == nil {
-		return errors.New("Fail to parse Overall parameters")
+		return errors.New("fail to parse Overall parameters")
 	}
 
 	Action = ArgsCopy[0]

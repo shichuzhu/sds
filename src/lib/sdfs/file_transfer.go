@@ -70,7 +70,7 @@ func FileTransferToNode(client *pb.SdfsServicesClient, localFilePath, sdfsFilePa
 		sdfsFilePath, version = LfsToSdfs(filepath.Base(localFilePath))
 	} else if localFilePath == "" {
 		version = GetFileVersion(sdfsFilePath)
-		localFilePath = SdfsToLfs(sdfsFilePath, version)
+		localFilePath = SdfsnameToLfs(sdfsFilePath, version)
 	}
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
@@ -89,7 +89,7 @@ func FileTransferToNode(client *pb.SdfsServicesClient, localFilePath, sdfsFilePa
 			Config: &pb.FileCfg{RepNumber: 0, FileVersion: int32(version),
 				RemoteFilepath: sdfsFilePath, IgnoreMemtable: igMT}}}
 
-	fileClient.Send(message)
+	_ = fileClient.Send(message)
 
 	buf := make([]byte, 1024)
 
@@ -98,7 +98,7 @@ func FileTransferToNode(client *pb.SdfsServicesClient, localFilePath, sdfsFilePa
 		message = &pb.FileTransMessage{
 			Message: &pb.FileTransMessage_Chunk{Chunk: buf[0:n]},
 		}
-		fileClient.Send(message)
+		_ = fileClient.Send(message)
 		n, _ = file.Read(buf)
 	}
 
@@ -113,10 +113,9 @@ func FileTransferToNode(client *pb.SdfsServicesClient, localFilePath, sdfsFilePa
 }
 
 func connect(IP string) (*grpc.ClientConn, error) {
-	var opts []grpc.DialOption
-	opts = append(opts, grpc.WithInsecure())
-	opts = append(opts, grpc.WithTimeout(time.Second*3))
-	conn, err := grpc.Dial(IP, opts...)
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+	conn, err := grpc.DialContext(ctx, IP, grpc.WithInsecure())
 	if err != nil {
 		message := fmt.Sprintf("CAN NOT CONNECT TO IP %v", IP)
 		log.Println(message)

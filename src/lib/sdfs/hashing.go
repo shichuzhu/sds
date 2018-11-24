@@ -13,7 +13,7 @@ var RUNES = []rune("01/V")
 
 func HashToKey(str string) int {
 	h := fnv.New32()
-	h.Write([]byte(str))
+	_, _ = h.Write([]byte(str))
 	return int(h.Sum32()) % ms.RingSize
 }
 
@@ -26,7 +26,7 @@ func FindNodeId(key int, successor int) int {
 	return tmp.NodeId()
 }
 
-func SdfsToLfs(s string, v int) string {
+func SdfsnameToLfs(s string, v int) string {
 	n := len(s)
 	lfn := &utils.Builder{}
 	lfn.Grow(2*n + 2)
