@@ -13,13 +13,10 @@ import (
 )
 
 var (
-	ctx    context.Context
-	opts   []grpc.DialOption
-	cancel context.CancelFunc
+	opts []grpc.DialOption
 )
 
 func init() {
-	ctx, cancel = context.WithTimeout(context.Background(), 3*time.Second)
 	opts = append(opts, grpc.WithInsecure())
 }
 
@@ -41,6 +38,7 @@ func Connect() ([]*grpc.ClientConn, error) {
 }
 
 func helper(IP string, port int) (*grpc.ClientConn, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
 	defer cancel()
 	strAddr := IP + ":" + strconv.Itoa(port)
 	conn, err := grpc.DialContext(ctx, strAddr, opts...)
