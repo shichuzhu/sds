@@ -1,0 +1,23 @@
+{
+  "bolts": [
+    {
+      "id": 0,
+      "name": "spout",
+      "pred": []
+    },
+    {
+      "id": 1,
+      "name": "ExclaimAdder",
+      "pred": [
+        0
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Halver",
+      "pred": [
+        1
+      ]
+    }
+  ]
+}
