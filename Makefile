@@ -43,7 +43,7 @@ localsetup:
 	protoc -I src/pb/ src/pb/server_services.proto --go_out=plugins=grpc:src/pb
 
 buildlocal:
-	go install fa18cs425mp/...
+	go install fa18cs425mp/src/...
 
 runlocal: buildlocal
 	dserver -port 10001 -pfd 11001 -nodeid 1 &

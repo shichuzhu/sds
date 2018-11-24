@@ -19,8 +19,6 @@ func init() {
 func GetBolt() stream.BoltABC {
 	var bolt stream.BoltABC
 	switch *BoltId {
-	case 0:
-		bolt = &Spout{}
 	case 1:
 		bolt = &ExclaimAdder{}
 	case 2:
@@ -32,8 +30,21 @@ func GetBolt() stream.BoltABC {
 	return bolt
 }
 
+func GetSpout() stream.SpoutABC {
+	return &Spout{}
+}
+
+func isSpout() bool {
+	return *BoltId == 0
+}
+
 func main() {
-	bolt := GetBolt()
-	bolt.Init()
-	bolt.NextTuple()
+	if isSpout() {
+		spout := GetSpout()
+		spout.NextTuple()
+	} else {
+		bolt := GetBolt()
+		bolt.Init()
+		bolt.Execute()
+	}
 }
