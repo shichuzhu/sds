@@ -1,5 +1,24 @@
 # FA18CS425MP
 
+## MP4
+
+### Design
+
+Entities:
+1. Master per system
+2. Stand-by master per system
+3. Supervisor per VM
+4. Task
+5. Client. Submit job. Local code, SDFS data sources (both input data and file databases).
+
+* Master and supervisor detect each other's failure.
+* Supervisor detect Tasks' failure.
+i.e. each tasks owns a Unix domain socket on disk and supervisor 'connect/search' for its existence.
+  * If any socket exists, supervisor needs to report its failure upon starting.
+  * TODO: Current implementation doesn't support node rejoining.
+  Therefore, always assume all tasks fail simultaneously
+  * TODO: In the sds close method, need to close all the bolts tasks as well.
+
 ## MP3
 
 ### Installation

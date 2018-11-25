@@ -18,3 +18,8 @@ type BoltABC interface {
 	//Pack()
 	CollectorABC
 }
+
+type SinkABC interface {
+	BoltABC
+	CheckPoint()
+}

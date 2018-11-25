@@ -14,3 +14,7 @@ func (s *Halver) Init() {
 func (s *Halver) Execute() {
 	return
 }
+
+func (s *Halver) CheckPoint() {
+	return
+}
