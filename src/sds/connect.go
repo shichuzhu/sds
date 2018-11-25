@@ -1,11 +1,11 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"fa18cs425mp/src/lib/memlist"
 	"fa18cs425mp/src/shared/cfg"
 	"fmt"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"log"
 	"strconv"

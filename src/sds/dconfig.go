@@ -1,9 +1,9 @@
 package main
 
 import (
+	"context"
 	"fa18cs425mp/src/pb"
 	"fmt"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"os"
 	"sync"

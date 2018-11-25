@@ -1,10 +1,10 @@
 package sdfs
 
 import (
+	"context"
 	"errors"
 	"fa18cs425mp/src/pb"
 	"fa18cs425mp/src/shared/sdfs2fd"
-	"golang.org/x/net/context"
 	"log"
 	"os"
 	"strconv"

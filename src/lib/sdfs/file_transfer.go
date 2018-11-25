@@ -1,11 +1,11 @@
 package sdfs
 
 import (
+	"context"
 	"errors"
 	"fa18cs425mp/src/lib/memlist"
 	"fa18cs425mp/src/pb"
 	"fmt"
-	"golang.org/x/net/context"
 	"google.golang.org/grpc"
 	"log"
 	"os"
