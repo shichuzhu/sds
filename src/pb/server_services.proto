@@ -28,8 +28,11 @@ service SdfsServices {
     }
 }
 
-// Stream processing services
 service StreamProcServices {
+    // Submit job client stub
+    rpc SubmitJob (TopoConfig) returns (TopoConfig) {
+    }
+    // Stream processing services
     rpc SpawnTask (TaskCfg) returns (TaskCfg) {
     }
     rpc Anchor (TaskCfg) returns (TaskCfg) {
@@ -47,8 +50,7 @@ service StreamProcServices {
 message TaskCfg {
     /* Request */
     // SpawnTask
-    int64 bolt_id = 1;
-    bool is_sink = 2;
+    Bolt bolt = 1;
     // Anchor
     repeated string pred_addrs = 3;
     int64 cp_id = 4; // checkpoint ID
@@ -59,11 +61,19 @@ message TaskCfg {
     string listen_addr = 14;
 }
 
+message Bolt {
+    bool is_sink = 1;
+    int64 bolt_id = 2;
+    string name = 3;
+    repeated int64 preds = 4;
+}
+
 message TopoConfig {
     repeated Worker workers = 1;
     int64 cp_id = 2;
     string master_addr = 3;
     string standby_master_addr = 4;
+    repeated Bolt bolts = 5;
 
     message Worker {
         int64 node_id = 1;
