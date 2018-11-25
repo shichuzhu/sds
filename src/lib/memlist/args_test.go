@@ -3,9 +3,10 @@ package memlist_test
 import (
 	"fmt"
 	"os"
+	"testing"
 )
 
-func main_test_mp2() {
+func Test_mp2(t *testing.T) {
 	if len(os.Args) <= 1 {
 		fmt.Println("No action specified by 'sds' command.")
 		return

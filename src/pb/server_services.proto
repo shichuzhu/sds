@@ -28,6 +28,50 @@ service SdfsServices {
     }
 }
 
+// Stream processing services
+service StreamProcServices {
+    rpc SpawnTask (TaskCfg) returns (TaskCfg) {
+    }
+    rpc Anchor (TaskCfg) returns (TaskCfg) {
+    }
+    rpc CheckPoint (TaskCfg) returns (TaskCfg) {
+    }
+    rpc Terminate (TaskCfg) returns (TaskCfg) {
+    }
+    // system state to sync between masters
+    rpc SyncMasterState (TopoConfig) returns (TopoConfig) {
+    }
+}
+
+// Stream processing messages
+message TaskCfg {
+    /* Request */
+    // SpawnTask
+    int64 bolt_id = 1;
+    bool is_sink = 2;
+    // Anchor
+    repeated string pred_addrs = 3;
+    int64 cp_id = 4; // checkpoint ID
+
+    /* Response */
+    bool success = 15;
+    // SpawnTask
+    string listen_addr = 14;
+}
+
+message TopoConfig {
+    repeated Worker workers = 1;
+    int64 cp_id = 2;
+    string master_addr = 3;
+    string standby_master_addr = 4;
+
+    message Worker {
+        int64 node_id = 1;
+        repeated TaskCfg tasks = 2;
+    }
+}
+
+// dserver messages
 message ConfigInfo {
     int32 log_level = 1;
     int32 vm_index = 2;
