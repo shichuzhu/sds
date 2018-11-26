@@ -27,7 +27,7 @@ func CompilePlugin(cfg *pb.TaskCfg) *plugin.Plugin {
 	cmd = "unzip -d " + dirpath + "src " + dirpath + "src/" + cfg.JobName + ".zip"
 	_ = utils.RunShellString(cmd)
 	filepath := dirpath + "plugin/" + cfg.JobName + ".so"
-	cmd = "go build -buildmode=plugin -o " + filepath + " fa18cs425mp/" + dirpath + "src/" + cfg.JobName
+	cmd = "go build -buildmode=plugin -o " + filepath + " fa18cs425mp/" + dirpath + "src/"
 	_ = utils.RunShellString(cmd)
 	plug, err := plugin.Open(filepath)
 	if err != nil {
@@ -38,8 +38,19 @@ func CompilePlugin(cfg *pb.TaskCfg) *plugin.Plugin {
 	}
 }
 
-func SpawnTask(cfg *pb.TaskCfg, plug *plugin.Plugin) shared.SpoutABC {
-	sym, err := plug.Lookup("NewSpout")
+func SpawnBoltTask(cfg *pb.TaskCfg, plug *plugin.Plugin) shared.BoltABC {
+	sym, err := plug.Lookup("New" + cfg.Bolt.Name)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	var bolt shared.BoltABC
+	bolt = sym.(func() shared.BoltABC)()
+	return bolt
+}
+
+func SpawnSpoutTask(cfg *pb.TaskCfg, plug *plugin.Plugin) shared.SpoutABC {
+	sym, err := plug.Lookup("New" + cfg.Bolt.Name)
 	if err != nil {
 		log.Println(err)
 		return nil

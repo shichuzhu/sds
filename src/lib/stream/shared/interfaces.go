@@ -1,22 +1,22 @@
 package shared
 
 type CollectorABC interface {
-	Emit()
-	Ack()
-	Fail()
+	Emit([]byte)
+	//Ack()
+	//Fail()
 }
 
 type SpoutABC interface {
-	Init()
-	NextTuple()
+	Init() error
+	NextTuple(CollectorABC)
 }
 
 type BoltABC interface {
-	Init()
+	Init() error
 	//Unpack()
-	Execute()
+	Execute([]byte, CollectorABC)
 	//Pack()
-	CollectorABC
+	//CollectorABC
 }
 
 type SinkABC interface {
@@ -24,18 +24,18 @@ type SinkABC interface {
 	CheckPoint()
 }
 
-type Collector struct {
-	// state
-}
+//type Collector struct {
+//	state
+//}
+//
+//func (s *Collector) Emit() {
+//	return
+//}
 
-func (s *Collector) Emit() {
-	return
-}
-
-func (s *Collector) Ack() {
-	return
-}
-
-func (s *Collector) Fail() {
-	return
-}
+//func (s *Collector) Ack() {
+//	return
+//}
+//
+//func (s *Collector) Fail() {
+//	return
+//}

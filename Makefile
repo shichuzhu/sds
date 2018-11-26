@@ -61,6 +61,9 @@ runlocal: buildlocal
 	sleep 0.5
 	#sds grep -c 123456 '*'
 
+testbuild:
+	go build -buildmode=plugin -o data/mp4/exclamation/plugin/exclamation.so fa18cs425mp/examples/streamProcessing/exclamation
+
 test:
 	test/mp1/runtest
 
