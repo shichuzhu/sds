@@ -2,6 +2,7 @@ package worker
 
 import (
 	"fa18cs425mp/src/lib/stream/config"
+	"fa18cs425mp/src/lib/stream/shared"
 	"fa18cs425mp/src/lib/utils"
 	"fa18cs425mp/src/pb"
 	"flag"
@@ -20,21 +21,38 @@ func TestSpawnBolt(t *testing.T) {
 	plug := CompilePlugin(cfg)
 	col := &Collector{}
 
-	spout1 := SpawnSpoutTask(cfg, plug)
-	_ = spout1.Init()
+	spout := SpawnSpoutTask(cfg, plug)
+	_ = spout.Init()
 	spout2 := SpawnSpoutTask(cfg, plug)
 	_ = spout2.Init()
 
 	cfg.Bolt.Name = "ExclaimAdder"
 	bolt1 := SpawnBoltTask(cfg, plug)
+	_ = bolt1.Init()
+	cfg.Bolt.Name = "Halver"
+	bolt2 := SpawnBoltTask(cfg, plug)
+	_ = bolt2.Init()
 
-	bolt1.Execute(nil, col)
-	spout1.NextTuple(col)
-	bolt1.Execute(nil, col)
-	spout1.NextTuple(col)
-	bolt1.Execute(nil, col)
+	spout.NextTuple(col)
+	bolt1.Execute(col.state, col)
+	bolt2.Execute(col.state, col)
+
+	spout.NextTuple(col)
+	bolt1.Execute(col.state, col)
+	bolt2.Execute(col.state, col)
+
+	spout.NextTuple(col)
+	bolt1.Execute(col.state, col)
+	bolt2.Execute(col.state, col)
+
 	spout2.NextTuple(col)
-	bolt1.Execute(nil, col)
+	bolt1.Execute(col.state, col)
+	bolt2.Execute(col.state, col)
+
+	sink, ok := bolt2.(shared.SinkABC)
+	if ok {
+		sink.CheckPoint()
+	}
 }
 
 type Collector struct {

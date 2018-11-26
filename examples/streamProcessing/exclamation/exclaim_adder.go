@@ -1,8 +1,10 @@
 package main
 
-import "fa18cs425mp/src/lib/stream/shared"
+import (
+	"fa18cs425mp/src/lib/stream/shared"
+	"github.com/golang/protobuf/proto"
+)
 
-// TODO: implement me and chain the bytes in spawn_task_test.go
 type ExclaimAdder struct {
 	// states
 }
@@ -16,6 +18,15 @@ func (s *ExclaimAdder) Init() error {
 }
 
 func (s *ExclaimAdder) Execute(arr []byte, abc shared.CollectorABC) {
-	abc.Emit(arr)
+	obj := new(Words)
+	_ = proto.Unmarshal(arr, obj)
+
+	another := []string{}
+	for _, word := range obj.Words {
+		another = append(another, word+"!!!")
+	}
+	anotherObj := &Words{Words: another}
+	anotherArr, _ := proto.Marshal(anotherObj)
+	abc.Emit(anotherArr)
 	return
 }

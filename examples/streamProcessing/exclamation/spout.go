@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"fa18cs425mp/src/lib/stream/shared"
 	"fmt"
+	"github.com/golang/protobuf/proto"
 	"log"
 	"os"
+	"strings"
 )
 
 type Spout struct {
@@ -33,8 +35,9 @@ func (s *Spout) Init() error {
 
 func (s *Spout) NextTuple(collector shared.CollectorABC) {
 	if s.scanner.Scan() {
-		text := s.scanner.Text()
-		fmt.Println("Sending: ", text)
-		collector.Emit([]byte(text))
+		obj := Words{Words: strings.Split(s.scanner.Text(), " ")}
+		bts, _ := proto.Marshal(&obj)
+		fmt.Println("Sending: ", obj)
+		collector.Emit(bts)
 	}
 }
