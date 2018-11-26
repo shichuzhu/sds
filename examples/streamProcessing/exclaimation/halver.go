@@ -1,10 +1,12 @@
 package main
 
-import "fa18cs425mp/src/lib/stream"
+import (
+	"fa18cs425mp/src/lib/stream/shared"
+)
 
 type Halver struct {
 	// states
-	*stream.Collector
+	*shared.Collector
 }
 
 func (s *Halver) Init() {

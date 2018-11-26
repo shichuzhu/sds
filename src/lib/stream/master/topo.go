@@ -1,4 +1,4 @@
-package main
+package master
 
 import (
 	"encoding/json"
@@ -6,18 +6,17 @@ import (
 	"io/ioutil"
 )
 
-var Cfg Config
-
-func init() {
-	fileContent, err := ioutil.ReadFile(*configFileName)
+func ReadConfig(configFileName string) (Cfg *Config) {
+	fileContent, err := ioutil.ReadFile(configFileName)
 	if err != nil {
 		fmt.Println("Cannot read the topology config file")
 		return
 	}
-	if err := json.Unmarshal(fileContent, &Cfg); err != nil {
+	if err := json.Unmarshal(fileContent, Cfg); err != nil {
 		fmt.Println("Fail to parse the JSON topology file")
 		return
 	}
+	return
 }
 
 type Config struct {

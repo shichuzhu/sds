@@ -3,6 +3,7 @@ package main
 import (
 	"fa18cs425mp/src/lib/memlist"
 	"fa18cs425mp/src/lib/sdfs"
+	"fa18cs425mp/src/lib/stream"
 	"fa18cs425mp/src/pb"
 	"fmt"
 	"google.golang.org/grpc"
@@ -18,6 +19,7 @@ func SetupGRpc() {
 	grpcServer = grpc.NewServer()
 	pb.RegisterServerServicesServer(grpcServer, &serviceServer{})
 	pb.RegisterSdfsServicesServer(grpcServer, &sdfs.Server{})
+	pb.RegisterStreamProcServicesServer(grpcServer, &stream.StreamProcServer{})
 	go grpcServer.Serve(lis)
 }
 
