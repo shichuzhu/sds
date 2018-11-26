@@ -51,7 +51,6 @@ func InitialSdfs() {
 	RootPath = *RootPathp
 	sdfs2fd.Fd2Sdfs = make(chan int)
 	sdfs2fd.Sdfs2Fd = make(chan int)
-	// TODO: Error handling
 	_ = os.RemoveAll(RootPath)
 	_ = os.Mkdir(RootPath, os.ModePerm)
 	MemTableIntial()

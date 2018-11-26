@@ -1,32 +1,22 @@
 package worker
 
 import (
-	"fa18cs425mp/src/lib/stream/shared"
-	"log"
-	"plugin"
+	"fa18cs425mp/src/lib/stream/config"
+	"fa18cs425mp/src/lib/utils"
+	"fa18cs425mp/src/pb"
+	"flag"
 	"testing"
 )
 
 func TestSpawnBolt(t *testing.T) {
-	spout1 := SpawnTask()
+	flag.Parse()
+	config.InitialCrane()
+	cfg := &pb.TaskCfg{JobName: "exclamation"}
+	SetupDirectories(cfg)
+	_ = utils.RunShellString("cp test/mp4/user_code/exclamation.zip data/mp4/exclamation/src")
+	plug := CompilePlugin(cfg)
+	spout1 := SpawnTask(cfg, plug)
 	spout1.Init()
-	spout2 := SpawnTask()
+	spout2 := SpawnTask(cfg, plug)
 	spout2.Init()
-}
-
-func SpawnTask() shared.SpoutABC {
-	filepath := "/home/shichu/usr/gopath/src/fa18cs425mp/exclaimation.so"
-	plug, err := plugin.Open(filepath)
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
-	sym, err := plug.Lookup("NewSpout")
-	if err != nil {
-		log.Println(err)
-		return nil
-	}
-	var spout shared.SpoutABC
-	spout = sym.(func() shared.SpoutABC)()
-	return spout
 }

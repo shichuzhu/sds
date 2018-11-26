@@ -4,6 +4,7 @@
   "logDir": "data/mp2/",
   "sdfsDir": "data/mp3/",
   "grepDir": "data/",
+  "streamDir": "data/mp4/",
   "memlist": {
     "failureTimeout": 1800,
     "nodeNumberToPing": 3,

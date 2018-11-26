@@ -44,13 +44,25 @@ service StreamProcServices {
     // system state to sync between masters
     rpc SyncMasterState (TopoConfig) returns (TopoConfig) {
     }
+    // For bolts communication, TaskCfg acts as a credential token
+    rpc StreamTuples (TaskCfg) returns (stream BytesTuple) {
+    }
+}
+
+message BytesTuple {
+    oneof bytes_oneof {
+        bytes tuple = 1;
+        // ack, fail, checkpoint etc. Can be expanded.
+        int64 control_signal = 2;
+    }
 }
 
 // Stream processing messages
 message TaskCfg {
     /* Request */
+    string job_name = 1;
     // SpawnTask
-    Bolt bolt = 1;
+    Bolt bolt = 2;
     // Anchor
     repeated string pred_addrs = 3;
     int64 cp_id = 4; // checkpoint ID

@@ -1,4 +1,4 @@
-package stream
+package services
 
 import (
 	"context"
@@ -32,4 +32,9 @@ func (s *StreamProcServer) CheckPoint(ctx context.Context, cfg *pb.TaskCfg) (*pb
 
 func (s *StreamProcServer) Terminate(ctx context.Context, cfg *pb.TaskCfg) (*pb.TaskCfg, error) {
 	return nil, nil
+}
+
+func (s *StreamProcServer) StreamTuples(cfg *pb.TaskCfg, stream pb.StreamProcServices_StreamTuplesServer) error {
+	// If idle, send some heartbeat back to client
+	return nil
 }

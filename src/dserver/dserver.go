@@ -3,6 +3,7 @@ package main
 import (
 	"fa18cs425mp/src/lib/memlist"
 	"fa18cs425mp/src/lib/sdfs"
+	"fa18cs425mp/src/lib/stream/config"
 	"fa18cs425mp/src/lib/utils"
 	"fa18cs425mp/src/shared/cfg"
 	"fa18cs425mp/src/shared/sdfs2fd"
@@ -30,6 +31,7 @@ func main() {
 	memlist.StartFailureDetector()
 
 	sdfs.InitialSdfs()
+	config.InitialCrane()
 	defer close(sdfs2fd.Fd2Sdfs)
 
 	switch <-closeSigs {

@@ -16,6 +16,7 @@ type ConfigType struct {
 	LogDir         string `json:"logDir"`
 	SdfsDir        string `json:"sdfsDir"`
 	GrepDir        string `json:"grepDir"`
+	StreamDir      string `json:"streamDir"`
 	Memlist        struct {
 		FailureTimeout   int `json:"failureTimeout"`
 		NodeNumberToPing int `json:"nodeNumberToPing"`
