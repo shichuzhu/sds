@@ -1,4 +1,4 @@
-.idea/
-data/
+/.idea/
+/data/
 SOURCEME.sh
 cfg.json
