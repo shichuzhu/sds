@@ -19,7 +19,7 @@ func TestSpawnBolt(t *testing.T) {
 	_ = utils.RunShellString("zip -rj data/mp4/exclamation/src/exclamation.zip examples/streamProcessing/exclamation")
 	//_ = utils.RunShellString("cp test/mp4/user_code/exclamation.zip data/mp4/exclamation/src")
 	plug := CompilePlugin(cfg)
-	col := &TestCollector{}
+	col := new(TestCollector)
 
 	spout := SpawnSpoutTask(cfg, plug)
 	_ = spout.Init()

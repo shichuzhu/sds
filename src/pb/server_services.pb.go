@@ -4,9 +4,9 @@
 package pb
 
 import (
-	context "context"
 	fmt "fmt"
 	proto "github.com/golang/protobuf/proto"
+	context "golang.org/x/net/context"
 	grpc "google.golang.org/grpc"
 	math "math"
 )
@@ -20,7 +20,7 @@ var _ = math.Inf
 // is compatible with the proto package it is being compiled against.
 // A compilation error at this line likely means your copy of the
 // proto package needs to be updated.
-const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
+const _ = proto.ProtoPackageIsVersion2 // please upgrade the proto package
 
 type BytesTuple struct {
 	// Types that are valid to be assigned to BytesOneof:
@@ -94,12 +94,69 @@ func (m *BytesTuple) GetControlSignal() int64 {
 	return 0
 }
 
-// XXX_OneofWrappers is for the internal use of the proto package.
-func (*BytesTuple) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*BytesTuple) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _BytesTuple_OneofMarshaler, _BytesTuple_OneofUnmarshaler, _BytesTuple_OneofSizer, []interface{}{
 		(*BytesTuple_Tuple)(nil),
 		(*BytesTuple_ControlSignal)(nil),
 	}
+}
+
+func _BytesTuple_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*BytesTuple)
+	// bytes_oneof
+	switch x := m.BytesOneof.(type) {
+	case *BytesTuple_Tuple:
+		b.EncodeVarint(1<<3 | proto.WireBytes)
+		b.EncodeRawBytes(x.Tuple)
+	case *BytesTuple_ControlSignal:
+		b.EncodeVarint(2<<3 | proto.WireVarint)
+		b.EncodeVarint(uint64(x.ControlSignal))
+	case nil:
+	default:
+		return fmt.Errorf("BytesTuple.BytesOneof has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _BytesTuple_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*BytesTuple)
+	switch tag {
+	case 1: // bytes_oneof.tuple
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeRawBytes(true)
+		m.BytesOneof = &BytesTuple_Tuple{x}
+		return true, err
+	case 2: // bytes_oneof.control_signal
+		if wire != proto.WireVarint {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeVarint()
+		m.BytesOneof = &BytesTuple_ControlSignal{int64(x)}
+		return true, err
+	default:
+		return false, nil
+	}
+}
+
+func _BytesTuple_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*BytesTuple)
+	// bytes_oneof
+	switch x := m.BytesOneof.(type) {
+	case *BytesTuple_Tuple:
+		n += 1 // tag and wire
+		n += proto.SizeVarint(uint64(len(x.Tuple)))
+		n += len(x.Tuple)
+	case *BytesTuple_ControlSignal:
+		n += 1 // tag and wire
+		n += proto.SizeVarint(uint64(x.ControlSignal))
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
 }
 
 // Stream processing messages
@@ -889,15 +946,77 @@ func (m *FileTransMessage) GetConfig() *FileCfg {
 	return nil
 }
 
-// XXX_OneofWrappers is for the internal use of the proto package.
-func (*FileTransMessage) XXX_OneofWrappers() []interface{} {
-	return []interface{}{
+// XXX_OneofFuncs is for the internal use of the proto package.
+func (*FileTransMessage) XXX_OneofFuncs() (func(msg proto.Message, b *proto.Buffer) error, func(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error), func(msg proto.Message) (n int), []interface{}) {
+	return _FileTransMessage_OneofMarshaler, _FileTransMessage_OneofUnmarshaler, _FileTransMessage_OneofSizer, []interface{}{
 		(*FileTransMessage_Chunk)(nil),
 		(*FileTransMessage_Config)(nil),
 	}
 }
 
-//For pull file
+func _FileTransMessage_OneofMarshaler(msg proto.Message, b *proto.Buffer) error {
+	m := msg.(*FileTransMessage)
+	// message
+	switch x := m.Message.(type) {
+	case *FileTransMessage_Chunk:
+		b.EncodeVarint(1<<3 | proto.WireBytes)
+		b.EncodeRawBytes(x.Chunk)
+	case *FileTransMessage_Config:
+		b.EncodeVarint(2<<3 | proto.WireBytes)
+		if err := b.EncodeMessage(x.Config); err != nil {
+			return err
+		}
+	case nil:
+	default:
+		return fmt.Errorf("FileTransMessage.Message has unexpected type %T", x)
+	}
+	return nil
+}
+
+func _FileTransMessage_OneofUnmarshaler(msg proto.Message, tag, wire int, b *proto.Buffer) (bool, error) {
+	m := msg.(*FileTransMessage)
+	switch tag {
+	case 1: // message.chunk
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		x, err := b.DecodeRawBytes(true)
+		m.Message = &FileTransMessage_Chunk{x}
+		return true, err
+	case 2: // message.config
+		if wire != proto.WireBytes {
+			return true, proto.ErrInternalBadWireType
+		}
+		msg := new(FileCfg)
+		err := b.DecodeMessage(msg)
+		m.Message = &FileTransMessage_Config{msg}
+		return true, err
+	default:
+		return false, nil
+	}
+}
+
+func _FileTransMessage_OneofSizer(msg proto.Message) (n int) {
+	m := msg.(*FileTransMessage)
+	// message
+	switch x := m.Message.(type) {
+	case *FileTransMessage_Chunk:
+		n += 1 // tag and wire
+		n += proto.SizeVarint(uint64(len(x.Chunk)))
+		n += len(x.Chunk)
+	case *FileTransMessage_Config:
+		s := proto.Size(x.Config)
+		n += 1 // tag and wire
+		n += proto.SizeVarint(uint64(s))
+		n += s
+	case nil:
+	default:
+		panic(fmt.Sprintf("proto: unexpected type %T in oneof", x))
+	}
+	return n
+}
+
+// For pull file
 type PullFileInfo struct {
 	FileName  string `protobuf:"bytes,1,opt,name=file_name,json=fileName,proto3" json:"file_name,omitempty"`
 	NumOfFile int32  `protobuf:"varint,2,opt,name=num_of_file,json=numOfFile,proto3" json:"num_of_file,omitempty"`
