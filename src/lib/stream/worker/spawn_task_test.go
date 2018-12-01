@@ -19,7 +19,7 @@ func TestSpawnBolt(t *testing.T) {
 	_ = utils.RunShellString("zip -rj data/mp4/exclamation/src/exclamation.zip examples/streamProcessing/exclamation")
 	//_ = utils.RunShellString("cp test/mp4/user_code/exclamation.zip data/mp4/exclamation/src")
 	plug := CompilePlugin(cfg)
-	col := &Collector{}
+	col := &TestCollector{}
 
 	spout := SpawnSpoutTask(cfg, plug)
 	_ = spout.Init()
@@ -55,11 +55,11 @@ func TestSpawnBolt(t *testing.T) {
 	}
 }
 
-type Collector struct {
+type TestCollector struct {
 	state []byte
 }
 
-func (s *Collector) Emit(arr []byte) {
+func (s *TestCollector) Emit(arr []byte) {
 	if arr != nil {
 		s.state = arr
 	}

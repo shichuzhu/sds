@@ -65,7 +65,8 @@ message TaskCfg {
     Bolt bolt = 2;
     // Anchor
     repeated string pred_addrs = 3;
-    int64 cp_id = 4; // checkpoint ID
+    int64 task_id = 4;
+    int64 cp_id = 5; // checkpoint ID
 
     /* Response */
     bool success = 15;

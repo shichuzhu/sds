@@ -22,7 +22,7 @@ func (s *Halver) Execute(arr []byte, abc shared.CollectorABC) {
 	obj := new(Words)
 	_ = proto.Unmarshal(arr, obj)
 
-	another := []string{}
+	var another []string
 	for i, word := range obj.Words {
 		if i%2 == 0 {
 			another = append(another, word)
