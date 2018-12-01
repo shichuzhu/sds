@@ -23,6 +23,7 @@ func (s *StreamProcServer) SpawnTask(ctx context.Context, cfg *pb.TaskCfg) (*pb.
 }
 
 func (s *StreamProcServer) Anchor(ctx context.Context, cfg *pb.TaskCfg) (*pb.TaskCfg, error) {
+	// TODO: call task.StreamTuple
 	return nil, nil
 }
 
@@ -34,7 +35,7 @@ func (s *StreamProcServer) Terminate(ctx context.Context, cfg *pb.TaskCfg) (*pb.
 	return nil, nil
 }
 
+// This function should not return
 func (s *StreamProcServer) StreamTuples(cfg *pb.TaskCfg, stream pb.StreamProcServices_StreamTuplesServer) error {
-	// If idle, send some heartbeat back to client
 	return nil
 }

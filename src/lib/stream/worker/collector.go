@@ -8,8 +8,8 @@ type Collector struct {
 	stream pb.StreamProcServices_StreamTuplesServer
 }
 
-func NewCollector(cfg *pb.TaskCfg) *Collector {
-	return new(Collector)
+func NewCollector(server pb.StreamProcServices_StreamTuplesServer) *Collector {
+	return &Collector{stream: server}
 }
 
 func (s *Collector) Emit(arr []byte) {

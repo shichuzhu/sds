@@ -74,8 +74,14 @@ message TaskCfg {
     string listen_addr = 14;
 }
 
+enum BoltType {
+    SPOUT = 0;
+    BOLT = 1;
+    SINK = 2;
+}
+
 message Bolt {
-    bool is_sink = 1;
+    BoltType bolt_type = 1;
     int64 bolt_id = 2;
     string name = 3;
     repeated int64 preds = 4;
