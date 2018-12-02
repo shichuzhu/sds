@@ -20,9 +20,16 @@ func ReadConfig(configFileName string) (Cfg *Config) {
 }
 
 type Config struct {
-	Bolts []struct {
+	/*Bolts []struct {
 		ID   int           `json:"id"`
 		Name string        `json:"name"`
 		Pred []interface{} `json:"pred"`
-	} `json:"bolts"`
+	} `json:"bolts"`*/
+	Bolts []Bolt
+}
+
+type Bolt struct {
+	ID   int
+	Name string
+	pred []interface{}
 }
