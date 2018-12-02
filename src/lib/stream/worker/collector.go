@@ -23,6 +23,7 @@ func (s *Collector) Emit(arr []byte) {
 }
 
 func (s *Collector) IssueStop() {
+	s.IssueCheckPoint()
 	// Send control signal and remove task from taskManager
 	_ = s.stream.Send(&pb.BytesTuple{
 		BytesOneof: &pb.BytesTuple_ControlSignal{ControlSignal: 1}})

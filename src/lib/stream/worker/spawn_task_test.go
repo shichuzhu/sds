@@ -30,7 +30,7 @@ func TestSpawnBolt(t *testing.T) {
 	bolt1 := SpawnBoltTask(cfg, plug)
 	_ = bolt1.Init()
 	cfg.Bolt.Name = "Halver"
-	bolt2 := SpawnBoltTask(cfg, plug)
+	bolt2 := SpawnSinkTask(cfg, plug)
 	_ = bolt2.Init()
 
 	spout.NextTuple(col)

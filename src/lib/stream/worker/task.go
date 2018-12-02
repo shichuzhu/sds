@@ -22,31 +22,102 @@ type Task struct {
 	Receiver  pb.StreamProcServices_StreamTuplesClient
 	Collector shared.CollectorABC
 	Executor  shared.BoltABC
+	Spout     shared.SpoutABC
+	Sink      shared.SinkABC
 }
 
 func NewTask(cfg *pb.TaskCfg) *pb.TaskCfg {
-	task := &Task{downStreamSetterSync: make(chan bool, 1)}
+	task := new(Task)
+
+	SetupDirectories(cfg)
+	// TODO: download the zipped file from sdfs
+	//_ = utils.RunShellString("zip -rj data/mp4/exclamation/src/exclamation.zip examples/streamProcessing/exclamation")
+	plug := CompilePlugin(cfg)
+
+	switch cfg.Bolt.BoltType {
+	case pb.BoltType_SINK:
+		task.Sink = SpawnSinkTask(cfg, plug)
+	case pb.BoltType_SPOUT:
+		task.Spout = SpawnSpoutTask(cfg, plug)
+		task.downStreamSetterSync = make(chan bool, 1)
+	default:
+		task.Executor = SpawnBoltTask(cfg, plug)
+		task.downStreamSetterSync = make(chan bool, 1)
+	}
 	task.TaskId = GetTMgr().InsertTask(task)
+	task.Cfg = cfg
 	cfg.TaskId = int64(task.TaskId)
 	return cfg
 }
 
 func StreamTuple(cfg *pb.TaskCfg, server pb.StreamProcServices_StreamTuplesServer) error {
-	// TODO: decide if this is bolt/spout/sink; checkout the task; run the routine of task
 	id := IdFromCfg(cfg)
 	task := GetTMgr().Task(id)
-	go task.RegisterDownStream(cfg, server)
-	return task.StreamTuple()
+	switch task.BoltType() {
+	case pb.BoltType_SPOUT:
+		go task.RegisterDownStream(cfg, server)
+		return task.StreamSpoutTuple() // TODO: change different stream function
+	case pb.BoltType_SINK:
+		return task.StreamSinkTuple()
+	default:
+		go task.RegisterDownStream(cfg, server)
+		return task.StreamBoltTuple()
+	}
 }
 
 // Connect to data source and anchor the input stream there
 func Anchor(cfg *pb.TaskCfg) error {
+	// TODO: decide if this is bolt/spout/sink; checkout the task; run the routine of task
 	id := IdFromCfg(cfg)
 	task := GetTMgr().Task(id)
-	return task.ConnectUpStream()
+	switch task.BoltType() {
+	case pb.BoltType_SPOUT:
+		return nil // TODO: call init in Anchor
+	default:
+		return task.ConnectUpStream()
+	}
 }
 
-func (s *Task) StreamTuple() error {
+func (s *Task) BoltType() pb.BoltType {
+	return s.Cfg.Bolt.BoltType
+}
+
+func (s *Task) StreamSinkTuple() error {
+	for {
+		// handle receiver (upstream error)
+		arr, control, err := s.GetNextTupleBytes()
+
+		switch control {
+		case 0: // checkpoint
+			s.Sink.CheckPoint()
+		case 1: // stop
+			_ = GetTMgr().RemoveTask(s)
+			return nil
+		}
+
+		if err != nil {
+			log.Println("sink receiving error: ", err)
+			return err
+		} else if arr != nil {
+			s.Sink.Execute(arr, s.Collector)
+		}
+	}
+}
+
+func (s *Task) StreamSpoutTuple() error {
+	<-s.downStreamSetterSync
+	for {
+		// handle previous sender side error (downstream error)
+		convert, ok := s.Collector.(*Collector)
+		if ok && convert.IsLive() != nil {
+			return convert.IsLive()
+		}
+
+		s.Spout.NextTuple(s.Collector)
+	}
+}
+
+func (s *Task) StreamBoltTuple() error {
 	<-s.downStreamSetterSync
 	for {
 		// handle previous sender side error (downstream error)
@@ -55,18 +126,28 @@ func (s *Task) StreamTuple() error {
 			return convert.IsLive()
 		}
 		// handle receiver (upstream error)
-		arr, err := s.GetNextTupleBytes()
+		arr, control, err := s.GetNextTupleBytes()
+
+		switch control {
+		case 0: // checkpoint
+			s.Collector.IssueCheckPoint()
+		case 1: // stop
+			s.Collector.IssueStop()
+			_ = GetTMgr().RemoveTask(s)
+			return nil
+		}
+
 		if err != nil {
 			log.Println("bolt receiving error: ", err)
 			return err
 		} else if arr != nil {
 			s.Executor.Execute(arr, s.Collector)
 		}
-		// else meaning checkpoint, processed already
 	}
 }
 
 func (s *Task) ConnectUpStream() error {
+	// TODO: to support DAG, need to anchor to multiple upstream
 	conn, err := grpc.Dial(s.Cfg.PredAddrs[0], nil)
 	if err != nil {
 		log.Printf("fail to dial: %v", err)
@@ -83,36 +164,28 @@ func (s *Task) ConnectUpStream() error {
 
 // To be called by rpc from downstream
 func (s *Task) RegisterDownStream(cfg *pb.TaskCfg, server pb.StreamProcServices_StreamTuplesServer) {
-	s.downStreamSetterSync <- true
+	// TODO: add mechanism to register multiple downstream, change Collector to a slice, and sync setting up all downstream before ack the 'true'
 	s.Collector = NewCollector(server)
+
+	s.downStreamSetterSync <- true
 	close(s.downStreamSetterSync)
 	s.downStreamSetterSync = nil
 }
 
-func (s *Task) GetNextTupleBytes() ([]byte, error) {
+func (s *Task) GetNextTupleBytes() ([]byte, int, error) {
 	data, err := s.Receiver.Recv()
 	if err != nil {
-		return nil, err
+		return nil, -1, err
 	}
 	switch x := data.BytesOneof.(type) {
 	case *pb.BytesTuple_Tuple:
 		// Normal tuple byte string
-		return x.Tuple, nil
+		return x.Tuple, -1, nil
 	case *pb.BytesTuple_ControlSignal:
 		log.Println("control signal received: ", x.ControlSignal)
-		switch x.ControlSignal {
-		case 0: // checkpoint
-			s.Collector.IssueCheckPoint()
-			return nil, nil
-		case 1: // stop
-			s.Collector.IssueStop()
-			_ = GetTMgr().RemoveTask(s)
-			return nil, errors.New("Stop streaming signal")
-		default:
-			return nil, errors.New("Unknown control signal")
-		}
+		return nil, int(x.ControlSignal), nil
 	default:
 		err := errors.New("unexpected input stream byte")
-		return nil, err
+		return nil, -1, err
 	}
 }

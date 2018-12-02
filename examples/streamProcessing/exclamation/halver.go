@@ -2,15 +2,15 @@ package main
 
 import (
 	"fa18cs425mp/src/lib/stream/shared"
-	"fmt"
 	"github.com/golang/protobuf/proto"
+	"log"
 )
 
 type Halver struct {
 	states [][]string
 }
 
-func NewHalver() shared.BoltABC {
+func NewHalver() shared.SinkABC {
 	return &Halver{}
 }
 
@@ -28,15 +28,16 @@ func (s *Halver) Execute(arr []byte, abc shared.CollectorABC) {
 			another = append(another, word)
 		}
 	}
-	anotherObj := &Words{Words: another}
+	//anotherObj := &Words{Words: another}
 	s.states = append(s.states, another)
-	anotherArr, _ := proto.Marshal(anotherObj)
-	abc.Emit(anotherArr)
+	//anotherArr, _ := proto.Marshal(anotherObj)
+	//abc.Emit(anotherArr)
 	return
 }
 
 func (s *Halver) CheckPoint() {
 	for _, words := range s.states {
-		fmt.Println(words)
+		log.Println(words)
 	}
+	s.states = nil
 }

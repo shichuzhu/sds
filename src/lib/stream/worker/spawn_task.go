@@ -14,6 +14,7 @@ func SetupDirectories(cfg *pb.TaskCfg) {
 	_ = os.RemoveAll(config.RootPath + cfg.JobName)
 	_ = os.Mkdir(config.RootPath+cfg.JobName, os.ModePerm)
 	dirpath := config.RootPath + cfg.JobName + "/"
+	log.Println("local job directory: ", dirpath)
 	_ = os.Mkdir(dirpath+"plugin/", os.ModePerm)
 	_ = os.Mkdir(dirpath+"src/", os.ModePerm)
 }
@@ -46,6 +47,17 @@ func SpawnBoltTask(cfg *pb.TaskCfg, plug *plugin.Plugin) shared.BoltABC {
 	}
 	var bolt shared.BoltABC
 	bolt = sym.(func() shared.BoltABC)()
+	return bolt
+}
+
+func SpawnSinkTask(cfg *pb.TaskCfg, plug *plugin.Plugin) shared.SinkABC {
+	sym, err := plug.Lookup("New" + cfg.Bolt.Name)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	var bolt shared.SinkABC
+	bolt = sym.(func() shared.SinkABC)()
 	return bolt
 }
 
