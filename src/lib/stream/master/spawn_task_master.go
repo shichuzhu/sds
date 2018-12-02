@@ -107,7 +107,7 @@ func sendSpawnMessage(nodeID int, bolt *Bolt, boltsLength int) error {
 
 func sendAnchorMessage(bolt *Bolt) error {
 	boltID := bolt.ID
-	predList := bolt.pred
+	predList := bolt.Pred
 	predAddr := make([]string, len(predList))
 	for i := 0; i < len(predList); i++ {
 		nodeID := BoltNodeMap[boltID]
