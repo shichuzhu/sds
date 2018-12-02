@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fa18cs425mp/src/lib/stream/worker"
 	"fa18cs425mp/src/pb"
 )
 
@@ -19,12 +20,13 @@ func (s *StreamProcServer) SyncMasterState(ctx context.Context, config *pb.TopoC
 
 // Worker
 func (s *StreamProcServer) SpawnTask(ctx context.Context, cfg *pb.TaskCfg) (*pb.TaskCfg, error) {
-	return nil, nil
+	cfg = worker.NewTask(cfg)
+	return cfg, nil
 }
 
 func (s *StreamProcServer) Anchor(ctx context.Context, cfg *pb.TaskCfg) (*pb.TaskCfg, error) {
-	// TODO: call task.StreamTuple
-	return nil, nil
+	err := worker.Anchor(cfg)
+	return cfg, err
 }
 
 func (s *StreamProcServer) CheckPoint(ctx context.Context, cfg *pb.TaskCfg) (*pb.TaskCfg, error) {
@@ -35,7 +37,7 @@ func (s *StreamProcServer) Terminate(ctx context.Context, cfg *pb.TaskCfg) (*pb.
 	return nil, nil
 }
 
-// This function should not return
+// This function should not return until streaming stops
 func (s *StreamProcServer) StreamTuples(cfg *pb.TaskCfg, stream pb.StreamProcServices_StreamTuplesServer) error {
-	return nil
+	return worker.StreamTuple(cfg, stream)
 }

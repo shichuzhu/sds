@@ -14,8 +14,9 @@ func IdFromCfg(cfg *pb.TaskCfg) int {
 }
 
 type TaskManager struct {
-	tasks map[int]*Task
-	lk    sync.RWMutex
+	tasks     map[int]*Task
+	lk        sync.RWMutex
+	NextIndex int
 }
 
 var taskManager TaskManager
@@ -26,8 +27,17 @@ func (s *TaskManager) Task(id int) *Task {
 	return s.tasks[id]
 }
 
-func (s *TaskManager) InsertTask(id int, task *Task) {
+func (s *TaskManager) InsertTask(task *Task) int {
 	s.lk.Lock()
 	defer s.lk.Unlock()
-	s.tasks[id] = task
+	s.tasks[s.NextIndex] = task
+	s.NextIndex++
+	return s.NextIndex - 1
+}
+
+func (s *TaskManager) RemoveTask(task *Task) error {
+	s.lk.Lock()
+	defer s.lk.Unlock()
+	delete(s.tasks, task.TaskId)
+	return nil
 }

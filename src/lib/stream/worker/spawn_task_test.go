@@ -65,3 +65,11 @@ func (s *TestCollector) Emit(arr []byte) {
 	}
 	fmt.Println(s.state)
 }
+
+func (s *TestCollector) IssueStop() {
+	return
+}
+
+func (s *TestCollector) IssueCheckPoint() {
+	return
+}

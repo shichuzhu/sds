@@ -17,19 +17,22 @@ type TaskId struct {
 type Task struct {
 	downStreamSetterSync chan bool
 	Cfg                  *pb.TaskCfg
+	TaskId               int
 
 	Receiver  pb.StreamProcServices_StreamTuplesClient
 	Collector shared.CollectorABC
 	Executor  shared.BoltABC
 }
 
-func NewTask() *Task {
-	return &Task{downStreamSetterSync: make(chan bool, 1)}
+func NewTask(cfg *pb.TaskCfg) *pb.TaskCfg {
+	task := &Task{downStreamSetterSync: make(chan bool, 1)}
+	task.TaskId = GetTMgr().InsertTask(task)
+	cfg.TaskId = int64(task.TaskId)
+	return cfg
 }
 
 func StreamTuple(cfg *pb.TaskCfg, server pb.StreamProcServices_StreamTuplesServer) error {
 	// TODO: decide if this is bolt/spout/sink; checkout the task; run the routine of task
-	// RegisterDownStream
 	id := IdFromCfg(cfg)
 	task := GetTMgr().Task(id)
 	go task.RegisterDownStream(cfg, server)
@@ -46,11 +49,20 @@ func Anchor(cfg *pb.TaskCfg) error {
 func (s *Task) StreamTuple() error {
 	<-s.downStreamSetterSync
 	for {
+		// handle previous sender side error (downstream error)
+		convert, ok := s.Collector.(*Collector)
+		if ok && convert.IsLive() != nil {
+			return convert.IsLive()
+		}
+		// handle receiver (upstream error)
 		arr, err := s.GetNextTupleBytes()
 		if err != nil {
+			log.Println("bolt receiving error: ", err)
 			return err
+		} else if arr != nil {
+			s.Executor.Execute(arr, s.Collector)
 		}
-		s.Executor.Execute(arr, s.Collector)
+		// else meaning checkpoint, processed already
 	}
 }
 
@@ -84,11 +96,21 @@ func (s *Task) GetNextTupleBytes() ([]byte, error) {
 	}
 	switch x := data.BytesOneof.(type) {
 	case *pb.BytesTuple_Tuple:
-		println(x.Tuple)
-		return nil, nil
+		// Normal tuple byte string
+		return x.Tuple, nil
 	case *pb.BytesTuple_ControlSignal:
-		println(x.ControlSignal)
-		return nil, nil
+		log.Println("control signal received: ", x.ControlSignal)
+		switch x.ControlSignal {
+		case 0: // checkpoint
+			s.Collector.IssueCheckPoint()
+			return nil, nil
+		case 1: // stop
+			s.Collector.IssueStop()
+			_ = GetTMgr().RemoveTask(s)
+			return nil, errors.New("Stop streaming signal")
+		default:
+			return nil, errors.New("Unknown control signal")
+		}
 	default:
 		err := errors.New("unexpected input stream byte")
 		return nil, err
