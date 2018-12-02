@@ -19,6 +19,11 @@ func ReadConfig(configFileName string) (Cfg *Config) {
 	return
 }
 
+/*
+	I change the structure of Config, with independent bolt struct to allow
+	mode convenience
+*/
+
 type Config struct {
 	/*Bolts []struct {
 		ID   int           `json:"id"`
