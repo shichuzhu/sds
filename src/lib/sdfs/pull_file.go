@@ -96,7 +96,7 @@ func pullFile(sdsFileName string, ip string, versions int, config *pb.PullFileIn
 	}
 	retMessage, err := client.PullFiles(ctx, info)
 	if err != nil {
-		log.Println("Failure in pull files")
+		//log.Println("Failure in pull files")
 		return nil
 	}
 	return retMessage

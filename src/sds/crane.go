@@ -29,7 +29,7 @@ func crane() {
 			if err != nil {
 				log.Panic(err)
 			}
-			_ = utils.RunShellString(fmt.Sprintf("sds sdfs %s/%s.zip %s.zip", jobPath, jobName, jobName))
+			_ = utils.RunShellString(fmt.Sprintf("sds sdfs put %s/%s.zip %s.zip", jobPath, jobName, jobName))
 			if err != nil {
 				log.Panic(err)
 			}
