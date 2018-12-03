@@ -5,21 +5,39 @@ import (
 	"fa18cs425mp/src/shared/cfg"
 	"flag"
 	"fmt"
+	"go/build"
+	"log"
 	"os"
 )
 
-var RootPathp = flag.String("stream", cfg.Cfg.StreamDir, "Directory to store the Crane streaming data")
+var RootPathp = flag.String("stream", cfg.Cfg.StreamDir, "Directory to store the Crane streaming data, RELATIVE to GOPATH/src")
 var RootPath string
+var RootPathRelativeToGoPath string // used when 'go build'
 
 func InitialCrane() {
-	RootPath = *RootPathp
+	gopath := func() string {
+		gopath := os.Getenv("GOPATH")
+		if gopath == "" {
+			gopath = build.Default.GOPATH
+		}
+		return gopath
+	}()
+	RootPathRelativeToGoPath = *RootPathp
+
+	RootPath = gopath + "/src/" + RootPathRelativeToGoPath
+
+	println(RootPath, RootPathRelativeToGoPath)
 	_ = os.RemoveAll(RootPath)
-	_ = os.Mkdir(RootPath, os.ModePerm)
+	log.Println("Creating directory: ", RootPath)
+	err := os.MkdirAll(RootPath, os.ModePerm)
+	if err != nil {
+		log.Println("err MkdirAll: ", err)
+	}
 }
 
-func SetupLoadFile(jobName string) error {
-	_ = os.RemoveAll(RootPath + jobName)
-	_ = os.Mkdir(RootPath+jobName, os.ModePerm)
+func SetupLoadFile(jobName string) (err error) {
+	err = os.RemoveAll(RootPath + jobName)
+	err = os.MkdirAll(RootPath+jobName, os.ModePerm)
 	dirpath := RootPath + jobName + "/"
 	//log.Println("local job directory: ", dirpath)
 	_ = os.Mkdir(dirpath+"plugin/", os.ModePerm)
@@ -31,8 +49,8 @@ func SetupLoadFile(jobName string) error {
 	_ = utils.RunShellString(fmt.Sprintf("sds sdfs get %s.zip %ssrc/%s.zip", jobName, dirpath, jobName))
 	//_ = utils.RunShellString("zip -rj data/mp4/exclamation/src/exclamation.zip examples/streamProcessing/exclamation")
 
-	cmd = "unzip -d " + dirpath + "src " + dirpath + "src/" + jobName + ".zip"
-	err := utils.RunShellString(cmd)
+	cmd = "unzip -od " + dirpath + "src " + dirpath + "src/" + jobName + ".zip"
+	err = utils.RunShellString(cmd)
 	return err
 }
 

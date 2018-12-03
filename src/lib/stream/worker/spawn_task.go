@@ -5,6 +5,7 @@ import (
 	"fa18cs425mp/src/lib/stream/shared"
 	"fa18cs425mp/src/lib/utils"
 	"fa18cs425mp/src/pb"
+	"fmt"
 	"log"
 	"plugin"
 )
@@ -14,7 +15,8 @@ func CompilePlugin(cfg *pb.TaskCfg) *plugin.Plugin {
 	dirpath := config.RootPath + cfg.JobName + "/"
 
 	filepath := dirpath + "plugin/" + cfg.JobName + ".so"
-	cmd = "go build -buildmode=plugin -o " + filepath + " fa18cs425mp/" + dirpath + "src/"
+	cmd = fmt.Sprintf("go build -buildmode=plugin -o %s %s%s/src/", filepath, config.RootPathRelativeToGoPath, cfg.JobName)
+	//cmd = "go build -buildmode=plugin -o " + filepath + " fa18cs425mp/" + dirpath + "src/"
 	_ = utils.RunShellString(cmd)
 	plug, err := plugin.Open(filepath)
 	if err != nil {
