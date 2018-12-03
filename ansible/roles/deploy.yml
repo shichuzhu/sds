@@ -10,6 +10,7 @@
       with_items:
         - { source: '/mnt/data/shared/gmaildrive/workspace/fa18byclass/CS425/fa18cs425mp/src', dest: '/home/szhu28/go/src/fa18cs425mp/' }
         - { source: '/mnt/data/shared/gmaildrive/workspace/fa18byclass/CS425/fa18cs425mp/examples', dest: '/home/szhu28/go/src/fa18cs425mp/' }
+        - { source: '/mnt/data/shared/gmaildrive/workspace/fa18byclass/CS425/fa18cs425mp/test', dest: '/home/szhu28/' }
 
     - name: copy config file to VMs
       synchronize:
