@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"fmt"
 	"log"
 	"os/exec"
 	"strings"
@@ -19,6 +18,6 @@ func RunShellArgs(cmdStrs []string) error {
 }
 
 func RunShellString(cmd string) error {
-	fmt.Println(cmd)
+	//fmt.Println(cmd)
 	return RunShellArgs(strings.Split(cmd, " "))
 }

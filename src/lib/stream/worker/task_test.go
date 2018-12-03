@@ -82,6 +82,8 @@ func TestBoltWithNetwork(t *testing.T) {
 	}
 	println(cfg2.TaskId)
 
-	time.Sleep(1 * time.Second)
-	grpcServer.Stop()
+	//time.Sleep(1 * time.Second)
+	//grpcServer.Stop()
+
+	grpcServer.GracefulStop()
 }

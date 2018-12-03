@@ -1,12 +1,16 @@
 package worker
 
-import "fa18cs425mp/src/pb"
+import (
+	"errors"
+	"fa18cs425mp/src/pb"
+	"log"
+)
 
-// TODO: implement emitter
 type Collector struct {
 	// state to record connection
 	stream pb.StreamProcServices_StreamTuplesServer
 	err    error
+	cpFlag bool
 }
 
 func NewCollector(server pb.StreamProcServices_StreamTuplesServer) *Collector {
@@ -14,25 +18,33 @@ func NewCollector(server pb.StreamProcServices_StreamTuplesServer) *Collector {
 }
 
 func (s *Collector) Emit(arr []byte) {
-	// TODO: error handle
 	err := s.stream.Send(&pb.BytesTuple{
 		BytesOneof: &pb.BytesTuple_Tuple{Tuple: arr}})
-	if err != nil && s.err != nil {
+	if err != nil {
 		s.err = err
+		log.Println(err)
 	}
 }
 
 func (s *Collector) IssueStop() {
 	s.IssueCheckPoint()
 	// Send control signal and remove task from taskManager
-	_ = s.stream.Send(&pb.BytesTuple{
+	s.err = s.stream.Send(&pb.BytesTuple{
 		BytesOneof: &pb.BytesTuple_ControlSignal{ControlSignal: 1}})
+	if s.err == nil {
+		s.err = errors.New("stream stopped by user")
+		log.Println(s.err)
+	}
 	return
 }
 
 func (s *Collector) IssueCheckPoint() {
-	_ = s.stream.Send(&pb.BytesTuple{
+	if s.cpFlag {
+		return
+	}
+	s.err = s.stream.Send(&pb.BytesTuple{
 		BytesOneof: &pb.BytesTuple_ControlSignal{ControlSignal: 0}})
+	s.cpFlag = true
 	return
 }
 

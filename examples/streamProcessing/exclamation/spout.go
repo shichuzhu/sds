@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fa18cs425mp/src/lib/stream/shared"
-	"fmt"
 	"github.com/golang/protobuf/proto"
 	"log"
 	"os"
@@ -37,7 +36,7 @@ func (s *Spout) NextTuple(collector shared.CollectorABC) {
 	if s.scanner.Scan() {
 		obj := Words{Words: strings.Split(s.scanner.Text(), " ")}
 		bts, _ := proto.Marshal(&obj)
-		fmt.Println("Spout Sending: ", s.scanner.Text())
+		//fmt.Println("Spout Sending: ", s.scanner.Text())
 		collector.Emit(bts)
 	} else {
 		collector.IssueStop()

@@ -14,7 +14,7 @@ func SetupDirectories(cfg *pb.TaskCfg) {
 	_ = os.RemoveAll(config.RootPath + cfg.JobName)
 	_ = os.Mkdir(config.RootPath+cfg.JobName, os.ModePerm)
 	dirpath := config.RootPath + cfg.JobName + "/"
-	log.Println("local job directory: ", dirpath)
+	//log.Println("local job directory: ", dirpath)
 	_ = os.Mkdir(dirpath+"plugin/", os.ModePerm)
 	_ = os.Mkdir(dirpath+"src/", os.ModePerm)
 }
@@ -32,7 +32,7 @@ func CompilePlugin(cfg *pb.TaskCfg) *plugin.Plugin {
 	_ = utils.RunShellString(cmd)
 	plug, err := plugin.Open(filepath)
 	if err != nil {
-		log.Println(err)
+		log.Println("error: ", err)
 		return nil
 	} else {
 		return plug

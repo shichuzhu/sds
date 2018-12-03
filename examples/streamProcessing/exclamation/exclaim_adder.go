@@ -21,6 +21,7 @@ func (s *ExclaimAdder) Execute(arr []byte, abc shared.CollectorABC) {
 	obj := new(Words)
 	_ = proto.Unmarshal(arr, obj)
 
+	//log.Println("bolt got: ", obj.Words)
 	another := []string{}
 	for _, word := range obj.Words {
 		another = append(another, word+"!!!")

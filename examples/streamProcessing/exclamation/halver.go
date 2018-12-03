@@ -3,7 +3,7 @@ package main
 import (
 	"fa18cs425mp/src/lib/stream/shared"
 	"github.com/golang/protobuf/proto"
-	"log"
+	"strings"
 )
 
 type Halver struct {
@@ -23,6 +23,7 @@ func (s *Halver) Execute(arr []byte, abc shared.CollectorABC) {
 	_ = proto.Unmarshal(arr, obj)
 
 	var another []string
+	//log.Println("sink got: ", obj.Words)
 	for i, word := range obj.Words {
 		if i%2 == 0 {
 			another = append(another, word)
@@ -36,8 +37,9 @@ func (s *Halver) Execute(arr []byte, abc shared.CollectorABC) {
 }
 
 func (s *Halver) CheckPoint() {
+	println("sink checkPointing:")
 	for _, words := range s.states {
-		log.Println("committed checkpoint: ", words)
+		println(strings.Join(words, " "))
 	}
 	s.states = nil
 }

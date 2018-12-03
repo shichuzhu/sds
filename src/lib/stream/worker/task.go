@@ -55,13 +55,14 @@ func NewTask(cfg *pb.TaskCfg) *pb.TaskCfg {
 func StreamTuple(cfg *pb.TaskCfg, server pb.StreamProcServices_StreamTuplesServer) error {
 	id := int(cfg.PredTaskId[0]) // bug fixed: anchor need to specify upstream task id
 	task := GetTMgr().Task(id)
-	log.Printf("%v\n", *task.Cfg) // TODO: delete me
+	//log.Printf("%v\n", *task.Cfg) // Pretty print the cfg for debug only
 	switch task.BoltType() {
 	case pb.BoltType_SPOUT:
 		go task.RegisterDownStream(cfg, server)
 		return task.StreamSpoutTuple() // TODO: change different stream function
 	case pb.BoltType_SINK:
-		return task.StreamSinkTuple()
+		log.Fatalln("Sink should not call this")
+		return nil
 	default:
 		go task.RegisterDownStream(cfg, server)
 		return task.StreamBoltTuple()
@@ -74,8 +75,22 @@ func Anchor(cfg *pb.TaskCfg) error {
 	task := GetTMgr().Task(id)
 	switch task.BoltType() {
 	case pb.BoltType_SPOUT:
-		return nil // TODO: call init in Anchor
+		_ = task.Spout.Init()
+		return nil
+	case pb.BoltType_SINK:
+		_ = task.Sink.Init()
+		task.Cfg.PredTaskId = cfg.PredTaskId
+		err := task.ConnectUpStream()
+		if err != nil {
+			return err
+		} else {
+			// Bug fixed: No one calls sink's streaming, need to invoke at anchor
+			go task.StreamSinkTuple()
+			return nil
+		}
 	default:
+		_ = task.Executor.Init()
+		task.Cfg.PredTaskId = cfg.PredTaskId
 		return task.ConnectUpStream()
 	}
 }
@@ -84,7 +99,8 @@ func (s *Task) BoltType() pb.BoltType {
 	return s.Cfg.Bolt.BoltType
 }
 
-func (s *Task) StreamSinkTuple() error {
+func (s *Task) StreamSinkTuple() {
+	// TODO: add mechanism to ack the master.
 	for {
 		// handle receiver (upstream error)
 		arr, control, err := s.GetNextTupleBytes()
@@ -94,12 +110,12 @@ func (s *Task) StreamSinkTuple() error {
 			s.Sink.CheckPoint()
 		case 1: // stop
 			_ = GetTMgr().RemoveTask(s)
-			return nil
+			return
 		}
 
 		if err != nil {
 			log.Println("sink receiving error: ", err)
-			return err
+			return
 		} else if arr != nil {
 			s.Sink.Execute(arr, s.Collector)
 		}
