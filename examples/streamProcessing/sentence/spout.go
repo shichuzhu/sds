@@ -6,6 +6,7 @@ import (
 	"github.com/golang/protobuf/proto"
 	"log"
 	"os"
+	"time"
 )
 
 type Spout struct {
@@ -44,7 +45,7 @@ func (s *Spout) NextTuple(collector shared.CollectorABC) {
 			collector.IssueCheckPoint()
 		}
 		//fmt.Println("Spout Sending: ", s.scanner.Text())
-		//time.Sleep(time.Second)
+		time.Sleep(time.Second)
 	} else {
 		collector.IssueStop()
 	}
