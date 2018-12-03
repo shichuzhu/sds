@@ -5,6 +5,7 @@ import (
 	"fa18cs425mp/src/lib/stream/master"
 	"fa18cs425mp/src/lib/stream/worker"
 	"fa18cs425mp/src/pb"
+	"log"
 )
 
 type StreamProcServer struct{}
@@ -24,6 +25,7 @@ func (s *StreamProcServer) SyncMasterState(ctx context.Context, config *pb.TopoC
 
 // Worker
 func (s *StreamProcServer) SpawnTask(ctx context.Context, cfg *pb.TaskCfg) (*pb.TaskCfg, error) {
+	log.Printf("to spawn bolt %d as type %v", cfg.Bolt.BoltId, cfg.Bolt.BoltType)
 	cfg = worker.NewTask(cfg)
 	return cfg, nil
 }

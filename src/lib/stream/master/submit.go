@@ -48,7 +48,8 @@ func SpawnTaskMaster(topo *pb.TopoConfig) (err error) {
 			nodeListIndex += 1
 		}
 		nodeID := nodeIDList[nodeListIndex%listLength]
-		cfgs[i], err = sendSpawnMessage(nodeID, &Bolts[i], listLength, topo.JobName)
+		log.Printf("assigning bolt %d to Node %d\n", Bolts[i].ID, nodeID)
+		cfgs[i], err = sendSpawnMessage(nodeID, &Bolts[i], len(Bolts), topo.JobName)
 		if err != nil {
 			log.Println("error spawning task", Bolts[i].ID, err)
 			return err
@@ -79,6 +80,7 @@ func sendSpawnMessage(nodeID int, bolt *Bolt, boltsLength int, jobName string) (
 		return nil, err
 	}
 	var spawnMess pb.TaskCfg
+	//log.Println("Comparison!!!!!!", bolt.ID, boltsLength)
 	if bolt.ID == 0 {
 		spawnMess = pb.TaskCfg{
 			Bolt: &pb.Bolt{
@@ -147,7 +149,7 @@ func sendAnchorMessage(bolt *Bolt, cfg *pb.TaskCfg) error {
 
 	client, err := GetClientOfNodeId(BoltNodeMap[boltID])
 	if err != nil {
-		log.Println("Error in initialize the client. In send Anchor function")
+		log.Println("Error in initialize the client. In send Anchor function", err)
 		return err
 	}
 

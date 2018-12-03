@@ -71,6 +71,8 @@ func StreamTuple(cfg *pb.TaskCfg, server pb.StreamProcServices_StreamTuplesServe
 func Anchor(cfg *pb.TaskCfg) error {
 	id := IdFromCfg(cfg)
 	task := GetTMgr().Task(id)
+	task.Cfg.PredAddrs = cfg.PredAddrs
+	task.Cfg.PredTaskId = cfg.PredTaskId
 	switch task.BoltType() {
 	case pb.BoltType_SPOUT:
 		_ = task.Spout.Init()
