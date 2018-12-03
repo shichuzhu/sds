@@ -52,5 +52,6 @@ func helper(IP string, port int) (*grpc.ClientConn, error) {
 
 func ConnectLocal() (*grpc.ClientConn, error) {
 	localIp := memlist.GetOutboundIP().String()
+	fmt.Println("Connecting to server addr: ", localIp, cfg.Cfg.DefaultTCPPort)
 	return helper(localIp, cfg.Cfg.DefaultTCPPort)
 }

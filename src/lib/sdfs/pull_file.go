@@ -76,7 +76,7 @@ func PutSingleSdfsFile(info *pb.PullFileInfo) (*pb.PullFileInfo, error) {
 		localFileName := SdfsnameToLfs(targetFile, versions-i)
 		err := FileTransferToNodeByIp(ip, RootPath+localFileName, "", igMT)
 		if err != nil {
-			log.Printf("Fail to transfer file %s to ip: %s\n", targetFile, ip)
+			log.Printf("file transfer fail %s to %s, Err: %v", targetFile, ip, err)
 		}
 	}
 	return &pb.PullFileInfo{LatestVersion: int32(versions)}, nil

@@ -50,18 +50,21 @@ func Get(sdfsFilename, localFilename string) {
 			continue
 		} else {
 			log.Println("Successfully get file " + sdfsFilename + " From system")
+			fileVersion := GetFileVersion(sdfsFilename) // TODO: get from remote
+			currentLocalName := SdfsnameToLfs(sdfsFilename, fileVersion)
+			log.Println("cp", RootPath+currentLocalName, localFilename) // TODO
+			err := exec.Command("cp", RootPath+currentLocalName, localFilename).Run()
+			if err != nil {
+				log.Println("Error in copy file", err)
+				return
+			}
+			//err = os.Remove(RootPath + currentLocalName)
+			//if err != nil {
+			//	log.Println("Error in remove file", err)
+			//	return
+			//}
 			break
 		}
-	}
-
-	fileVersion := GetFileVersion(sdfsFilename) // TODO: get from remote
-	currentLocalName := SdfsnameToLfs(sdfsFilename, fileVersion)
-	log.Println("cp", RootPath+currentLocalName, localFilename) // TODO
-	err := exec.Command("cp", RootPath+currentLocalName, localFilename).Run()
-	err = os.Remove(RootPath + currentLocalName)
-	if err != nil {
-		log.Println("Error in copy file")
-		return
 	}
 	return
 }

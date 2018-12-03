@@ -22,9 +22,7 @@ func SubmitJob(topo *pb.TopoConfig) (ret *pb.TopoConfig, err error) {
 		log.Println("job submission failed: ", err)
 		return
 	}
-	dirPath := config.DirPath(topo.JobName)
-	err = SpawnTaskMaster(fmt.Sprintf("%ssrc/topo.json", dirPath))
-	return
+	return topo, SpawnTaskMaster(topo)
 }
 
 /*
@@ -32,7 +30,9 @@ func SubmitJob(topo *pb.TopoConfig) (ret *pb.TopoConfig, err error) {
 	It will traverse all the node in node list, and then traverse back
 	TODO: Node that this method DIDN'T implement to avoid standby master
 */
-func SpawnTaskMaster(configFileName string) error {
+func SpawnTaskMaster(topo *pb.TopoConfig) (err error) {
+	dirPath := config.DirPath(topo.JobName)
+	configFileName := fmt.Sprintf("%ssrc/topo.json", dirPath)
 	BoltNodeMap = make(map[int]int)
 	BoltTaskMap = make(map[int]int)
 	fileConfig := ReadConfig(configFileName)
@@ -42,20 +42,22 @@ func SpawnTaskMaster(configFileName string) error {
 	nodeListIndex := 0
 	listLength := len(nodeIDList)
 	Bolts := fileConfig.Bolts
+	cfgs := make([]*pb.TaskCfg, len(Bolts))
 	for i := 0; i < len(Bolts); i++ {
 		if nodeIDList[nodeListIndex%listLength] == masterID {
 			nodeListIndex += 1
 		}
 		nodeID := nodeIDList[nodeListIndex%listLength]
-		err := sendSpawnMessage(nodeID, &Bolts[i], listLength)
+		cfgs[i], err = sendSpawnMessage(nodeID, &Bolts[i], listLength, topo.JobName)
 		if err != nil {
-			log.Println("Have error in sending spawn message ", Bolts[i].ID)
+			log.Println("error spawning task", Bolts[i].ID, err)
+			return err
 		}
 		nodeListIndex += 1
 	}
 
 	for i := 0; i < len(Bolts); i++ {
-		err := sendAnchorMessage(&Bolts[i])
+		err := sendAnchorMessage(&Bolts[i], cfgs[i])
 		if err != nil {
 			log.Println("Error in sending anchor message" + err.Error())
 		}
@@ -70,12 +72,11 @@ func SpawnTaskMaster(configFileName string) error {
 	Return error if transfer message is not successful
 	I will map the Bolt id to task id and node id
 	Also it will send message and wait for response
-	TODO:In the filed specification field, missing taskID, cp_id, listen_addr
 */
-func sendSpawnMessage(nodeID int, bolt *Bolt, boltsLength int) error {
+func sendSpawnMessage(nodeID int, bolt *Bolt, boltsLength int, jobName string) (*pb.TaskCfg, error) {
 	client, err := GetClientOfNodeId(nodeID)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	var spawnMess pb.TaskCfg
 	if bolt.ID == 0 {
@@ -106,9 +107,14 @@ func sendSpawnMessage(nodeID int, bolt *Bolt, boltsLength int) error {
 			},
 		}
 	}
+	spawnMess.JobName = jobName
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	taskResponse, _ := (*client).SpawnTask(ctx, &spawnMess)
+	taskResponse, err := (*client).SpawnTask(ctx, &spawnMess)
+	if err != nil {
+		log.Println(err)
+		return nil, err
+	}
 
 	/*
 		Here we will specific the two map, task map and node
@@ -117,8 +123,7 @@ func sendSpawnMessage(nodeID int, bolt *Bolt, boltsLength int) error {
 	BoltNodeMap[bolt.ID] = nodeID //initialize nodeID for the bolt
 	BoltTaskMap[bolt.ID] = int(taskResponse.TaskId)
 
-	return nil
-
+	return taskResponse, nil
 }
 
 /*
@@ -126,7 +131,7 @@ func sendSpawnMessage(nodeID int, bolt *Bolt, boltsLength int) error {
 	The anchor message will specify the NODEID and Taskid, and split by ","
 */
 
-func sendAnchorMessage(bolt *Bolt) error {
+func sendAnchorMessage(bolt *Bolt, cfg *pb.TaskCfg) error {
 	boltID := bolt.ID
 	predList := bolt.Pred
 	predAddr := make([]string, len(predList))
@@ -146,20 +151,15 @@ func sendAnchorMessage(bolt *Bolt) error {
 		return err
 	}
 
-	spawnMess := pb.TaskCfg{
-		Bolt: &pb.Bolt{
-			BoltId: int64(boltID),
-		},
-		PredAddrs:  predAddr,
-		PredTaskId: taskList,
-	}
+	cfg.PredTaskId = taskList
+	cfg.PredAddrs = predAddr
+	cfg.Bolt.BoltId = int64(boltID)
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
 	defer cancel()
-	retMess, _ := (*client).Anchor(ctx, &spawnMess)
-
-	if retMess.Success == true {
-		return nil
+	_, err = (*client).Anchor(ctx, cfg)
+	if err != nil {
+		return err
 	}
 	/*
 		TODO: How to deal with not successful Anchor ?
