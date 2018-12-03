@@ -3,8 +3,8 @@ package worker
 import (
 	"context"
 	"errors"
+	"fa18cs425mp/src/lib/stream/config"
 	"fa18cs425mp/src/lib/stream/shared"
-	"fa18cs425mp/src/lib/utils"
 	"fa18cs425mp/src/pb"
 	"google.golang.org/grpc"
 	"log"
@@ -30,9 +30,7 @@ type Task struct {
 func NewTask(cfg *pb.TaskCfg) *pb.TaskCfg {
 	task := new(Task)
 
-	SetupDirectories(cfg)
-	// TODO: download the zipped file from sdfs
-	_ = utils.RunShellString("zip -rj data/mp4/exclamation/src/exclamation.zip examples/streamProcessing/exclamation")
+	_ = config.SetupLoadFile(cfg.JobName)
 	plug := CompilePlugin(cfg)
 
 	switch cfg.Bolt.BoltType {

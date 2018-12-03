@@ -14,13 +14,7 @@ type StreamProcServer struct{}
 	TODO: We need to get file config name here
 */
 func (s *StreamProcServer) SubmitJob(ctx context.Context, config *pb.TopoConfig) (*pb.TopoConfig, error) {
-	jsonName := config.JobName
-	err := master.SpawnTaskMaster(jsonName)
-
-	/*
-		return message here is original message
-	*/
-	return config, err
+	return master.SubmitJob(config)
 }
 
 // Standby Master

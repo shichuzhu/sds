@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fa18cs425mp/src/lib/memlist"
+	"fa18cs425mp/src/lib/stream/config"
 	"fa18cs425mp/src/pb"
 	"fmt"
 	"google.golang.org/grpc"
@@ -13,6 +14,18 @@ import (
 
 var BoltNodeMap map[int]int
 var BoltTaskMap map[int]int
+
+func SubmitJob(topo *pb.TopoConfig) (ret *pb.TopoConfig, err error) {
+	ret = topo
+	err = config.SetupLoadFile(topo.JobName)
+	if err != nil {
+		log.Println("job submission failed: ", err)
+		return
+	}
+	dirPath := config.DirPath(topo.JobName)
+	err = SpawnTaskMaster(fmt.Sprintf("%ssrc/topo.json", dirPath))
+	return
+}
 
 /*
 	In this Spawn task function, I will firstly send spawn task message for each bolt

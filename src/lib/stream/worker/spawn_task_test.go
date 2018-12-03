@@ -3,7 +3,6 @@ package worker
 import (
 	"fa18cs425mp/src/lib/stream/config"
 	"fa18cs425mp/src/lib/stream/shared"
-	"fa18cs425mp/src/lib/utils"
 	"fa18cs425mp/src/pb"
 	"flag"
 	"fmt"
@@ -15,10 +14,9 @@ func TestSpawnBolt(t *testing.T) {
 	config.InitialCrane()
 	cfg := &pb.TaskCfg{JobName: "exclamation",
 		Bolt: &pb.Bolt{Name: "Spout"}}
-	SetupDirectories(cfg)
-	_ = utils.RunShellString("zip -rj data/mp4/exclamation/src/exclamation.zip examples/streamProcessing/exclamation")
-	//_ = utils.RunShellString("cp test/mp4/user_code/exclamation.zip data/mp4/exclamation/src")
+	_ = config.SetupLoadFile(cfg.JobName)
 	plug := CompilePlugin(cfg)
+
 	col := new(TestCollector)
 
 	spout := SpawnSpoutTask(cfg, plug)
