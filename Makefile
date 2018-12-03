@@ -59,7 +59,8 @@ runlocal: buildlocal
 	sleep 0.5
 	sds swim join 128.174.245.229:11001
 	sleep 0.5
-	sds crane examples/streamProcessing/exclamation
+	#sds crane examples/streamProcessing/exclamation
+	sds crane examples/streamProcessing/sentence
 	#sds grep -c 123456 '*'
 
 testbuild:
