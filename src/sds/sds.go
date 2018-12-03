@@ -43,6 +43,9 @@ func main() {
 		panic(err)
 	}
 	switch Action {
+	case "crane":
+		fmt.Println("crane invoked")
+		crane()
 	case "sdfs":
 		fmt.Println("sdfs invoked")
 		dsdfs()
