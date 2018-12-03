@@ -4,7 +4,6 @@ import (
 	"fa18cs425mp/src/lib/utils"
 	"fa18cs425mp/src/shared/cfg"
 	"flag"
-	"fmt"
 	"os"
 )
 
@@ -28,8 +27,8 @@ func SetupLoadFile(jobName string) error {
 	var cmd string
 
 	// TODO: load file from sdfs
-	_ = utils.RunShellString(fmt.Sprintf("sds sdfs get %s.zip %ssrc/%s.zip", jobName, dirpath, jobName))
-	//_ = utils.RunShellString("zip -rj data/mp4/exclamation/src/exclamation.zip examples/streamProcessing/exclamation")
+	//_ = utils.RunShellString(fmt.Sprintf("sds sdfs get %s.zip %ssrc/%s.zip", jobName, dirpath, jobName))
+	_ = utils.RunShellString("zip -rj data/mp4/exclamation/src/exclamation.zip examples/streamProcessing/exclamation")
 
 	cmd = "unzip -d " + dirpath + "src " + dirpath + "src/" + jobName + ".zip"
 	err := utils.RunShellString(cmd)

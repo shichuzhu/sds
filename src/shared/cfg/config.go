@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"os"
+	"os/user"
 )
 
 /*
@@ -33,10 +35,23 @@ var Cfg ConfigType
 var configFileName = "cfg.json"
 
 func init() {
+	homeDir := func() string {
+		usr, err := user.Current()
+		if err != nil {
+			return ""
+		}
+		return usr.HomeDir
+	}()
+
 	fileContent, err := ioutil.ReadFile(configFileName)
 	if err != nil {
-		fmt.Println("Cannot read the config file")
-		return
+		wd, _ := os.Getwd()
+		fmt.Println("didn't find the config file under current directory:", wd)
+		fileContent, err = ioutil.ReadFile(homeDir + "/" + configFileName)
+		if err != nil {
+			fmt.Println("didn't find the config file under home directory:", homeDir)
+			return
+		}
 	}
 	if err := json.Unmarshal(fileContent, &Cfg); err != nil {
 		fmt.Println("Fail to parse the JSON config file")
