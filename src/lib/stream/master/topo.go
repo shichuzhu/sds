@@ -41,13 +41,13 @@ type Bolts struct {
 type Bolt struct {
 	ID   int
 	Name string
-	Pred []interface{}
+	Pred []int
 }
 
 type Config struct {
 	Bolts []struct {
-		ID   int           `json:"id"`
-		Name string        `json:"name"`
-		Pred []interface{} `json:"pred"`
+		ID   int    `json:"id"`
+		Name string `json:"name"`
+		Pred []int  `json:"pred"`
 	} `json:"bolts"`
 }

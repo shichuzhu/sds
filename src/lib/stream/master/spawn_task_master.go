@@ -19,7 +19,7 @@ var BoltTaskMap map[int]int
 	It will traverse all the node in node list, and then traverse back
 	TODO: Node that this method DIDN'T implement to avoid standby master
 */
-func SpawnTaskMaster(configFileName string) {
+func SpawnTaskMaster(configFileName string) error {
 	BoltNodeMap = make(map[int]int)
 	BoltTaskMap = make(map[int]int)
 	fileConfig := ReadConfig(configFileName)
@@ -41,6 +41,14 @@ func SpawnTaskMaster(configFileName string) {
 		nodeListIndex += 1
 	}
 
+	for i := 0; i < len(Bolts); i++ {
+		err := sendAnchorMessage(&Bolts[i])
+		if err != nil {
+			log.Println("Error in sending anchor message" + err.Error())
+		}
+	}
+
+	return nil
 }
 
 /*
@@ -52,7 +60,7 @@ func SpawnTaskMaster(configFileName string) {
 	TODO:In the filed specification field, missing taskID, cp_id, listen_addr
 */
 func sendSpawnMessage(nodeID int, bolt *Bolt, boltsLength int) error {
-	client, err := GetClientofNodeId(nodeID)
+	client, err := GetClientOfNodeId(nodeID)
 	if err != nil {
 		return err
 	}
@@ -109,14 +117,17 @@ func sendAnchorMessage(bolt *Bolt) error {
 	boltID := bolt.ID
 	predList := bolt.Pred
 	predAddr := make([]string, len(predList))
+	taskList := make([]int64, len(predList))
+	//nodeList := make([]int, len(predList))
 	for i := 0; i < len(predList); i++ {
-		nodeID := BoltNodeMap[boltID]
-		taskID := BoltTaskMap[boltID]
-		tmp := fmt.Sprintf("%d,%d", nodeID, taskID)
-		predAddr[i] = tmp
+		predID := int(predList[i])
+		nodeID := BoltNodeMap[predID]
+		taskID := BoltTaskMap[predID]
+		taskList[i] = int64(taskID)
+		predAddr[i] = memlist.NextNofId(0, nodeID).Addr()
 	}
 
-	client, err := GetClientofNodeId(BoltNodeMap[boltID])
+	client, err := GetClientOfNodeId(BoltNodeMap[boltID])
 	if err != nil {
 		log.Println("Error in initialize the client. In send Anchor function")
 		return err
@@ -126,7 +137,8 @@ func sendAnchorMessage(bolt *Bolt) error {
 		Bolt: &pb.Bolt{
 			BoltId: int64(boltID),
 		},
-		PredAddrs: predAddr,
+		PredAddrs:  predAddr,
+		PredTaskId: taskList,
 	}
 
 	ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
@@ -144,7 +156,7 @@ func sendAnchorMessage(bolt *Bolt) error {
 
 }
 
-func GetClientofNodeId(nodeID int) (*pb.StreamProcServicesClient, error) {
+func GetClientOfNodeId(nodeID int) (*pb.StreamProcServicesClient, error) {
 	nodeIP := memlist.NextNofId(0, nodeID).Addr()
 	if conn, err := connect(nodeIP); err != nil {
 		log.Println("Failure in connection Node ", nodeID)

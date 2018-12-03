@@ -2,6 +2,7 @@ package services
 
 import (
 	"context"
+	"fa18cs425mp/src/lib/stream/master"
 	"fa18cs425mp/src/lib/stream/worker"
 	"fa18cs425mp/src/pb"
 )
@@ -9,8 +10,17 @@ import (
 type StreamProcServer struct{}
 
 // Master
+/*
+	TODO: We need to get file config name here
+*/
 func (s *StreamProcServer) SubmitJob(ctx context.Context, config *pb.TopoConfig) (*pb.TopoConfig, error) {
-	return nil, nil
+	jsonName := config.JobName
+	err := master.SpawnTaskMaster(jsonName)
+
+	/*
+		return message here is original message
+	*/
+	return config, err
 }
 
 // Standby Master
