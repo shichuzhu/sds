@@ -46,7 +46,7 @@ buildlocal:
 	go install fa18cs425mp/src/...
 
 runlocal: buildlocal
-#	dserver -port 10001 -pfd 11001 -nodeid 1 &
+	dserver -port 10001 -pfd 11001 -nodeid 1 &
 	dserver -port 10002 -pfd 11002 -nodeid 2 &
 	dserver -port 10003 -pfd 11003 -nodeid 3 &
 	dserver -port 10004 -pfd 11004 -nodeid 4 &
@@ -59,6 +59,7 @@ runlocal: buildlocal
 	sleep 0.5
 	sds swim join 128.174.245.229:11001
 	sleep 0.5
+	sds crane examples/streamProcessing/exclamation
 	#sds grep -c 123456 '*'
 
 testbuild:
