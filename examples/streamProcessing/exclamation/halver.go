@@ -33,7 +33,7 @@ func (s *Halver) Execute(arr []byte, abc shared.CollectorABC) {
 	_ = proto.Unmarshal(arr, obj)
 
 	var another []string
-	//log.Println("sink got: ", obj.Words)
+	log.Println("New tuple reaches sink: ", obj.Words)
 	for i, word := range obj.Words {
 		if i%2 == 0 {
 			another = append(another, word)
