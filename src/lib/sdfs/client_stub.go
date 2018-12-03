@@ -5,22 +5,33 @@ import (
 	"errors"
 	"fa18cs425mp/src/pb"
 	"fa18cs425mp/src/shared/sdfs2fd"
+	"fmt"
 	"log"
 	"os"
+	"path"
 	"strconv"
 )
 
+func NormalizePath(candidate, cwd string) string {
+	if path.IsAbs(candidate) {
+		return candidate
+	}
+	return fmt.Sprintf("%s/%s", cwd, candidate)
+}
+
 func (s *Server) SdfsCall(_ context.Context, argsMsgs *pb.StringArray) (*pb.StringArray, error) {
 	args := argsMsgs.GetMesgs()
+	cwd := args[0]
+	args = args[1:]
 	var response []string
 	switch text := args[0]; text {
 	case "put":
 		if len(args) == 3 {
-			Put(args[1], args[2])
+			Put(NormalizePath(args[1], cwd), args[2])
 		}
 	case "get":
 		if len(args) == 3 {
-			Get(args[1], args[2])
+			Get(args[1], NormalizePath(args[2], cwd))
 		}
 	case "delete":
 		if len(args) == 2 {
@@ -38,7 +49,7 @@ func (s *Server) SdfsCall(_ context.Context, argsMsgs *pb.StringArray) (*pb.Stri
 			if err != nil {
 				return nil, errors.New("please input integer for version number")
 			}
-			GetVersions(args[1], numVar, args[3])
+			GetVersions(args[1], numVar, NormalizePath(args[3], cwd))
 		}
 	default:
 		log.Println("Invalid input.")
