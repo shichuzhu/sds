@@ -65,6 +65,7 @@ message TaskCfg {
     Bolt bolt = 2;
     // Anchor
     repeated string pred_addrs = 3;
+    repeated int64 pred_task_id = 6;
     int64 task_id = 4;
     int64 cp_id = 5; // checkpoint ID
 
@@ -93,6 +94,7 @@ message TopoConfig {
     string master_addr = 3;
     string standby_master_addr = 4;
     repeated Bolt bolts = 5;
+    string job_name = 6;
 
     message Worker {
         int64 node_id = 1;

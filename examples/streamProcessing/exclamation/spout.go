@@ -37,7 +37,9 @@ func (s *Spout) NextTuple(collector shared.CollectorABC) {
 	if s.scanner.Scan() {
 		obj := Words{Words: strings.Split(s.scanner.Text(), " ")}
 		bts, _ := proto.Marshal(&obj)
-		fmt.Println("Sending: ", obj)
+		fmt.Println("Spout Sending: ", s.scanner.Text())
 		collector.Emit(bts)
+	} else {
+		collector.IssueStop()
 	}
 }

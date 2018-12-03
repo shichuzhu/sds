@@ -6,6 +6,9 @@ import (
 )
 
 func GetTMgr() *TaskManager {
+	if taskManager.tasks == nil {
+		taskManager.tasks = make(map[int]*Task)
+	}
 	return &taskManager
 }
 

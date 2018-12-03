@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fa18cs425mp/src/lib/stream/shared"
+	"fa18cs425mp/src/lib/utils"
 	"fa18cs425mp/src/pb"
 	"google.golang.org/grpc"
 	"log"
@@ -31,7 +32,7 @@ func NewTask(cfg *pb.TaskCfg) *pb.TaskCfg {
 
 	SetupDirectories(cfg)
 	// TODO: download the zipped file from sdfs
-	//_ = utils.RunShellString("zip -rj data/mp4/exclamation/src/exclamation.zip examples/streamProcessing/exclamation")
+	_ = utils.RunShellString("zip -rj data/mp4/exclamation/src/exclamation.zip examples/streamProcessing/exclamation")
 	plug := CompilePlugin(cfg)
 
 	switch cfg.Bolt.BoltType {
@@ -50,9 +51,11 @@ func NewTask(cfg *pb.TaskCfg) *pb.TaskCfg {
 	return cfg
 }
 
+// This cfg is the cfg of successor, not self!
 func StreamTuple(cfg *pb.TaskCfg, server pb.StreamProcServices_StreamTuplesServer) error {
-	id := IdFromCfg(cfg)
+	id := int(cfg.PredTaskId[0]) // bug fixed: anchor need to specify upstream task id
 	task := GetTMgr().Task(id)
+	log.Printf("%v\n", *task.Cfg) // TODO: delete me
 	switch task.BoltType() {
 	case pb.BoltType_SPOUT:
 		go task.RegisterDownStream(cfg, server)
@@ -67,7 +70,6 @@ func StreamTuple(cfg *pb.TaskCfg, server pb.StreamProcServices_StreamTuplesServe
 
 // Connect to data source and anchor the input stream there
 func Anchor(cfg *pb.TaskCfg) error {
-	// TODO: decide if this is bolt/spout/sink; checkout the task; run the routine of task
 	id := IdFromCfg(cfg)
 	task := GetTMgr().Task(id)
 	switch task.BoltType() {
@@ -148,7 +150,8 @@ func (s *Task) StreamBoltTuple() error {
 
 func (s *Task) ConnectUpStream() error {
 	// TODO: to support DAG, need to anchor to multiple upstream
-	conn, err := grpc.Dial(s.Cfg.PredAddrs[0], nil)
+	conn, err := grpc.Dial(s.Cfg.PredAddrs[0], grpc.WithInsecure())
+
 	if err != nil {
 		log.Printf("fail to dial: %v", err)
 		return err

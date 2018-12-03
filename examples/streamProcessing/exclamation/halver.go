@@ -37,7 +37,7 @@ func (s *Halver) Execute(arr []byte, abc shared.CollectorABC) {
 
 func (s *Halver) CheckPoint() {
 	for _, words := range s.states {
-		log.Println(words)
+		log.Println("committed checkpoint: ", words)
 	}
 	s.states = nil
 }
