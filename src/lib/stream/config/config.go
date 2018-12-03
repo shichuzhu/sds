@@ -3,6 +3,7 @@ package config
 import (
 	"fa18cs425mp/src/lib/utils"
 	"fa18cs425mp/src/shared/cfg"
+	"fa18cs425mp/src/shared/sdfs2fd"
 	"flag"
 	"fmt"
 	"go/build"
@@ -15,6 +16,7 @@ var RootPath string
 var RootPathRelativeToGoPath string // used when 'go build'
 
 func InitialCrane() {
+	sdfs2fd.Fd2Crane = make(chan int, 2)
 	gopath := func() string {
 		gopath := os.Getenv("GOPATH")
 		if gopath == "" {

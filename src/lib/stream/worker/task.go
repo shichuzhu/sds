@@ -114,7 +114,7 @@ func (s *Task) StreamSinkTuple() {
 		}
 
 		if err != nil {
-			log.Println("sink receiving error: ", err)
+			log.Println("sink receiving error: >>>>>> ", err)
 			return
 		} else if arr != nil {
 			s.Sink.Execute(arr, s.Collector)
@@ -128,6 +128,7 @@ func (s *Task) StreamSpoutTuple() error {
 		// handle previous sender side error (downstream error)
 		convert, ok := s.Collector.(*Collector)
 		if ok && convert.IsLive() != nil {
+			log.Println("Spout streaming stops >>>>>")
 			return convert.IsLive()
 		}
 
@@ -141,6 +142,7 @@ func (s *Task) StreamBoltTuple() error {
 		// handle previous sender side error (downstream error)
 		convert, ok := s.Collector.(*Collector)
 		if ok && convert.IsLive() != nil {
+			log.Println("Spout streaming stops >>>>>")
 			return convert.IsLive()
 		}
 		// handle receiver (upstream error)
@@ -156,7 +158,7 @@ func (s *Task) StreamBoltTuple() error {
 		}
 
 		if err != nil {
-			log.Println("bolt receiving error: ", err)
+			log.Println("bolt receiving error: >>>>>", err)
 			return err
 		} else if arr != nil {
 			s.Executor.Execute(arr, s.Collector)

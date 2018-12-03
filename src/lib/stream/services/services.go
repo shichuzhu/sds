@@ -5,17 +5,35 @@ import (
 	"fa18cs425mp/src/lib/stream/master"
 	"fa18cs425mp/src/lib/stream/worker"
 	"fa18cs425mp/src/pb"
+	"fa18cs425mp/src/shared/sdfs2fd"
+	"fmt"
 	"log"
+	"time"
 )
 
 type StreamProcServer struct{}
 
 // Master
-/*
-	TODO: We need to get file config name here
-*/
 func (s *StreamProcServer) SubmitJob(ctx context.Context, config *pb.TopoConfig) (*pb.TopoConfig, error) {
-	return master.SubmitJob(config)
+	//for sig, ok <- sdfs2fd.Fd2Crane;
+	func() {
+		for {
+			select {
+			case _ = <-sdfs2fd.Fd2Crane:
+			default:
+				return
+			}
+		}
+	}()
+
+	config, _ = master.SubmitJob(config)
+	go func() {
+		<-sdfs2fd.Fd2Crane
+		time.Sleep(3 * time.Second)
+		log.Println("Failure detected, restarting job!")
+		_, _ = master.SubmitJob(config)
+	}()
+	return config, nil
 }
 
 // Standby Master
@@ -45,5 +63,7 @@ func (s *StreamProcServer) Terminate(ctx context.Context, cfg *pb.TaskCfg) (*pb.
 
 // This function should not return until streaming stops
 func (s *StreamProcServer) StreamTuples(cfg *pb.TaskCfg, stream pb.StreamProcServices_StreamTuplesServer) error {
-	return worker.StreamTuple(cfg, stream)
+	err := worker.StreamTuple(cfg, stream)
+	fmt.Println("stream terminated")
+	return err
 }
