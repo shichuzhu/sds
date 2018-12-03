@@ -24,10 +24,13 @@ func (s *Collector) Emit(arr []byte) {
 		s.err = err
 		log.Println(err)
 	}
+	s.cpFlag = false
 }
 
 func (s *Collector) IssueStop() {
-	s.IssueCheckPoint()
+	if !s.cpFlag {
+		s.IssueCheckPoint()
+	}
 	// Send control signal and remove task from taskManager
 	s.err = s.stream.Send(&pb.BytesTuple{
 		BytesOneof: &pb.BytesTuple_ControlSignal{ControlSignal: 1}})
@@ -39,9 +42,6 @@ func (s *Collector) IssueStop() {
 }
 
 func (s *Collector) IssueCheckPoint() {
-	if s.cpFlag {
-		return
-	}
 	s.err = s.stream.Send(&pb.BytesTuple{
 		BytesOneof: &pb.BytesTuple_ControlSignal{ControlSignal: 0}})
 	s.cpFlag = true

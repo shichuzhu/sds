@@ -50,7 +50,7 @@ runlocal: buildlocal
 	dserver -port 10002 -pfd 11002 -nodeid 2 &
 	dserver -port 10003 -pfd 11003 -nodeid 3 &
 	dserver -port 10004 -pfd 11004 -nodeid 4 &
-	dserver -port 10005 -pfd 11005 -nodeid 5 &
+#	dserver -port 10005 -pfd 11005 -nodeid 5 &
 #	dserver -port 10006 -pfd 11006 -nodeid 6 &
 #	dserver -port 10007 -pfd 11007 -nodeid 7 &
 #	dserver -port 10008 -pfd 11008 -nodeid 8 &

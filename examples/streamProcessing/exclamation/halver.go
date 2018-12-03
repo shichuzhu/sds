@@ -47,12 +47,13 @@ func (s *Halver) Execute(arr []byte, abc shared.CollectorABC) {
 }
 
 func (s *Halver) CheckPoint() {
-	println("sink checkPointing:")
+	log.Println("sink checkPointing...")
 	for _, words := range s.states {
-		println(strings.Join(words, " "))
 		_, _ = fmt.Fprintln(s.file, strings.Join(words, " "))
 	}
 	s.states = nil
+	//s.file.Close()
 	_ = s.file.Sync()
 	_ = utils.RunShellString(fmt.Sprintf("sds sdfs put %s %s", s.fn, s.fn))
+	//s.file, _ = os.OpenFile(s.fn, os.O_APPEND|os.O_WRONLY, 0600)
 }

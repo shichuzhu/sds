@@ -11,9 +11,6 @@ import (
 type StreamProcServer struct{}
 
 // Master
-/*
-	TODO: We need to get file config name here
-*/
 func (s *StreamProcServer) SubmitJob(ctx context.Context, config *pb.TopoConfig) (*pb.TopoConfig, error) {
 	return master.SubmitJob(config)
 }
