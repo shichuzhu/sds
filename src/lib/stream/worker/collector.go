@@ -3,6 +3,7 @@ package worker
 import (
 	"errors"
 	"fa18cs425mp/src/pb"
+	"fmt"
 	"log"
 )
 
@@ -23,6 +24,7 @@ func (s *Collector) Emit(arr []byte) {
 	if err != nil {
 		s.err = err
 		log.Println(err)
+		fmt.Println("error while EMITTING", err)
 	}
 	s.cpFlag = false
 }

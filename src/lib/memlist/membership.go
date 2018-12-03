@@ -53,6 +53,7 @@ func (ml *MembershipListType) delete(index int) {
 	failId := ml.members[index].nodeId
 	//log.Println("channel to send: ", failId)
 	sdfs2fd.Fd2Sdfs <- failId
+	sdfs2fd.Fd2Crane <- failId
 
 	<-sdfs2fd.Sdfs2Fd // Barrier to avoid read-write conflict
 	log.Println("Member Rmved: ", ml.members[index].addr)

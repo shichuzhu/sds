@@ -7,6 +7,7 @@ import (
 	"log"
 	"os"
 	"strings"
+	"time"
 )
 
 type Spout struct {
@@ -41,7 +42,7 @@ func (s *Spout) NextTuple(collector shared.CollectorABC) {
 			collector.IssueCheckPoint()
 		}
 		//fmt.Println("Spout Sending: ", s.scanner.Text())
-		//time.Sleep(time.Second)
+		time.Sleep(time.Second)
 		collector.Emit(bts)
 	} else {
 		collector.IssueStop()
